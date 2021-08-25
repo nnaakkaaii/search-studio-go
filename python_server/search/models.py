@@ -396,7 +396,7 @@ class Payment(models.Model):
         null=False,
         max_length=3,
         validators=[
-            validators.MinValueValidator(3),
+            validators.MinLengthValidator(3),
         ]
     )
     name = models.CharField(
@@ -415,7 +415,7 @@ class Reservation(models.Model):
         null=False,
         max_length=3,
         validators=[
-            validators.MinValueValidator(3),
+            validators.MinLengthValidator(3),
         ]
     )
     name = models.CharField(
