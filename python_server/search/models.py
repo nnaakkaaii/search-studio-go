@@ -51,33 +51,33 @@ class Slot(models.Model):
 
 class Amenity(models.Model):
     AMENITY_SET = (
-        ("stand-light", "stand-light"),
-        ("color-light", "color-light"),
-        ("phone-stand", "phone-stand"),
-        ("phone-lens", "phone-lens"),
-        ("filming-equipment", "filming-equipment"),
-        ("dj", "dj"),
-        ("mic", "mic"),
-        ("headset-mic", "headset-mic"),
-        ("mic-stand", "mic-stand"),
-        ("keyboard", "keyboard"),
-        ("music-stand", "music-stand"),
-        ("projector", "projector"),
-        ("monitor", "monitor"),
-        ("bluray", "bluray"),
-        ("desk", "desk"),
-        ("chair", "chair"),
-        ("whiteboard", "whiteboard"),
-        ("partition", "partition"),
-        ("ballet-bar", "ballet-bar"),
-        ("tap-board", "tap-board"),
-        ("yoga-mat", "yoga-mat"),
-        ("yoga-goods", "yoga-goods"),
-        ("training-goods", "training-goods"),
-        ("heel-cover", "heel-cover"),
-        ("hanger", "hanger"),
-        ("charger", "charger"),
-        ("alcohol", "alcohol"),
+        ("stand-light", "スタンドライト"),
+        ("color-light", "カラーライト"),
+        ("phone-stand", "スマホ用三脚"),
+        ("phone-lens", "スマホ用広角レンズ"),
+        ("filming-equipment", "その他撮影機材"),
+        ("dj", "DJセット"),
+        ("mic", "マイク"),
+        ("headset-mic", "ヘッドセットマイク"),
+        ("mic-stand", "マイクスタンド"),
+        ("keyboard", "キーボード"),
+        ("music-stand", "譜面台"),
+        ("projector", "プロジェクター"),
+        ("monitor", "モニター"),
+        ("bluray", "Blu-rayデッキ"),
+        ("desk", "机"),
+        ("chair", "イス"),
+        ("whiteboard", "ホワイトボード"),
+        ("partition", "パーテーション"),
+        ("ballet-bar", "バレエバー"),
+        ("tap-board", "タップ板"),
+        ("yoga-mat", "ヨガマット"),
+        ("yoga-goods", "ヨガグッズ"),
+        ("training-goods", "トレーニンググッズ"),
+        ("heel-cover", "ヒールカバー"),
+        ("hanger", "ハンガー"),
+        ("charger", "充電器"),
+        ("alcohol", "アルコール消毒"),
     )
     name = models.CharField(
         verbose_name="アメニティ名",
@@ -109,16 +109,15 @@ class Amenity(models.Model):
 
 class RoomFacility(models.Model):
     ROOM_FACILITY_SET = (
-        ("two-sides-mirror", "two-sides-mirror"),
-        ("color-control", "color-control"),
-        ("colored-lighting", "colored-lighting"),
-        ("mirror-ball", "mirror-ball"),
-        ("phone-holder", "phone-holder"),
-        ("mixer", "mixer"),
-        ("cd", "cd"),
-        ("ipod", "ipod"),
-        ("bluetooth", "bluetooth"),
-        ("curtain", "curtain"),
+        ("two-sides-mirror", "鏡2面"),
+        ("color-control", "明るさ調節"),
+        ("mirror-ball", "ミラーボール"),
+        ("phone-holder", "スマホ固定台"),
+        ("mixer", "ミキサー"),
+        ("cd", "CD利用"),
+        ("ipod", "iPod利用"),
+        ("bluetooth", "BlueTooth利用"),
+        ("curtain", "カーテン/更衣スペース"),
     )
     name = models.CharField(
         verbose_name="部屋設備名",
@@ -150,13 +149,13 @@ class RoomFacility(models.Model):
 
 class StudioFacility(models.Model):
     STUDIO_FACILITY_SET = (
-        ("male-changing-room", "male-changing-room"),
-        ("female-changing-room", "female-changing-room"),
-        ("shower-room", "shower-room"),
-        ("smoking-room", "smoking-room"),
-        ("waiting-space", "waiting-space"),
-        ("parking", "parking"),
-        ("wifi", "wifi"),
+        ("male-changing-room", "男性更衣室"),
+        ("female-changing-room", "女性更衣室"),
+        ("shower-room", "シャワールーム"),
+        ("smoking-room", "喫煙室"),
+        ("waiting-space", "待合室"),
+        ("parking", "駐車場"),
+        ("wifi", "Wi-Fi"),
     )
     name = models.CharField(
         verbose_name="スタジオ設備名",
@@ -316,7 +315,7 @@ class Line(models.Model):
         help_text="路線名 (山手線)。不明な場合は空に。",
         null=True,
         blank=True,
-        max_length=16,
+        max_length=32,
     )
 
 
@@ -367,8 +366,8 @@ class Address(models.Model):
     )
     prefecture = models.ForeignKey(Prefecture, on_delete=models.CASCADE)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
-    line = models.ForeignKey(Line, on_delete=models.CASCADE)
-    station = models.ForeignKey(Station, on_delete=models.CASCADE)
+    line = models.ManyToManyField(Line, on_delete=models.CASCADE)
+    station = models.ManyToManyField(Station, on_delete=models.CASCADE)
     exit = models.CharField(
         verbose_name="出口名",
         help_text="出口名。不明な場合は空に。",
