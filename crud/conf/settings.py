@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 
 from conf.const import DB_USERNAME, DB_PASSWORD, DB_NAME, DB_HOST, DB_PORT
+try:
+    from .local_settings import *
+except ImportError:
+    pass
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,9 +24,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)q3j)9q^f_u7j5&kwv6tcq6az^g%#hsg7%vjq7r$41o&l4#y$f'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

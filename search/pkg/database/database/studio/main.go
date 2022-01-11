@@ -50,7 +50,7 @@ func (d *Database) Read(q studio2.Query) (studio2.Response, error) {
 		                        ) pr
 		                    ) as prefecture
 		                    FROM city
-		                    WHERE city.city_id = adress.address_id
+		                    WHERE city.city_id = address.address_id
 		                ) ci
 		            ) as city
 		            FROM address
@@ -64,11 +64,11 @@ func (d *Database) Read(q studio2.Query) (studio2.Response, error) {
 		                FROM (
 		                    SELECT facility_id, facility_name
 		                    FROM facility
-		                    WHERE facility.facility_id = studio_facility.facility_id
+		                    WHERE facility.facility_id = studio_facility_link.facility_id
 		                ) fc
 		            ) as facility, studio_facility_count, studio_facility_price, studio_facility_unit_hour, created_at, updated_at, deleted_at, is_deleted
-		            FROM studio_facility
-		            WHERE studio_facility.studio_id = studio.studio_id
+		            FROM studio_facility_link
+		            WHERE studio_facility_link.studio_id = studio.studio_id
 		        ) sf
 		    ) as studio_facilities, (
 		        SELECT array_to_json(array_agg(sa))
@@ -170,7 +170,7 @@ func (d *Database) Read(q studio2.Query) (studio2.Response, error) {
 		        ) sabs
 		    )
 		    FROM studio
-		    WHERE studio.studio_id = %d
+		    WHERE studio.studio_id = 0
 		) st;
 	`
 	rows, err := d.handler.Query(query)
