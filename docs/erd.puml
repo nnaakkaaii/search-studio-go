@@ -1,0 +1,335 @@
+@startuml
+
+' hide the spot
+hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+title studio-search論理設計
+
+entity "Studio" as studio {
+    * スタジオID (studio_id) : integer
+    --
+    * スタジオ名 (studio_name) : varchar(1024)
+    説明文 (introduction) : text
+    注意書き (precaution) : text
+    ホームページURL (homepage_url) : varchar(1024)
+    * 電話番号 (contact) : varchar(11)
+    * 住所ID (address_id) : integer <<FK>>
+    * 最小予約単位(h) (rent_by_min_hours) : float
+    キャンセル可否 (can_free_cancel) : boolean
+    * 作成日 (created_at) : datetime
+    * 更新日 (updated_at) : datetime
+    削除日 (deleted_at) : datetime
+    * 削除フラグ (is_deleted) : boolean
+}
+
+entity "Address" as address {
+    * 住所ID (address_id) : integer
+    --
+    * 住所名 (address_name) : varchar(1024)
+    * 市区町村ID (city_id) : integer <<FK>>
+}
+
+entity "City" as city {
+    * 市区町村ID (city_id) : integer
+    --
+    * 市区町村名 (city_name) : varchar(256)
+    * 県ID (prefecture_id) : integer <<FK>>
+}
+
+entity "Prefecture" as prefecture {
+    * 県ID (prefecture_id) : integer
+    --
+    * 県名 (prefecture_name) : varchar(256)
+}
+
+entity "StudioAccessByStationLink" as studio_access_by_station_link {
+    * スタジオ-駅アクセス紐付けID (studio_access_by_station_link_id) : integer
+    --
+    * スタジオID (studio_id) : integer <<FK>>
+    * 駅-鉄道-出口紐付けID (station_railway_exit_link_id) : integer <<FK>>
+    徒歩時間 (minutes_from_station) : integer
+    * 作成日 (created_at) : datetime
+    * 更新日 (updated_at) : datetime
+    削除日 (deleted_at) : datetime
+    * 削除フラグ (is_deleted) : boolean
+}
+
+entity "StationRailwayExitLink" as station_railway_exit_link {
+    * 駅-鉄道-出口紐付けID (station_railway_exit_link_id) : integer
+    --
+    * 駅-鉄道紐付けID (station_railway_link_id) : integer <<FK>>
+    * 出口ID (exit_id) : integer <<FK>>
+}
+
+entity "StationRailwayLink" as station_railway_link {
+    * 駅-鉄道紐付けID (station_railway_link_id) : integer
+    --
+    * 駅ID (station_id) : integer <<FK>>
+    * 鉄道ID (railway_id) : integer <<FK>>
+}
+
+entity "Station" as station {
+    * 駅ID (station_id) : integer
+    --
+    * 駅名 (station_name) : varchar(256)
+}
+
+entity "Exit" as exit {
+    * 出口ID (exit_id) : integer
+    --
+    * 出口名 (exit_name) : varchar(128)
+}
+
+entity "Railway" as railway {
+    * 鉄道ID (railway_id) : integer
+    --
+    * 鉄道名 (railway_name) : varchar(128)
+}
+
+entity "StationRailwayLineLink" as station_railway_line_link {
+    * 駅-鉄道-路線紐付けID (station_railway_line_link_id) : integer
+    --
+    * 駅-鉄道紐付けID (station_railway_link_id) : integer <<FK>>
+    * 路線ID (line_id) : integer <<FK>>
+}
+
+entity "Line" as line {
+    * 路線ID (line_id) : integer
+    --
+    * 路線名 (line_name) : varchar(256)
+}
+
+entity "StudioImageLink" as studio_image_link {
+    * スタジオ-画像紐付けID (studio_image_link_id) : integer
+    --
+    * スタジオID (studio_id) : integer
+    * 画像ID (image_id) : integer
+    説明 (description) : text
+}
+
+entity "Image" as image {
+    * 画像ID (image_id) : integer
+    --
+    * 画像名 (image_name) : varchar(512)
+    * 画像パス (image_path) : varchar(1024)
+    * 作成日 (created_at) : datetime
+    * 更新日 (updated_at) : datetime
+    削除日 (deleted_at) : datetime
+    * 削除フラグ (is_deleted) : boolean
+}
+
+entity "Room" as room {
+    * 部屋ID (room_id) : integer
+    --
+    * スタジオID (studio_id) : integer <<FK>>
+    * 部屋名 (room_name) : varchar(512)
+    予約URL (reservation_url) : varchar(1024)
+    最小予約可能人数 (min_reservable_people) : integer
+    最大予約可能人数 (max_reservable_people) : integer
+    床面積 (floor_area) : float
+    * 作成日 (created_at) : datetime
+    * 更新日 (updated_at) : datetime
+    削除日 (deleted_at) : datetime
+    * 削除フラグ (is_deleted) : boolean
+}
+
+entity "RoomImageLink" as room_image_link {
+    * 部屋-画像紐付けID (room_image_link_id) : integer
+    --
+    * 部屋ID (room_id) : integer <<FK>>
+    * 画像ID (image_id) : integer <<FK>>
+    説明 (description) : text
+}
+
+entity "RoomSlotLink" as room_slot_link {
+    * 部屋-予約枠紐付けID (room_slot_link_id) : integer
+    --
+    * 部屋ID (room_id) : integer <<FK>>
+    * 日-予約枠紐付けID (date_slot_link_id) : integer <<FK>>
+    * 残り枠数 (remain_slot_count) : integer
+    * 予約枠料金 (slot_price) : integer
+    * 作成日 (created_at) : datetime
+    * 更新日 (updated_at) : datetime
+    削除日 (deleted_at) : datetime
+    * 削除フラグ (is_deleted) : boolean
+}
+
+entity "DateSlotLink" as date_slot_link {
+    * 日-予約枠紐付けID (date_slot_link_id) : integer
+    --
+    * 日 (date) : date
+    * 予約枠ID (slot_id) : integer <<FK>>
+}
+
+entity "Slot" as slot {
+    * 予約枠ID (slot_id) : integer
+    --
+    * 予約枠ワークロード (workload) : float  /'ワークロードが1を超えて初めて予約可能に'/
+    * 開始時刻 (time_begin) : time
+    * 終了時刻 (time_end) : time
+    * 予約枠基本料金 (slot_base_price) : float
+    * 予約枠母数 (slot_count) : integer
+}
+
+entity "SlotDayTemplateLink" as slot_day_template_link {
+    * 予約枠-曜日テンプレート紐付けID (slot_day_template_link_id) : integer
+    --
+    * 予約枠ID (slot_id) : integer
+    * 曜日テンプレートID (day_template_id) : integer
+    * 作成日 (created_at) : datetime
+    * 更新日 (updated_at) : datetime
+    削除日 (deleted_at) : datetime
+    * 削除フラグ (is_deleted) : boolean
+}
+
+entity "DayTemplate" as day_template {
+    * 曜日テンプレートID (day_template_id) : integer
+    --
+    * 曜日テンプレート名 (day_template_name) : varchar(128)
+}
+
+entity "RoomFacilityLink" as room_facility_link {
+    * 部屋-設備紐付けID (room_facility_link_id) : integer
+    --
+    * 部屋ID (room_id) : integer <<FK>>
+    * 設備ID (facility_id) : integer <<FK>>
+    個数 (room_facility_count) : integer
+    料金 (room_facility_price) : float
+    単位時間(h) (room_facility_unit_hour) : float
+    * 作成日 (created_at) : datetime
+    * 更新日 (updated_at) : datetime
+    削除日 (deleted_at) : datetime
+    * 削除フラグ (is_deleted) : boolean
+}
+
+entity "RoomFloorMaterialLink" as room_floor_material_link {
+    * 部屋-床素材紐付けID (room_floor_material_link_id) : integer
+    --
+    * 部屋ID (room_id) : integer <<FK>>
+    * 床素材ID (floor_material_id) : integer <<FK>>
+    * 作成日 (created_at) : datetime
+    * 更新日 (updated_at) : datetime
+    削除日 (deleted_at) : datetime
+    * 削除フラグ (is_deleted) : boolean
+}
+
+entity "FloorMaterial" as floor_material {
+    * 床素材ID (floor_material_id) : integer
+    --
+    * 床素材名 (floor_material) : varchar(128)
+}
+
+entity "StudioAmenityLink" as studio_amenity_link {
+    * スタジオ-アメニティ紐付けID (studio_amenity_link_id) : integer
+    --
+    * スタジオID (studio_id) : integer <<FK>>
+    * 設備ID (amenity_id) : integer <<FK>>
+    個数 (studio_amenity_count) : integer
+    料金 (studio_amenity_price) : float
+    単位時間(h) (studio_amenity_unit_hour) : float  /'「単位時間」だけ借りると「料金」が発生'/
+    * 作成日 (created_at) : datetime
+    * 更新日 (updated_at) : datetime
+    削除日 (deleted_at) : datetime
+    * 削除フラグ (is_deleted) : boolean
+}
+
+entity "Amenity" as amenity {
+    * アメニティID (amenity_id) : integer
+    --
+    * アメニティ名 (amenity_name) : varchar(256)
+}
+
+entity "StudioFacilityLink" as studio_facility_link {
+    * スタジオ-設備紐付けID (studio_facility_link_id) : integer
+    --
+    * スタジオID (studio_id) : integer <<FK>>
+    * 設備ID (facility_id) : integer <<FK>>
+    個数 (studio_facility_count) : integer
+    料金 (studio_facility_price) : float
+    単位時間(h) (studio_facility_unit_hour) : float  /'「単位時間」だけ借りると「料金」が発生'/
+    * 作成日 (created_at) : datetime
+    * 更新日 (updated_at) : datetime
+    削除日 (deleted_at) : datetime
+    * 削除フラグ (is_deleted) : boolean
+}
+
+entity "Facility" as facility {
+    * 設備ID (facility_id) : integer
+    --
+    * 設備名 (facility_name) : varchar(256)
+}
+
+entity "StudioPaymentLink" as studio_payment_link {
+    * スタジオ-支払い方法紐付けID (studio_payment_link_id) : integer
+    --
+    * スタジオID (studio_id) : integer <<FK>>
+    * 支払い方法ID (payment_id) : integer <<FK>>
+    * 作成日 (created_at) : datetime
+    * 更新日 (updated_at) : datetime
+    削除日 (deleted_at) : datetime
+    * 削除フラグ (is_deleted) : boolean
+}
+
+entity "Payment" as payment {
+    * 支払いID (payment_id) : integer
+    --
+    * 支払い方法名 (payment_name) : varchar(128)
+}
+
+entity "StudioReservationLink" as studio_reservation_link {
+    * スタジオ-予約方法紐付けID (studio_reservation_link_id) : integer
+    --
+    * スタジオID (studio_id) : integer <<FK>>
+    * 予約方法ID (reservation_id) : integer <<FK>>
+    * 作成日 (created_at) : datetime
+    * 更新日 (updated_at) : datetime
+    削除日 (deleted_at) : datetime
+    * 削除フラグ (is_deleted) : boolean
+}
+
+entity "Reservation" as reservation {
+    * 予約方法ID (reservation_id) : integer
+    --
+    * 予約方法名 (reservation_name) : varchar(128)
+}
+
+studio }|--|| address
+address }|--|| city
+city }|--|| prefecture
+studio_access_by_station_link }|--|| studio
+studio_access_by_station_link }o--|| station_railway_exit_link
+station_railway_exit_link }o--|| station_railway_link
+station_railway_exit_link }|--|| exit
+station_railway_link }o--|| station
+station_railway_link }o--|| railway
+station_railway_line_link }o--|| station_railway_link
+station_railway_line_link }o--|| line
+studio_image_link }|--|| studio
+studio_image_link }o--|| image
+room }|--|| studio
+room_image_link }|--|| room
+room_image_link }o--|| image
+room_floor_material_link }|--|| room
+room_floor_material_link }o--|| floor_material
+room_slot_link }|--|| room
+room_slot_link }|--|| date_slot_link
+date_slot_link }o--|| slot
+slot_day_template_link }|--|| slot
+slot_day_template_link }o--|| day_template
+room_facility_link }|--|| room
+room_facility_link }o--|| facility
+studio_amenity_link }|--|| studio
+studio_amenity_link }o--|| amenity
+studio_facility_link }|--|| studio
+studio_facility_link }o--|| facility
+studio_payment_link }|--|| studio
+studio_payment_link }o--|| payment
+studio_reservation_link }|--|| studio
+studio_reservation_link }o--|| reservation
+
+
+
+@enduml
