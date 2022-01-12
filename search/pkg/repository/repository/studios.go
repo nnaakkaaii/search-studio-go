@@ -1,37 +1,8 @@
-package studio
+package repository
 
-import (
-	"database/sql"
-	"fmt"
-	_ "github.com/lib/pq"
-	studio2 "search/pkg/entity/entity/studio"
-	"search/pkg/repository/database_interface/studio"
-)
+import "search/pkg/entity/entity/studios"
 
-type Database struct {
-	handler *sql.DB
-}
-
-type DatabaseInput struct {
-	DBUser string
-	DBPass string
-	DBHost string
-	DBPort string
-	DBName string
-}
-
-var _ studio.DatabaseInterface = (*Database)(nil)
-
-func NewDatabase(i *DatabaseInput) *Database {
-	ds := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", i.DBHost, i.DBPort, i.DBUser, i.DBPass, i.DBName)
-	connector, err := sql.Open("postgres", ds)
-	if err != nil {
-		panic(err.Error())
-	}
-	return &Database{handler: connector}
-}
-
-func (d *Database) Read(q studio2.Query) (studio2.Response, error) {
+func (r *Repository) StudiosRead(q studios.Query) (studios.Response, error) {
 	query := `
 		SELECT row_to_json(st)
 		FROM (
@@ -64,11 +35,11 @@ func (d *Database) Read(q studio2.Query) (studio2.Response, error) {
 		                FROM (
 		                    SELECT facility_id, facility_name
 		                    FROM facility
-		                    WHERE facility.facility_id = studio_facility_link.facility_id
+		                    WHERE facility.facility_id = studio_facility.facility_id
 		                ) fc
 		            ) as facility, studio_facility_count, studio_facility_price, studio_facility_unit_hour, created_at, updated_at, deleted_at, is_deleted
-		            FROM studio_facility_link
-		            WHERE studio_facility_link.studio_id = studio.studio_id
+		            FROM studio_facility
+		            WHERE studio_facility.studio_id = studio.studio_id
 		        ) sf
 		    ) as studio_facilities, (
 		        SELECT array_to_json(array_agg(sa))
@@ -129,7 +100,7 @@ func (d *Database) Read(q studio2.Query) (studio2.Response, error) {
 		    ) as studio_images, (
 		        SELECT array_to_json(array_agg(sabs))
 		        FROM (
-		            SELECT studio_access_by_station_id, (
+		            SELECT studio_station_railway_exit_id, (
 		                SELECT row_to_json(sre)
 		                FROM (
 		                    SELECT station_railway_exit_id, (
@@ -140,14 +111,14 @@ func (d *Database) Read(q studio2.Query) (studio2.Response, error) {
 		                                FROM (
 		                                    SELECT station_id, station_name
 		                                    FROM station
-		                                    WHERE station.station_id = station_railway_id.station_id
+		                                    WHERE station.station_id = station_railway.station_id
 		                                ) st
 		                            ) as station, (
 		                                SELECT row_to_json(ra)
 		                                FROM (
 		                                    SELECT railway_id, railway_name
 		                                    FROM railway
-		                                    WHERE railway.railway_id = station_railway_id.railway_id
+		                                    WHERE railway.railway_id = station_railway.railway_id
 		                                ) ra
 		                            ) as railway
 		                            FROM station_railway
@@ -162,16 +133,26 @@ func (d *Database) Read(q studio2.Query) (studio2.Response, error) {
 		                        ) ex
 		                    ) as exit
 		                    FROM station_railway_exit
-		                    WHERE station_railway_exit.station_railway_exit_id = studio_access_by_station.station_railway_exit_id
+		                    WHERE station_railway_exit.station_railway_exit_id = studio_station_railway_exit.station_railway_exit_id
 		                ) sre
 		            ) as station_railway_exit, minutes_from_station, created_at, updated_at, deleted_at, is_deleted
-		            FROM studio_access_by_station
-		            WHERE studio_access_by_station.studio_id = studio.studio_id
+		            FROM studio_station_railway_exit
+		            WHERE studio_station_railway_exit.studio_id = studio.studio_id
 		        ) sabs
 		    )
 		    FROM studio
-		    WHERE studio.studio_id = 0
 		) st;
 	`
-	rows, err := d.handler.Query(query)
+	var res studios.Response
+	rows, err := r.Query(
+		query,
+	)
+	if err != nil {
+		return res, err
+	}
+	defer rows.Close()
+
+	rows.Next()
+	err = rows.Scan(&res)
+	return res, nil
 }

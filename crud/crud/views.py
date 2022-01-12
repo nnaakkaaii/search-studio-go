@@ -23,10 +23,10 @@ class CityViewSet(viewsets.ModelViewSet):
     filter_class = filters.CityFilter
 
 
-class DateSlotLinkViewSet(viewsets.ModelViewSet):
-    queryset = models.DateSlotLink.objects.all()
-    serializer_class = serializers.DateSlotLinkSerializer
-    filter_class = filters.DateSlotLinkFilter
+class DateSlotViewSet(viewsets.ModelViewSet):
+    queryset = models.DateSlot.objects.all()
+    serializer_class = serializers.DateSlotSerializer
+    filter_class = filters.DateSlotFilter
 
 
 class DayTemplateViewSet(viewsets.ModelViewSet):
@@ -95,28 +95,28 @@ class RoomViewSet(viewsets.ModelViewSet):
     filter_class = filters.RoomFilter
 
 
-class RoomFacilityLinkViewSet(viewsets.ModelViewSet):
-    queryset = models.RoomFacilityLink.objects.all()
-    serializer_class = serializers.RoomFacilityLinkSerializer
-    filter_class = filters.RoomFacilityLinkFilter
+class RoomFacilityViewSet(viewsets.ModelViewSet):
+    queryset = models.RoomFacility.objects.all()
+    serializer_class = serializers.RoomFacilitySerializer
+    filter_class = filters.RoomFacilityFilter
 
 
-class RoomFloorMaterialLinkViewSet(viewsets.ModelViewSet):
-    queryset = models.RoomFloorMaterialLink.objects.all()
-    serializer_class = serializers.RoomFloorMaterialLinkSerializer
-    filter_class = filters.RoomFloorMaterialLinkFilter
+class RoomFloorMaterialViewSet(viewsets.ModelViewSet):
+    queryset = models.RoomFloorMaterial.objects.all()
+    serializer_class = serializers.RoomFloorMaterialSerializer
+    filter_class = filters.RoomFloorMaterialFilter
 
 
-class RoomImageLinkViewSet(viewsets.ModelViewSet):
-    queryset = models.RoomImageLink.objects.all()
-    serializer_class = serializers.RoomImageLinkSerializer
-    filter_class = filters.RoomImageLinkFilter
+class RoomImageViewSet(viewsets.ModelViewSet):
+    queryset = models.RoomImage.objects.all()
+    serializer_class = serializers.RoomImageSerializer
+    filter_class = filters.RoomImageFilter
 
 
-class RoomSlotLinkViewSet(viewsets.ModelViewSet):
-    queryset = models.RoomSlotLink.objects.all()
-    serializer_class = serializers.RoomSlotLinkSerializer
-    filter_class = filters.RoomSlotLinkFilter
+class RoomSlotViewSet(viewsets.ModelViewSet):
+    queryset = models.RoomSlot.objects.all()
+    serializer_class = serializers.RoomSlotSerializer
+    filter_class = filters.RoomSlotFilter
 
 
 class SlotViewSet(viewsets.ModelViewSet):
@@ -125,10 +125,10 @@ class SlotViewSet(viewsets.ModelViewSet):
     filter_class = filters.SlotFilter
 
 
-class SlotDayTemplateLinkViewSet(viewsets.ModelViewSet):
-    queryset = models.SlotDayTemplateLink.objects.all()
-    serializer_class = serializers.SlotDayTemplateLinkSerializer
-    filter_class = filters.SlotDayTemplateLinkFilter
+class SlotDayTemplateViewSet(viewsets.ModelViewSet):
+    queryset = models.SlotDayTemplate.objects.all()
+    serializer_class = serializers.SlotDayTemplateSerializer
+    filter_class = filters.SlotDayTemplateFilter
 
 
 class StationViewSet(viewsets.ModelViewSet):
@@ -137,22 +137,22 @@ class StationViewSet(viewsets.ModelViewSet):
     filter_class = filters.StationFilter
 
 
-class StationRailwayExitLinkViewSet(viewsets.ModelViewSet):
-    queryset = models.StationRailwayExitLink.objects.all()
-    serializer_class = serializers.StationRailwayExitLinkSerializer
-    filter_class = filters.StationRailwayExitLinkFilter
+class StationRailwayViewSet(viewsets.ModelViewSet):
+    queryset = models.StationRailway.objects.all()
+    serializer_class = serializers.StationRailwaySerializer
+    filter_class = filters.StationRailwayFilter
 
 
-class StationRailwayLineLinkViewSet(viewsets.ModelViewSet):
-    queryset = models.StationRailwayLineLink.objects.all()
-    serializer_class = serializers.StationRailwayLineLinkSerializer
-    filter_class = filters.StationRailwayLineLinkFilter
+class StationRailwayExitViewSet(viewsets.ModelViewSet):
+    queryset = models.StationRailwayExit.objects.all()
+    serializer_class = serializers.StationRailwayExitSerializer
+    filter_class = filters.StationRailwayExitFilter
 
 
-class StationRailwayLinkViewSet(viewsets.ModelViewSet):
-    queryset = models.StationRailwayLink.objects.all()
-    serializer_class = serializers.StationRailwayLinkSerializer
-    filter_class = filters.StationRailwayLinkFilter
+class StationRailwayLineViewSet(viewsets.ModelViewSet):
+    queryset = models.StationRailwayLine.objects.all()
+    serializer_class = serializers.StationRailwayLineSerializer
+    filter_class = filters.StationRailwayLineFilter
 
 
 class StudioViewSet(viewsets.ModelViewSet):
@@ -161,37 +161,37 @@ class StudioViewSet(viewsets.ModelViewSet):
     filter_class = filters.StudioFilter
 
 
-class StudioAccessByStationLinkViewSet(viewsets.ModelViewSet):
-    queryset = models.StudioAccessByStationLink.objects.all()
-    serializer_class = serializers.StudioAccessByStationLinkSerializer
-    filter_class = filters.StudioAccessByStationLinkFilter
+class StudioAmenityViewSet(viewsets.ModelViewSet):
+    queryset = models.StudioAmenity.objects.all()
+    serializer_class = serializers.StudioAmenitySerializer
+    filter_class = filters.StudioAmenityFilter
 
 
-class StudioAmenityLinkViewSet(viewsets.ModelViewSet):
-    queryset = models.StudioAmenityLink.objects.all()
-    serializer_class = serializers.StudioAmenityLinkSerializer
-    filter_class = filters.StudioAmenityLinkFilter
+class StudioFacilityViewSet(viewsets.ModelViewSet):
+    queryset = models.StudioFacility.objects.all()
+    serializer_class = serializers.StudioFacilitySerializer
+    filter_class = filters.StudioFacilityFilter
 
 
-class StudioFacilityLinkViewSet(viewsets.ModelViewSet):
-    queryset = models.StudioFacilityLink.objects.all()
-    serializer_class = serializers.StudioFacilityLinkSerializer
-    filter_class = filters.StudioFacilityLinkFilter
+class StudioImageViewSet(viewsets.ModelViewSet):
+    queryset = models.StudioImage.objects.all()
+    serializer_class = serializers.StudioImageSerializer
+    filter_class = filters.StudioImageFilter
 
 
-class StudioImageLinkViewSet(viewsets.ModelViewSet):
-    queryset = models.StudioImageLink.objects.all()
-    serializer_class = serializers.StudioImageLinkSerializer
-    filter_class = filters.StudioImageLinkFilter
+class StudioPaymentViewSet(viewsets.ModelViewSet):
+    queryset = models.StudioPayment.objects.all()
+    serializer_class = serializers.StudioPaymentSerializer
+    filter_class = filters.StudioPaymentFilter
 
 
-class StudioPaymentLinkViewSet(viewsets.ModelViewSet):
-    queryset = models.StudioPaymentLink.objects.all()
-    serializer_class = serializers.StudioPaymentLinkSerializer
-    filter_class = filters.StudioPaymentLinkFilter
+class StudioReservationViewSet(viewsets.ModelViewSet):
+    queryset = models.StudioReservation.objects.all()
+    serializer_class = serializers.StudioReservationSerializer
+    filter_class = filters.StudioReservationFilter
 
 
-class StudioReservationLinkViewSet(viewsets.ModelViewSet):
-    queryset = models.StudioReservationLink.objects.all()
-    serializer_class = serializers.StudioReservationLinkSerializer
-    filter_class = filters.StudioReservationLinkFilter
+class StudioStationRailwayExitViewSet(viewsets.ModelViewSet):
+    queryset = models.StudioStationRailwayExit.objects.all()
+    serializer_class = serializers.StudioStationRailwayExitSerializer
+    filter_class = filters.StudioStationRailwayExitFilter

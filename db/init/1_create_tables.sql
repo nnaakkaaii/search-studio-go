@@ -75,8 +75,8 @@ CREATE TABLE reservation (
     reservation_name VARCHAR(128) NOT NULL
 );
 
-CREATE TABLE studio_reservation_link (
-    studio_reservation_link_id SERIAL PRIMARY KEY,
+CREATE TABLE studio_reservation (
+    studio_reservation_id SERIAL PRIMARY KEY,
     studio_id INTEGER NOT NULL REFERENCES studio(studio_id) ON DELETE RESTRICT,
     reservation_id INTEGER NOT NULL REFERENCES reservation(reservation_id) ON DELETE RESTRICT,
     created_at TIMESTAMP NOT NULL,
@@ -91,8 +91,8 @@ CREATE TABLE payment (
     payment_name VARCHAR(128) NOT NULL
 );
 
-CREATE TABLE studio_payment_link (
-    studio_payment_link_id SERIAL PRIMARY KEY,
+CREATE TABLE studio_payment (
+    studio_payment_id SERIAL PRIMARY KEY,
     studio_id INTEGER NOT NULL REFERENCES studio(studio_id) ON DELETE RESTRICT,
     payment_id INTEGER NOT NULL REFERENCES payment(payment_id) ON DELETE RESTRICT,
     created_at TIMESTAMP NOT NULL,
@@ -107,8 +107,8 @@ CREATE TABLE amenity (
     amenity_name VARCHAR(128) NOT NULL
 );
 
-CREATE TABLE studio_amenity_link (
-    studio_amenity_link_id SERIAL PRIMARY KEY,
+CREATE TABLE studio_amenity (
+    studio_amenity_id SERIAL PRIMARY KEY,
     studio_id INTEGER NOT NULL REFERENCES studio(studio_id) ON DELETE RESTRICT,
     amenity_id INTEGER NOT NULL REFERENCES amenity(amenity_id) ON DELETE RESTRICT,
     studio_amenity_count INTEGER,
@@ -126,8 +126,8 @@ CREATE TABLE facility (
     facility_name VARCHAR(128) NOT NULL
 );
 
-CREATE TABLE studio_facility_link (
-    studio_facility_link_id SERIAL PRIMARY KEY,
+CREATE TABLE studio_facility (
+    studio_facility_id SERIAL PRIMARY KEY,
     studio_id INTEGER NOT NULL REFERENCES studio(studio_id) ON DELETE RESTRICT,
     facility_id INTEGER NOT NULL REFERENCES facility(facility_id) ON DELETE RESTRICT,
     studio_facility_count INTEGER,
@@ -140,8 +140,8 @@ CREATE TABLE studio_facility_link (
     UNIQUE (studio_id, facility_id)
 );
 
-CREATE TABLE studio_image_link (
-   studio_image_link_id SERIAL PRIMARY KEY,
+CREATE TABLE studio_image (
+   studio_image_id SERIAL PRIMARY KEY,
    studio_id INTEGER NOT NULL REFERENCES studio(studio_id) ON DELETE RESTRICT,
    image_id INTEGER NOT NULL REFERENCES image(image_id) ON DELETE RESTRICT,
    description TEXT,
@@ -158,8 +158,8 @@ CREATE TABLE railway (
     railway_name VARCHAR(128)
 );
 
-CREATE TABLE station_railway_link (
-    station_railway_link_id SERIAL PRIMARY KEY,
+CREATE TABLE station_railway (
+    station_railway_id SERIAL PRIMARY KEY,
     station_id INTEGER NOT NULL REFERENCES station(station_id) ON DELETE RESTRICT,
     railway_id INTEGER NOT NULL REFERENCES railway(railway_id) ON DELETE RESTRICT,
     UNIQUE (station_id, railway_id)
@@ -170,11 +170,11 @@ CREATE TABLE line (
     line_name VARCHAR(256) NOT NULL
 );
 
-CREATE TABLE station_railway_line_link (
-    station_railway_line_link_id SERIAL PRIMARY KEY,
-    station_railway_link_id INTEGER NOT NULL REFERENCES station_railway_link(station_railway_link_id) ON DELETE RESTRICT,
+CREATE TABLE station_railway_line (
+    station_railway_line_id SERIAL PRIMARY KEY,
+    station_railway_id INTEGER NOT NULL REFERENCES station_railway(station_railway_id) ON DELETE RESTRICT,
     line_id INTEGER NOT NULL REFERENCES line(line_id) ON DELETE RESTRICT,
-    UNIQUE (station_railway_link_id, line_id)
+    UNIQUE (station_railway_id, line_id)
 );
 
 CREATE TABLE exit (
@@ -182,23 +182,23 @@ CREATE TABLE exit (
     exit_name VARCHAR(128) NOT NULL
 );
 
-CREATE TABLE station_railway_exit_link (
-    station_railway_exit_link_id SERIAL PRIMARY KEY,
-    station_railway_link_id INTEGER NOT NULL REFERENCES station_railway_link(station_railway_link_id) ON DELETE RESTRICT,
+CREATE TABLE station_railway_exit (
+    station_railway_exit_id SERIAL PRIMARY KEY,
+    station_railway_id INTEGER NOT NULL REFERENCES station_railway(station_railway_id) ON DELETE RESTRICT,
     exit_id INTEGER NOT NULL REFERENCES exit(exit_id) ON DELETE RESTRICT,
-    UNIQUE (station_railway_link_id, exit_id)
+    UNIQUE (station_railway_id, exit_id)
 );
 
-CREATE TABLE studio_access_by_station_link (
-    studio_access_by_station_link_id SERIAL PRIMARY KEY,
+CREATE TABLE studio_station_railway_exit (
+    studio_station_railway_exit_id SERIAL PRIMARY KEY,
     studio_id INTEGER NOT NULL REFERENCES studio(studio_id) ON DELETE RESTRICT,
-    station_railway_exit_link_id INTEGER NOT NULL REFERENCES station_railway_exit_link(station_railway_exit_link_id) ON DELETE RESTRICT,
+    station_railway_exit_id INTEGER NOT NULL REFERENCES station_railway_exit(station_railway_exit_id) ON DELETE RESTRICT,
     minutes_from_station INTEGER,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     deleted_at TIMESTAMP,
     is_deleted BOOLEAN NOT NULL,
-    UNIQUE (studio_id, station_railway_exit_link_id)
+    UNIQUE (studio_id, station_railway_exit_id)
 );
 
 
@@ -230,8 +230,8 @@ CREATE TABLE floor_material (
     floor_material_name VARCHAR(128) NOT NULL
 );
 
-CREATE TABLE room_floor_material_link (
-    room_floor_material_link_id SERIAL PRIMARY KEY,
+CREATE TABLE room_floor_material (
+    room_floor_material_id SERIAL PRIMARY KEY,
     room_id INTEGER NOT NULL REFERENCES room(room_id) ON DELETE RESTRICT,
     floor_material_id INTEGER NOT NULL REFERENCES floor_material(floor_material_id) ON DELETE RESTRICT,
     created_at TIMESTAMP NOT NULL,
@@ -241,8 +241,8 @@ CREATE TABLE room_floor_material_link (
     UNIQUE (room_id, floor_material_id)
 );
 
-CREATE TABLE room_facility_link (
-    room_facility_link_id SERIAL PRIMARY KEY,
+CREATE TABLE room_facility (
+    room_facility_id SERIAL PRIMARY KEY,
     room_id INTEGER NOT NULL REFERENCES room(room_id) ON DELETE RESTRICT,
     facility_id INTEGER NOT NULL REFERENCES facility(facility_id) ON DELETE RESTRICT,
     room_facility_count INTEGER,
@@ -255,8 +255,8 @@ CREATE TABLE room_facility_link (
     UNIQUE (room_id, facility_id)
 );
 
-CREATE TABLE room_image_link (
-    room_image_link_id SERIAL PRIMARY KEY,
+CREATE TABLE room_image (
+    room_image_id SERIAL PRIMARY KEY,
     room_id INTEGER NOT NULL REFERENCES room(room_id) ON DELETE RESTRICT,
     image_id INTEGER NOT NULL REFERENCES image(image_id) ON DELETE RESTRICT,
     description TEXT,
@@ -287,8 +287,8 @@ CREATE TABLE day_template (
     day_template_name VARCHAR(128) NOT NULL
 );
 
-CREATE TABLE slot_day_template_link (
-    slot_day_template_link_id SERIAL PRIMARY KEY,
+CREATE TABLE slot_day_template (
+    slot_day_template_id SERIAL PRIMARY KEY,
     slot_id INTEGER NOT NULL REFERENCES slot(slot_id) ON DELETE RESTRICT,
     day_template_id INTEGER NOT NULL REFERENCES day_template(day_template_id) ON DELETE RESTRICT,
     created_at TIMESTAMP NOT NULL,
@@ -298,24 +298,24 @@ CREATE TABLE slot_day_template_link (
     UNIQUE (slot_id, day_template_id)
 );
 
-CREATE TABLE date_slot_link (
-    date_slot_link_id SERIAL PRIMARY KEY,
+CREATE TABLE date_slot (
+    date_slot_id SERIAL PRIMARY KEY,
     date DATE NOT NULL,
     slot_id INTEGER NOT NULL REFERENCES slot(slot_id) ON DELETE RESTRICT,
     UNIQUE (date, slot_id)
 );
 
-CREATE TABLE room_slot_link (
-    room_slot_link_id SERIAL PRIMARY KEY,
+CREATE TABLE room_slot (
+    room_slot_id SERIAL PRIMARY KEY,
     room_id INTEGER NOT NULL REFERENCES room(room_id) ON DELETE RESTRICT,
-    date_slot_link_id INTEGER NOT NULL REFERENCES date_slot_link(date_slot_link_id) ON DELETE RESTRICT,
+    date_slot_id INTEGER NOT NULL REFERENCES date_slot(date_slot_id) ON DELETE RESTRICT,
     remain_slot_count INTEGER NOT NULL,
     slot_price INTEGER NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     deleted_at TIMESTAMP,
     is_deleted BOOLEAN NOT NULL,
-    UNIQUE (room_id, date_slot_link_id)
+    UNIQUE (room_id, date_slot_id)
 );
 
 

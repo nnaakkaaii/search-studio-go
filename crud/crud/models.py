@@ -37,14 +37,14 @@ class City(models.Model):
         db_table = 'city'
 
 
-class DateSlotLink(models.Model):
-    date_slot_link_id = models.AutoField(primary_key=True)
+class DateSlot(models.Model):
+    date_slot_id = models.AutoField(primary_key=True)
     date = models.DateField()
     slot = models.ForeignKey('Slot', models.DO_NOTHING)
 
     class Meta:
         managed = False
-        db_table = 'date_slot_link'
+        db_table = 'date_slot'
         unique_together = (('date', 'slot'),)
 
 
@@ -161,8 +161,8 @@ class Room(models.Model):
         db_table = 'room'
 
 
-class RoomFacilityLink(models.Model):
-    room_facility_link_id = models.AutoField(primary_key=True)
+class RoomFacility(models.Model):
+    room_facility_id = models.AutoField(primary_key=True)
     room = models.ForeignKey(Room, models.DO_NOTHING)
     facility = models.ForeignKey(Facility, models.DO_NOTHING)
     room_facility_count = models.IntegerField(blank=True, null=True)
@@ -175,12 +175,12 @@ class RoomFacilityLink(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'room_facility_link'
+        db_table = 'room_facility'
         unique_together = (('room', 'facility'),)
 
 
-class RoomFloorMaterialLink(models.Model):
-    room_floor_material_link_id = models.AutoField(primary_key=True)
+class RoomFloorMaterial(models.Model):
+    room_floor_material_id = models.AutoField(primary_key=True)
     room = models.ForeignKey(Room, models.DO_NOTHING)
     floor_material = models.ForeignKey(FloorMaterial, models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -190,26 +190,26 @@ class RoomFloorMaterialLink(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'room_floor_material_link'
+        db_table = 'room_floor_material'
         unique_together = (('room', 'floor_material'),)
 
 
-class RoomImageLink(models.Model):
-    room_image_link_id = models.AutoField(primary_key=True)
+class RoomImage(models.Model):
+    room_image_id = models.AutoField(primary_key=True)
     room = models.ForeignKey(Room, models.DO_NOTHING)
     image = models.ForeignKey(Image, models.DO_NOTHING)
     description = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'room_image_link'
+        db_table = 'room_image'
         unique_together = (('room', 'image'),)
 
 
-class RoomSlotLink(models.Model):
-    room_slot_link_id = models.AutoField(primary_key=True)
+class RoomSlot(models.Model):
+    room_slot_id = models.AutoField(primary_key=True)
     room = models.ForeignKey(Room, models.DO_NOTHING)
-    date_slot_link = models.ForeignKey(DateSlotLink, models.DO_NOTHING)
+    date_slot = models.ForeignKey(DateSlot, models.DO_NOTHING)
     remain_slot_count = models.IntegerField()
     slot_price = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -219,8 +219,8 @@ class RoomSlotLink(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'room_slot_link'
-        unique_together = (('room', 'date_slot_link'),)
+        db_table = 'room_slot'
+        unique_together = (('room', 'date_slot'),)
 
 
 class Slot(models.Model):
@@ -236,8 +236,8 @@ class Slot(models.Model):
         db_table = 'slot'
 
 
-class SlotDayTemplateLink(models.Model):
-    slot_day_template_link_id = models.AutoField(primary_key=True)
+class SlotDayTemplate(models.Model):
+    slot_day_template_id = models.AutoField(primary_key=True)
     slot = models.ForeignKey(Slot, models.DO_NOTHING)
     day_template = models.ForeignKey(DayTemplate, models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -247,7 +247,7 @@ class SlotDayTemplateLink(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'slot_day_template_link'
+        db_table = 'slot_day_template'
         unique_together = (('slot', 'day_template'),)
 
 
@@ -260,37 +260,37 @@ class Station(models.Model):
         db_table = 'station'
 
 
-class StationRailwayExitLink(models.Model):
-    station_railway_exit_link_id = models.AutoField(primary_key=True)
-    station_railway_link = models.ForeignKey('StationRailwayLink', models.DO_NOTHING)
-    exit = models.ForeignKey(Exit, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'station_railway_exit_link'
-        unique_together = (('station_railway_link', 'exit'),)
-
-
-class StationRailwayLineLink(models.Model):
-    station_railway_line_link_id = models.AutoField(primary_key=True)
-    station_railway_link = models.ForeignKey('StationRailwayLink', models.DO_NOTHING)
-    line = models.ForeignKey(Line, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'station_railway_line_link'
-        unique_together = (('station_railway_link', 'line'),)
-
-
-class StationRailwayLink(models.Model):
-    station_railway_link_id = models.AutoField(primary_key=True)
+class StationRailway(models.Model):
+    station_railway_id = models.AutoField(primary_key=True)
     station = models.ForeignKey(Station, models.DO_NOTHING)
     railway = models.ForeignKey(Railway, models.DO_NOTHING)
 
     class Meta:
         managed = False
-        db_table = 'station_railway_link'
+        db_table = 'station_railway'
         unique_together = (('station', 'railway'),)
+
+
+class StationRailwayExit(models.Model):
+    station_railway_exit_id = models.AutoField(primary_key=True)
+    station_railway = models.ForeignKey(StationRailway, models.DO_NOTHING)
+    exit = models.ForeignKey(Exit, models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'station_railway_exit'
+        unique_together = (('station_railway', 'exit'),)
+
+
+class StationRailwayLine(models.Model):
+    station_railway_line_id = models.AutoField(primary_key=True)
+    station_railway = models.ForeignKey(StationRailway, models.DO_NOTHING)
+    line = models.ForeignKey(Line, models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'station_railway_line'
+        unique_together = (('station_railway', 'line'),)
 
 
 class Studio(models.Model):
@@ -313,24 +313,8 @@ class Studio(models.Model):
         db_table = 'studio'
 
 
-class StudioAccessByStationLink(models.Model):
-    studio_access_by_station_link_id = models.AutoField(primary_key=True)
-    studio = models.ForeignKey(Studio, models.DO_NOTHING)
-    station_railway_exit_link = models.ForeignKey(StationRailwayExitLink, models.DO_NOTHING)
-    minutes_from_station = models.IntegerField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(blank=True, null=True)
-    is_deleted = models.BooleanField()
-
-    class Meta:
-        managed = False
-        db_table = 'studio_access_by_station_link'
-        unique_together = (('studio', 'station_railway_exit_link'),)
-
-
-class StudioAmenityLink(models.Model):
-    studio_amenity_link_id = models.AutoField(primary_key=True)
+class StudioAmenity(models.Model):
+    studio_amenity_id = models.AutoField(primary_key=True)
     studio = models.ForeignKey(Studio, models.DO_NOTHING)
     amenity = models.ForeignKey(Amenity, models.DO_NOTHING)
     studio_amenity_count = models.IntegerField(blank=True, null=True)
@@ -343,12 +327,12 @@ class StudioAmenityLink(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'studio_amenity_link'
+        db_table = 'studio_amenity'
         unique_together = (('studio', 'amenity'),)
 
 
-class StudioFacilityLink(models.Model):
-    studio_facility_link_id = models.AutoField(primary_key=True)
+class StudioFacility(models.Model):
+    studio_facility_id = models.AutoField(primary_key=True)
     studio = models.ForeignKey(Studio, models.DO_NOTHING)
     facility = models.ForeignKey(Facility, models.DO_NOTHING)
     studio_facility_count = models.IntegerField(blank=True, null=True)
@@ -361,24 +345,24 @@ class StudioFacilityLink(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'studio_facility_link'
+        db_table = 'studio_facility'
         unique_together = (('studio', 'facility'),)
 
 
-class StudioImageLink(models.Model):
-    studio_image_link_id = models.AutoField(primary_key=True)
+class StudioImage(models.Model):
+    studio_image_id = models.AutoField(primary_key=True)
     studio = models.ForeignKey(Studio, models.DO_NOTHING)
     image = models.ForeignKey(Image, models.DO_NOTHING)
     description = models.TextField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'studio_image_link'
+        db_table = 'studio_image'
         unique_together = (('studio', 'image'),)
 
 
-class StudioPaymentLink(models.Model):
-    studio_payment_link_id = models.AutoField(primary_key=True)
+class StudioPayment(models.Model):
+    studio_payment_id = models.AutoField(primary_key=True)
     studio = models.ForeignKey(Studio, models.DO_NOTHING)
     payment = models.ForeignKey(Payment, models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -388,12 +372,12 @@ class StudioPaymentLink(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'studio_payment_link'
+        db_table = 'studio_payment'
         unique_together = (('studio', 'payment'),)
 
 
-class StudioReservationLink(models.Model):
-    studio_reservation_link_id = models.AutoField(primary_key=True)
+class StudioReservation(models.Model):
+    studio_reservation_id = models.AutoField(primary_key=True)
     studio = models.ForeignKey(Studio, models.DO_NOTHING)
     reservation = models.ForeignKey(Reservation, models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -403,6 +387,22 @@ class StudioReservationLink(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'studio_reservation_link'
+        db_table = 'studio_reservation'
         unique_together = (('studio', 'reservation'),)
+
+
+class StudioStationRailwayExit(models.Model):
+    studio_station_railway_exit_id = models.AutoField(primary_key=True)
+    studio = models.ForeignKey(Studio, models.DO_NOTHING)
+    station_railway_exit = models.ForeignKey(StationRailwayExit, models.DO_NOTHING)
+    minutes_from_station = models.IntegerField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(blank=True, null=True)
+    is_deleted = models.BooleanField()
+
+    class Meta:
+        managed = False
+        db_table = 'studio_station_railway_exit'
+        unique_together = (('studio', 'station_railway_exit'),)
 

@@ -45,17 +45,17 @@ class CitySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class DateSlotLinkSerializer(serializers.ModelSerializer):
+class DateSlotSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.DateSlotLink
+        model = models.DateSlot
         fields = '__all__'
 
 
-class DateSlotLinkSerializer(serializers.ModelSerializer):
+class DateSlotSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.DateSlotLink
+        model = models.DateSlot
         fields = '__all__'
 
 
@@ -215,61 +215,61 @@ class RoomSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_at', 'updated_at')
 
 
-class RoomFacilityLinkSerializer(serializers.ModelSerializer):
+class RoomFacilitySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.RoomFacilityLink
+        model = models.RoomFacility
         fields = '__all__'
 
 
-class RoomFacilityLinkSerializer(serializers.ModelSerializer):
+class RoomFacilitySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.RoomFacilityLink
-        fields = '__all__'
-        read_only_fields = ('created_at', 'updated_at')
-
-
-class RoomFloorMaterialLinkSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = models.RoomFloorMaterialLink
-        fields = '__all__'
-
-
-class RoomFloorMaterialLinkSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = models.RoomFloorMaterialLink
+        model = models.RoomFacility
         fields = '__all__'
         read_only_fields = ('created_at', 'updated_at')
 
 
-class RoomImageLinkSerializer(serializers.ModelSerializer):
+class RoomFloorMaterialSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.RoomImageLink
+        model = models.RoomFloorMaterial
         fields = '__all__'
 
 
-class RoomImageLinkSerializer(serializers.ModelSerializer):
+class RoomFloorMaterialSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.RoomImageLink
+        model = models.RoomFloorMaterial
+        fields = '__all__'
+        read_only_fields = ('created_at', 'updated_at')
+
+
+class RoomImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.RoomImage
         fields = '__all__'
 
 
-class RoomSlotLinkSerializer(serializers.ModelSerializer):
+class RoomImageSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.RoomSlotLink
+        model = models.RoomImage
         fields = '__all__'
 
 
-class RoomSlotLinkSerializer(serializers.ModelSerializer):
+class RoomSlotSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.RoomSlotLink
+        model = models.RoomSlot
+        fields = '__all__'
+
+
+class RoomSlotSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.RoomSlot
         fields = '__all__'
         read_only_fields = ('created_at', 'updated_at')
 
@@ -288,17 +288,17 @@ class SlotSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class SlotDayTemplateLinkSerializer(serializers.ModelSerializer):
+class SlotDayTemplateSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.SlotDayTemplateLink
+        model = models.SlotDayTemplate
         fields = '__all__'
 
 
-class SlotDayTemplateLinkSerializer(serializers.ModelSerializer):
+class SlotDayTemplateSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.SlotDayTemplateLink
+        model = models.SlotDayTemplate
         fields = '__all__'
         read_only_fields = ('created_at', 'updated_at')
 
@@ -317,52 +317,45 @@ class StationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class StationRailwayExitLinkSerializer(serializers.ModelSerializer):
+class StationRailwaySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.StationRailwayExitLink
+        model = models.StationRailway
         fields = '__all__'
 
 
-class StationRailwayExitLinkSerializer(serializers.ModelSerializer):
+class StationRailwaySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.StationRailwayExitLink
+        model = models.StationRailway
         fields = '__all__'
 
 
-class StationRailwayLineLinkSerializer(serializers.ModelSerializer):
+class StationRailwayExitSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.StationRailwayLineLink
+        model = models.StationRailwayExit
         fields = '__all__'
 
 
-class StationRailwayLineLinkSerializer(serializers.ModelSerializer):
+class StationRailwayExitSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.StationRailwayLineLink
+        model = models.StationRailwayExit
         fields = '__all__'
 
 
-class StationRailwayLinkSerializer(serializers.ModelSerializer):
+class StationRailwayLineSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.StationRailwayLink
+        model = models.StationRailwayLine
         fields = '__all__'
 
 
-class StationRailwayLinkSerializer(serializers.ModelSerializer):
+class StationRailwayLineSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.StationRailwayLink
-        fields = '__all__'
-
-
-class StudioSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = models.Studio
+        model = models.StationRailwayLine
         fields = '__all__'
 
 
@@ -371,93 +364,100 @@ class StudioSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Studio
         fields = '__all__'
-        read_only_fields = ('created_at', 'updated_at')
 
 
-class StudioAccessByStationLinkSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = models.StudioAccessByStationLink
-        fields = '__all__'
-
-
-class StudioAccessByStationLinkSerializer(serializers.ModelSerializer):
+class StudioSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.StudioAccessByStationLink
+        model = models.Studio
         fields = '__all__'
         read_only_fields = ('created_at', 'updated_at')
 
 
-class StudioAmenityLinkSerializer(serializers.ModelSerializer):
+class StudioAmenitySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.StudioAmenityLink
+        model = models.StudioAmenity
         fields = '__all__'
 
 
-class StudioAmenityLinkSerializer(serializers.ModelSerializer):
+class StudioAmenitySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.StudioAmenityLink
-        fields = '__all__'
-        read_only_fields = ('created_at', 'updated_at')
-
-
-class StudioFacilityLinkSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = models.StudioFacilityLink
-        fields = '__all__'
-
-
-class StudioFacilityLinkSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = models.StudioFacilityLink
+        model = models.StudioAmenity
         fields = '__all__'
         read_only_fields = ('created_at', 'updated_at')
 
 
-class StudioImageLinkSerializer(serializers.ModelSerializer):
+class StudioFacilitySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.StudioImageLink
+        model = models.StudioFacility
         fields = '__all__'
 
 
-class StudioImageLinkSerializer(serializers.ModelSerializer):
+class StudioFacilitySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.StudioImageLink
-        fields = '__all__'
-
-
-class StudioPaymentLinkSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = models.StudioPaymentLink
-        fields = '__all__'
-
-
-class StudioPaymentLinkSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = models.StudioPaymentLink
+        model = models.StudioFacility
         fields = '__all__'
         read_only_fields = ('created_at', 'updated_at')
 
 
-class StudioReservationLinkSerializer(serializers.ModelSerializer):
+class StudioImageSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.StudioReservationLink
+        model = models.StudioImage
         fields = '__all__'
 
 
-class StudioReservationLinkSerializer(serializers.ModelSerializer):
+class StudioImageSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = models.StudioReservationLink
+        model = models.StudioImage
+        fields = '__all__'
+
+
+class StudioPaymentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.StudioPayment
+        fields = '__all__'
+
+
+class StudioPaymentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.StudioPayment
+        fields = '__all__'
+        read_only_fields = ('created_at', 'updated_at')
+
+
+class StudioReservationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.StudioReservation
+        fields = '__all__'
+
+
+class StudioReservationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.StudioReservation
+        fields = '__all__'
+        read_only_fields = ('created_at', 'updated_at')
+
+
+class StudioStationRailwayExitSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.StudioStationRailwayExit
+        fields = '__all__'
+
+
+class StudioStationRailwayExitSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.StudioStationRailwayExit
         fields = '__all__'
         read_only_fields = ('created_at', 'updated_at')

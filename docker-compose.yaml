@@ -21,8 +21,6 @@ services:
     build:
       context: crud
       dockerfile: ./Dockerfile
-    volumes:
-      - ./crud:/code
     ports:
       - 8000:8000
     environment:
@@ -32,6 +30,15 @@ services:
       - DB_PORT=5432
       - DB_HOST=db
       - PGPASSWORD=postgres
+    tty: true
+    depends_on:
+      - db
+  search:
+    build:
+      context: search
+      dockerfile: ./Dockerfile
+    ports:
+      - 8001:8001
     tty: true
     depends_on:
       - db
