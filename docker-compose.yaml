@@ -33,12 +33,12 @@ services:
     tty: true
     depends_on:
       - db
-  search:
+  graphql:
     build:
-      context: search
+      context: graphql
       dockerfile: ./Dockerfile
     ports:
-      - 8001:8001
+      - 8080:8080
     tty: true
     depends_on:
       - db

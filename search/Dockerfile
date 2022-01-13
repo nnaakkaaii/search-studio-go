@@ -14,4 +14,4 @@ RUN go build -o /docker-search-go ./cmd/main.go
 
 EXPOSE 8001
 
-CMD [ "/bin/bash", "./start.sh" ]
+CMD [ "/docker-search-go" ]
