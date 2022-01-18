@@ -23,12 +23,6 @@ class CityViewSet(viewsets.ModelViewSet):
     filter_class = filters.CityFilter
 
 
-class DateSlotViewSet(viewsets.ModelViewSet):
-    queryset = models.DateSlot.objects.all()
-    serializer_class = serializers.DateSlotSerializer
-    filter_class = filters.DateSlotFilter
-
-
 class DayTemplateViewSet(viewsets.ModelViewSet):
     queryset = models.DayTemplate.objects.all()
     serializer_class = serializers.DayTemplateSerializer
@@ -119,16 +113,10 @@ class RoomSlotViewSet(viewsets.ModelViewSet):
     filter_class = filters.RoomSlotFilter
 
 
-class SlotViewSet(viewsets.ModelViewSet):
-    queryset = models.Slot.objects.all()
-    serializer_class = serializers.SlotSerializer
-    filter_class = filters.SlotFilter
-
-
-class SlotDayTemplateViewSet(viewsets.ModelViewSet):
-    queryset = models.SlotDayTemplate.objects.all()
-    serializer_class = serializers.SlotDayTemplateSerializer
-    filter_class = filters.SlotDayTemplateFilter
+class RoomSlotDayTemplateViewSet(viewsets.ModelViewSet):
+    queryset = models.RoomSlotDayTemplate.objects.all()
+    serializer_class = serializers.RoomSlotDayTemplateSerializer
+    filter_class = filters.RoomSlotDayTemplateFilter
 
 
 class StationViewSet(viewsets.ModelViewSet):

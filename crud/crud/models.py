@@ -37,17 +37,6 @@ class City(models.Model):
         db_table = 'city'
 
 
-class DateSlot(models.Model):
-    date_slot_id = models.AutoField(primary_key=True)
-    date = models.DateField()
-    slot = models.ForeignKey('Slot', models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'date_slot'
-        unique_together = (('date', 'slot'),)
-
-
 class DayTemplate(models.Model):
     day_template_id = models.AutoField(primary_key=True)
     day_template_name = models.CharField(max_length=128)
@@ -165,6 +154,7 @@ class RoomFacility(models.Model):
     room_facility_id = models.AutoField(primary_key=True)
     room = models.ForeignKey(Room, models.DO_NOTHING)
     facility = models.ForeignKey(Facility, models.DO_NOTHING)
+    room_facility_serial_number = models.IntegerField()
     room_facility_count = models.IntegerField(blank=True, null=True)
     room_facility_price = models.FloatField(blank=True, null=True)
     room_facility_unit_hour = models.FloatField(blank=True, null=True)
@@ -209,9 +199,12 @@ class RoomImage(models.Model):
 class RoomSlot(models.Model):
     room_slot_id = models.AutoField(primary_key=True)
     room = models.ForeignKey(Room, models.DO_NOTHING)
-    date_slot = models.ForeignKey(DateSlot, models.DO_NOTHING)
-    remain_slot_count = models.IntegerField()
+    date = models.DateField()
+    time_begin = models.TimeField()
+    time_end = models.TimeField()
+    workload = models.FloatField()
     slot_price = models.IntegerField()
+    remain_slot_count = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
@@ -220,26 +213,18 @@ class RoomSlot(models.Model):
     class Meta:
         managed = False
         db_table = 'room_slot'
-        unique_together = (('room', 'date_slot'),)
+        unique_together = (('room', 'date', 'time_begin'), ('room', 'date', 'time_end'),)
 
 
-class Slot(models.Model):
-    slot_id = models.AutoField(primary_key=True)
-    workload = models.FloatField()
+class RoomSlotDayTemplate(models.Model):
+    room_slot_day_template_id = models.AutoField(primary_key=True)
+    room = models.ForeignKey(Room, models.DO_NOTHING)
+    day_template = models.ForeignKey(DayTemplate, models.DO_NOTHING)
     time_begin = models.TimeField()
     time_end = models.TimeField()
+    workload = models.FloatField()
     slot_base_price = models.FloatField()
     slot_count = models.IntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'slot'
-
-
-class SlotDayTemplate(models.Model):
-    slot_day_template_id = models.AutoField(primary_key=True)
-    slot = models.ForeignKey(Slot, models.DO_NOTHING)
-    day_template = models.ForeignKey(DayTemplate, models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
@@ -247,8 +232,8 @@ class SlotDayTemplate(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'slot_day_template'
-        unique_together = (('slot', 'day_template'),)
+        db_table = 'room_slot_day_template'
+        unique_together = (('room', 'day_template', 'time_begin'), ('room', 'day_template', 'time_end'),)
 
 
 class Station(models.Model):
@@ -317,6 +302,7 @@ class StudioAmenity(models.Model):
     studio_amenity_id = models.AutoField(primary_key=True)
     studio = models.ForeignKey(Studio, models.DO_NOTHING)
     amenity = models.ForeignKey(Amenity, models.DO_NOTHING)
+    studio_amenity_serial_number = models.IntegerField()
     studio_amenity_count = models.IntegerField(blank=True, null=True)
     studio_amenity_price = models.FloatField(blank=True, null=True)
     studio_amenity_unit_hour = models.FloatField(blank=True, null=True)
@@ -335,6 +321,7 @@ class StudioFacility(models.Model):
     studio_facility_id = models.AutoField(primary_key=True)
     studio = models.ForeignKey(Studio, models.DO_NOTHING)
     facility = models.ForeignKey(Facility, models.DO_NOTHING)
+    studio_facility_serial_number = models.IntegerField()
     studio_facility_count = models.IntegerField(blank=True, null=True)
     studio_facility_price = models.FloatField(blank=True, null=True)
     studio_facility_unit_hour = models.FloatField(blank=True, null=True)

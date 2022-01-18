@@ -40,16 +40,3 @@ from crud import models''')
                     flag_updated = False
                     flag = False
                     continue
-
-
-
-            if not line.startswith('class '):
-                continue
-            cls_name = line.split('class ')[1].split('(')[0]
-            print()
-            print()
-            print(f'class {cls_name}Serializer(serializers.ModelSerializer):')
-            print()
-            print('    class Meta:')
-            print(f'        model = models.{cls_name}')
-            print("        fields = '__all__'")

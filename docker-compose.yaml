@@ -31,6 +31,8 @@ services:
       - DB_HOST=db
       - PGPASSWORD=postgres
     tty: true
+    volumes:
+      - ./crud:/code
     depends_on:
       - db
   graphql:

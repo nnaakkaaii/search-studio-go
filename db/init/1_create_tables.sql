@@ -25,7 +25,8 @@ CREATE TABLE image (
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     deleted_at TIMESTAMP,
-    is_deleted BOOLEAN NOT NULL
+    is_deleted BOOLEAN NOT NULL,
+    UNIQUE(image_name, image_path)
 );
 
 
@@ -41,21 +42,24 @@ CREATE TABLE image (
 -- ok
 CREATE TABLE prefecture (
     prefecture_id SERIAL PRIMARY KEY,
-    prefecture_name VARCHAR(256) NOT NULL
+    prefecture_name VARCHAR(256) NOT NULL,
+    UNIQUE(prefecture_name)
 );
 
 -- ok
 CREATE TABLE city (
     city_id SERIAL PRIMARY KEY,
     city_name VARCHAR(256) NOT NULL,
-    prefecture_id INTEGER NOT NULL REFERENCES prefecture(prefecture_id) ON DELETE RESTRICT
+    prefecture_id INTEGER NOT NULL REFERENCES prefecture(prefecture_id) ON DELETE RESTRICT,
+    UNIQUE(city_name, prefecture_id)
 );
 
 -- ok
 CREATE TABLE address (
     address_id SERIAL PRIMARY KEY,
     address_name VARCHAR(1024) NOT NULL,
-    city_id INTEGER NOT NULL REFERENCES city(city_id) ON DELETE RESTRICT
+    city_id INTEGER NOT NULL REFERENCES city(city_id) ON DELETE RESTRICT,
+    UNIQUE(address_name)
 );
 
 -- ok
@@ -72,13 +76,15 @@ CREATE TABLE studio (
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     deleted_at TIMESTAMP,
-    is_deleted BOOLEAN NOT NULL
+    is_deleted BOOLEAN NOT NULL,
+    UNIQUE(studio_name)
 );
 
 -- ok
 CREATE TABLE reservation (
     reservation_id SERIAL PRIMARY KEY,
-    reservation_name VARCHAR(128) NOT NULL
+    reservation_name VARCHAR(128) NOT NULL,
+    UNIQUE(reservation_name)
 );
 
 -- ok
@@ -96,7 +102,8 @@ CREATE TABLE studio_reservation (
 -- ok
 CREATE TABLE payment (
     payment_id SERIAL PRIMARY KEY,
-    payment_name VARCHAR(128) NOT NULL
+    payment_name VARCHAR(128) NOT NULL,
+    UNIQUE(payment_name)
 );
 
 -- ok
@@ -114,7 +121,8 @@ CREATE TABLE studio_payment (
 -- ok
 CREATE TABLE amenity (
     amenity_id SERIAL PRIMARY KEY,
-    amenity_name VARCHAR(128) NOT NULL
+    amenity_name VARCHAR(128) NOT NULL,
+    UNIQUE (amenity_name)
 );
 
 -- ok
@@ -130,13 +138,14 @@ CREATE TABLE studio_amenity (
     updated_at TIMESTAMP NOT NULL,
     deleted_at TIMESTAMP,
     is_deleted BOOLEAN NOT NULL,
-    UNIQUE (studio_id, amenity_id)
+    UNIQUE (studio_id, amenity_id, studio_amenity_serial_number)
 );
 
 -- ok
 CREATE TABLE facility (
     facility_id SERIAL PRIMARY KEY,
-    facility_name VARCHAR(128) NOT NULL
+    facility_name VARCHAR(128) NOT NULL,
+    UNIQUE(facility_name)
 );
 
 -- ok
@@ -152,7 +161,7 @@ CREATE TABLE studio_facility (
     updated_at TIMESTAMP NOT NULL,
     deleted_at TIMESTAMP,
     is_deleted BOOLEAN NOT NULL,
-    UNIQUE (studio_id, facility_id)
+    UNIQUE (studio_id, facility_id, studio_facility_serial_number)
 );
 
 -- ok
@@ -167,13 +176,15 @@ CREATE TABLE studio_image (
 -- ok
 CREATE TABLE station (
     station_id SERIAL PRIMARY KEY,
-    station_name VARCHAR(256) NOT NULL
+    station_name VARCHAR(256) NOT NULL,
+    UNIQUE(station_name)
 );
 
 -- ok
 CREATE TABLE railway (
     railway_id SERIAL PRIMARY KEY,
-    railway_name VARCHAR(128)
+    railway_name VARCHAR(128),
+    UNIQUE(railway_name)
 );
 
 -- ok
@@ -199,7 +210,8 @@ CREATE TABLE station_railway_line (
 -- ok
 CREATE TABLE exit (
     exit_id SERIAL PRIMARY KEY,
-    exit_name VARCHAR(128) NOT NULL
+    exit_name VARCHAR(128) NOT NULL,
+    UNIQUE(exit_name)
 );
 
 -- ok
@@ -244,13 +256,15 @@ CREATE TABLE room (
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     deleted_at TIMESTAMP,
-    is_deleted BOOLEAN NOT NULL
+    is_deleted BOOLEAN NOT NULL,
+    UNIQUE(studio_id, room_name)
 );
 
 -- ok
 CREATE TABLE floor_material (
     floor_material_id SERIAL PRIMARY KEY,
-    floor_material_name VARCHAR(128) NOT NULL
+    floor_material_name VARCHAR(128) NOT NULL,
+    UNIQUE(floor_material_name)
 );
 
 -- ok
@@ -278,7 +292,7 @@ CREATE TABLE room_facility (
     updated_at TIMESTAMP NOT NULL,
     deleted_at TIMESTAMP,
     is_deleted BOOLEAN NOT NULL,
-    UNIQUE (room_id, facility_id)
+    UNIQUE (room_id, facility_id, room_facility_serial_number)
 );
 
 -- ok
@@ -302,7 +316,8 @@ CREATE TABLE room_image (
 
 CREATE TABLE day_template (
     day_template_id SERIAL PRIMARY KEY,
-    day_template_name VARCHAR(128) NOT NULL
+    day_template_name VARCHAR(128) NOT NULL,
+    UNIQUE(day_template_name)
 );
 
 CREATE TABLE room_slot_day_template (

@@ -27,7 +27,7 @@ FROM
         INNER JOIN
     prefecture
     ON  prefecture.prefecture_name = temp_city.prefecture_name
-ON  CONFLICT(city_name) DO NOTHING
+ON  CONFLICT(city_name, prefecture_id) DO NOTHING
 ;
 
 COMMIT

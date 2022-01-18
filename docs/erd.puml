@@ -11,7 +11,7 @@ title studio-search論理設計
 entity "Studio" as studio {
     * スタジオID (studio_id) : integer
     --
-    * スタジオ名 (studio_name) : varchar(1024)
+    + スタジオ名 (studio_name) : varchar(1024)
     説明文 (introduction) : text
     注意書き (precaution) : text
     ホームページURL (homepage_url) : varchar(1024)
@@ -28,25 +28,25 @@ entity "Studio" as studio {
 entity "Address" as address {
     * 住所ID (address_id) : integer
     --
-    * 住所名 (address_name) : varchar(1024)
+    + 住所名 (address_name) : varchar(1024)
     * 市区町村ID (city_id) : integer <<FK>>
 }
 
 entity "City" as city {
     * 市区町村ID (city_id) : integer
     --
-    * 市区町村名 (city_name) : varchar(256)
+    + 市区町村名 (city_name) : varchar(256)
     * 県ID (prefecture_id) : integer <<FK>>
 }
 
 entity "Prefecture" as prefecture {
     * 県ID (prefecture_id) : integer
     --
-    * 県名 (prefecture_name) : varchar(256)
+    + 県名 (prefecture_name) : varchar(256)
 }
 
-entity "StudioAccessByStation" as studio_access_by_station {
-    * スタジオ-駅アクセス紐付けID (studio_access_by_station_id) : integer
+entity "StudioStationRailwayExit" as studio_station_railway_exit {
+    * スタジオ-駅-鉄道-出口紐付けID (studio_station_railway_exit_id) : integer
     --
     * スタジオID (studio_id) : integer <<FK>>
     * 駅-鉄道-出口紐付けID (station_railway_exit_id) : integer <<FK>>
@@ -60,33 +60,33 @@ entity "StudioAccessByStation" as studio_access_by_station {
 entity "StationRailwayExit" as station_railway_exit {
     * 駅-鉄道-出口紐付けID (station_railway_exit_id) : integer
     --
-    * 駅-鉄道紐付けID (station_railway_id) : integer <<FK>>
-    * 出口ID (exit_id) : integer <<FK>>
+    + 駅-鉄道紐付けID (station_railway_id) : integer <<FK>>
+    + 出口ID (exit_id) : integer <<FK>>
 }
 
 entity "StationRailway" as station_railway {
     * 駅-鉄道紐付けID (station_railway_id) : integer
     --
-    * 駅ID (station_id) : integer <<FK>>
-    * 鉄道ID (railway_id) : integer <<FK>>
+    + 駅ID (station_id) : integer <<FK>>
+    + 鉄道ID (railway_id) : integer <<FK>>
 }
 
 entity "Station" as station {
     * 駅ID (station_id) : integer
     --
-    * 駅名 (station_name) : varchar(256)
+    + 駅名 (station_name) : varchar(256)
 }
 
 entity "Exit" as exit {
     * 出口ID (exit_id) : integer
     --
-    * 出口名 (exit_name) : varchar(128)
+    + 出口名 (exit_name) : varchar(128)
 }
 
 entity "Railway" as railway {
     * 鉄道ID (railway_id) : integer
     --
-    * 鉄道名 (railway_name) : varchar(128)
+    + 鉄道名 (railway_name) : varchar(128)
 }
 
 entity "StationRailwayLine" as station_railway_line {
@@ -105,16 +105,16 @@ entity "Line" as line {
 entity "StudioImage" as studio_image {
     * スタジオ-画像紐付けID (studio_image_id) : integer
     --
-    * スタジオID (studio_id) : integer
-    * 画像ID (image_id) : integer
+    + スタジオID (studio_id) : integer
+    + 画像ID (image_id) : integer
     説明 (description) : text
 }
 
 entity "Image" as image {
     * 画像ID (image_id) : integer
     --
-    * 画像名 (image_name) : varchar(512)
-    * 画像パス (image_path) : varchar(1024)
+    + 画像名 (image_name) : varchar(512)
+    + 画像パス (image_path) : varchar(1024)
     * 作成日 (created_at) : datetime
     * 更新日 (updated_at) : datetime
     削除日 (deleted_at) : datetime
@@ -124,8 +124,8 @@ entity "Image" as image {
 entity "Room" as room {
     * 部屋ID (room_id) : integer
     --
-    * スタジオID (studio_id) : integer <<FK>>
-    * 部屋名 (room_name) : varchar(512)
+    + スタジオID (studio_id) : integer <<FK>>
+    + 部屋名 (room_name) : varchar(512)
     予約URL (reservation_url) : varchar(1024)
     最小予約可能人数 (min_reservable_people) : integer
     最大予約可能人数 (max_reservable_people) : integer
@@ -139,18 +139,18 @@ entity "Room" as room {
 entity "RoomImage" as room_image {
     * 部屋-画像紐付けID (room_image_id) : integer
     --
-    * 部屋ID (room_id) : integer <<FK>>
-    * 画像ID (image_id) : integer <<FK>>
+    + 部屋ID (room_id) : integer <<FK>>
+    + 画像ID (image_id) : integer <<FK>>
     説明 (description) : text
 }
 
 entity "RoomSlot" as room_slot {
     * 部屋-予約枠紐付けID (room_slot_id) : integer
     --
-    * 部屋ID (room_id) : integer <<FK>>
-    * 日 (date) : date
-    * 開始時刻 (time_begin) : time
-    * 終了時刻 (time_end) : time
+    + 部屋ID (room_id) : integer <<FK>>
+    + 日 (date) : date
+    + 開始時刻 (time_begin) : time
+    + 終了時刻 (time_end) : time
     * 予約枠ワークロード (workload) : float  /'ワークロードが1を超えて初めて予約可能に'/
     * 予約枠料金 (slot_price) : float
     * 残り枠数 (remain_slot_count) : integer
@@ -163,11 +163,11 @@ entity "RoomSlot" as room_slot {
 entity "RoomSlotDayTemplate" as room_slot_day_template {
     * 部屋-予約枠テンプレート紐付けID (slot_day_template_id) : integer
     --
-    * 部屋ID (room_id) : integer <<FK>>
-    * 曜日テンプレートID (day_template_id) : integer
+    + 部屋ID (room_id) : integer <<FK>>
+    + 曜日テンプレートID (day_template_id) : integer
+    + 開始時刻 (time_begin) : time
+    + 終了時刻 (time_end) : time
     * 予約枠ワークロード (workload) : float  /'ワークロードが1を超えて初めて予約可能に'/
-    * 開始時刻 (time_begin) : time
-    * 終了時刻 (time_end) : time
     * 予約枠基本料金 (slot_base_price) : float
     * 予約枠母数 (slot_count) : integer
     * 作成日 (created_at) : datetime
@@ -179,15 +179,15 @@ entity "RoomSlotDayTemplate" as room_slot_day_template {
 entity "DayTemplate" as day_template {
     * 曜日テンプレートID (day_template_id) : integer
     --
-    * 曜日テンプレート名 (day_template_name) : varchar(128)
+    + 曜日テンプレート名 (day_template_name) : varchar(128)
 }
 
 entity "RoomFacility" as room_facility {
     * 部屋-設備紐付けID (room_facility_id) : integer
     --
-    * 部屋ID (room_id) : integer <<FK>>
-    * 設備ID (facility_id) : integer <<FK>>
-    * 部屋-設備通し番号 (room_facility_serial_number) : integer
+    + 部屋ID (room_id) : integer <<FK>>
+    + 設備ID (facility_id) : integer <<FK>>
+    + 部屋-設備通し番号 (room_facility_serial_number) : integer
     個数 (room_facility_count) : integer
     料金 (room_facility_price) : float
     単位時間(h) (room_facility_unit_hour) : float
@@ -200,8 +200,8 @@ entity "RoomFacility" as room_facility {
 entity "RoomFloorMaterial" as room_floor_material {
     * 部屋-床素材紐付けID (room_floor_material_id) : integer
     --
-    * 部屋ID (room_id) : integer <<FK>>
-    * 床素材ID (floor_material_id) : integer <<FK>>
+    + 部屋ID (room_id) : integer <<FK>>
+    + 床素材ID (floor_material_id) : integer <<FK>>
     * 作成日 (created_at) : datetime
     * 更新日 (updated_at) : datetime
     削除日 (deleted_at) : datetime
@@ -211,15 +211,15 @@ entity "RoomFloorMaterial" as room_floor_material {
 entity "FloorMaterial" as floor_material {
     * 床素材ID (floor_material_id) : integer
     --
-    * 床素材名 (floor_material) : varchar(128)
+    + 床素材名 (floor_material) : varchar(128)
 }
 
 entity "StudioAmenity" as studio_amenity {
     * スタジオ-アメニティ紐付けID (studio_amenity_id) : integer
     --
-    * スタジオID (studio_id) : integer <<FK>>
-    * アメニティID (amenity_id) : integer <<FK>>
-    * スタジオ-アメニティ通し番号 (studio_amenity_serial_number) : integer
+    + スタジオID (studio_id) : integer <<FK>>
+    + アメニティID (amenity_id) : integer <<FK>>
+    + スタジオ-アメニティ通し番号 (studio_amenity_serial_number) : integer
     個数 (studio_amenity_count) : integer
     料金 (studio_amenity_price) : float
     単位時間(h) (studio_amenity_unit_hour) : float  /'「単位時間」だけ借りると「料金」が発生'/
@@ -232,15 +232,15 @@ entity "StudioAmenity" as studio_amenity {
 entity "Amenity" as amenity {
     * アメニティID (amenity_id) : integer
     --
-    * アメニティ名 (amenity_name) : varchar(256)
+    + アメニティ名 (amenity_name) : varchar(256)
 }
 
 entity "StudioFacility" as studio_facility {
     * スタジオ-設備紐付けID (studio_facility_id) : integer
     --
-    * スタジオID (studio_id) : integer <<FK>>
-    * 設備ID (facility_id) : integer <<FK>>
-    * スタジオ-設備通し番号 (studio_facility_serial_number) : integer
+    + スタジオID (studio_id) : integer <<FK>>
+    + 設備ID (facility_id) : integer <<FK>>
+    + スタジオ-設備通し番号 (studio_facility_serial_number) : integer
     個数 (studio_facility_count) : integer
     料金 (studio_facility_price) : float
     単位時間(h) (studio_facility_unit_hour) : float  /'「単位時間」だけ借りると「料金」が発生'/
@@ -253,14 +253,14 @@ entity "StudioFacility" as studio_facility {
 entity "Facility" as facility {
     * 設備ID (facility_id) : integer
     --
-    * 設備名 (facility_name) : varchar(256)
+    + 設備名 (facility_name) : varchar(256)
 }
 
 entity "StudioPayment" as studio_payment {
     * スタジオ-支払い方法紐付けID (studio_payment_id) : integer
     --
-    * スタジオID (studio_id) : integer <<FK>>
-    * 支払い方法ID (payment_id) : integer <<FK>>
+    + スタジオID (studio_id) : integer <<FK>>
+    + 支払い方法ID (payment_id) : integer <<FK>>
     * 作成日 (created_at) : datetime
     * 更新日 (updated_at) : datetime
     削除日 (deleted_at) : datetime
@@ -270,14 +270,14 @@ entity "StudioPayment" as studio_payment {
 entity "Payment" as payment {
     * 支払いID (payment_id) : integer
     --
-    * 支払い方法名 (payment_name) : varchar(128)
+    + 支払い方法名 (payment_name) : varchar(128)
 }
 
 entity "StudioReservation" as studio_reservation {
     * スタジオ-予約方法紐付けID (studio_reservation_id) : integer
     --
-    * スタジオID (studio_id) : integer <<FK>>
-    * 予約方法ID (reservation_id) : integer <<FK>>
+    + スタジオID (studio_id) : integer <<FK>>
+    + 予約方法ID (reservation_id) : integer <<FK>>
     * 作成日 (created_at) : datetime
     * 更新日 (updated_at) : datetime
     削除日 (deleted_at) : datetime
@@ -287,14 +287,14 @@ entity "StudioReservation" as studio_reservation {
 entity "Reservation" as reservation {
     * 予約方法ID (reservation_id) : integer
     --
-    * 予約方法名 (reservation_name) : varchar(128)
+    + 予約方法名 (reservation_name) : varchar(128)
 }
 
 studio }|--|| address
 address }|--|| city
 city }|--|| prefecture
-studio_access_by_station }|--|| studio
-studio_access_by_station }o--|| station_railway_exit
+studio_station_railway_exit }|--|| studio
+studio_station_railway_exit }o--|| station_railway_exit
 station_railway_exit }o--|| station_railway
 station_railway_exit }|--|| exit
 station_railway }o--|| station

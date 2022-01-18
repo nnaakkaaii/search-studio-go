@@ -108,16 +108,6 @@ class CityFilter(filters.FilterSet):
         }
 
 
-class DateSlotFilter(filters.FilterSet):
-    class Meta:
-        model = models.DateSlot
-        fields = {
-            'date_slot_id': NUMBER_FILTER_LIST,
-            'date': DATE_FILTER_LIST,
-            'slot': NUMBER_FILTER_LIST,
-        }
-
-
 class DayTemplateFilter(filters.FilterSet):
     class Meta:
         model = models.DayTemplate
@@ -238,6 +228,7 @@ class RoomFacilityFilter(filters.FilterSet):
             'room_facility_id': NUMBER_FILTER_LIST,
             'room': NUMBER_FILTER_LIST,
             'facility': NUMBER_FILTER_LIST,
+            'room_facility_serial_number': NUMBER_FILTER_LIST,
             'room_facility_count': NUMBER_FILTER_LIST,
             'room_facility_price': NUMBER_FILTER_LIST,
             'room_facility_unit_hour': NUMBER_FILTER_LIST,
@@ -279,9 +270,12 @@ class RoomSlotFilter(filters.FilterSet):
         fields = {
             'room_slot_id': NUMBER_FILTER_LIST,
             'room': NUMBER_FILTER_LIST,
-            'date_slot': NUMBER_FILTER_LIST,
-            'remain_slot_count': NUMBER_FILTER_LIST,
+            'date': DATE_FILTER_LIST,
+            'time_begin': TIME_FILTER_LIST,
+            'time_end': TIME_FILTER_LIST,
+            'workload': NUMBER_FILTER_LIST,
             'slot_price': NUMBER_FILTER_LIST,
+            'remain_slot_count': NUMBER_FILTER_LIST,
             'created_at': DATETIME_FILTER_LIST,
             'updated_at': DATETIME_FILTER_LIST,
             'deleted_at': DATETIME_FILTER_LIST,
@@ -289,26 +283,18 @@ class RoomSlotFilter(filters.FilterSet):
         }
 
 
-class SlotFilter(filters.FilterSet):
+class RoomSlotDayTemplateFilter(filters.FilterSet):
     class Meta:
-        model = models.Slot
+        model = models.RoomSlotDayTemplate
         fields = {
-            'slot_id': NUMBER_FILTER_LIST,
-            'workload': NUMBER_FILTER_LIST,
+            'room_slot_day_template_id': NUMBER_FILTER_LIST,
+            'room': NUMBER_FILTER_LIST,
+            'day_template': NUMBER_FILTER_LIST,
             'time_begin': TIME_FILTER_LIST,
             'time_end': TIME_FILTER_LIST,
+            'workload': NUMBER_FILTER_LIST,
             'slot_base_price': NUMBER_FILTER_LIST,
             'slot_count': NUMBER_FILTER_LIST,
-        }
-
-
-class SlotDayTemplateFilter(filters.FilterSet):
-    class Meta:
-        model = models.SlotDayTemplate
-        fields = {
-            'slot_day_template_id': NUMBER_FILTER_LIST,
-            'slot': NUMBER_FILTER_LIST,
-            'day_template': NUMBER_FILTER_LIST,
             'created_at': DATETIME_FILTER_LIST,
             'updated_at': DATETIME_FILTER_LIST,
             'deleted_at': DATETIME_FILTER_LIST,
@@ -382,6 +368,7 @@ class StudioAmenityFilter(filters.FilterSet):
             'studio_amenity_id': NUMBER_FILTER_LIST,
             'studio': NUMBER_FILTER_LIST,
             'amenity': NUMBER_FILTER_LIST,
+            'studio_amenity_serial_number': NUMBER_FILTER_LIST,
             'studio_amenity_count': NUMBER_FILTER_LIST,
             'studio_amenity_price': NUMBER_FILTER_LIST,
             'studio_amenity_unit_hour': NUMBER_FILTER_LIST,
@@ -399,6 +386,7 @@ class StudioFacilityFilter(filters.FilterSet):
             'studio_facility_id': NUMBER_FILTER_LIST,
             'studio': NUMBER_FILTER_LIST,
             'facility': NUMBER_FILTER_LIST,
+            'studio_facility_serial_number': NUMBER_FILTER_LIST,
             'studio_facility_count': NUMBER_FILTER_LIST,
             'studio_facility_price': NUMBER_FILTER_LIST,
             'studio_facility_unit_hour': NUMBER_FILTER_LIST,
