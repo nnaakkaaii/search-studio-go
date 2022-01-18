@@ -9,11 +9,11 @@ import (
 
 // StudioPayments represents a row from 'public.studio_payments'.
 type StudioPayments struct {
-	StudioPaymentID int       `json:"studio_payment_id"` // studio_payment_id
-	PaymentID       int       `json:"payment_id"`        // payment_id
-	PaymentName     string    `json:"payment_name"`      // payment_name
-	CreatedAt       time.Time `json:"created_at"`        // created_at
-	UpdatedAt       time.Time `json:"updated_at"`        // updated_at
+	StudioPaymentID int        `json:"studio_payment_id"` // studio_payment_id
+	PaymentID       int        `json:"payment_id"`        // payment_id
+	PaymentName     string     `json:"payment_name"`      // payment_name
+	CreatedAt       time.Time  `json:"created_at"`        // created_at
+	UpdatedAt       time.Time  `json:"updated_at"`        // updated_at
 }
 
 // StudioPaymentsByStudioID runs a custom query, returning results as StudioPayments.

@@ -9,14 +9,14 @@ import (
 
 // StudioFacilities represents a row from 'public.studio_facilities'.
 type StudioFacilities struct {
-	StudioFacilityID       int       `json:"studio_facility_id"`        // studio_facility_id
-	FacilityID             int       `json:"facility_id"`               // facility_id
-	FacilityName           string    `json:"facility_name"`             // facility_name
-	StudioFacilityCount    int       `json:"studio_facility_count"`     // studio_facility_count
-	StudioFacilityPrice    float64   `json:"studio_facility_price"`     // studio_facility_price
-	StudioFacilityUnitHour float64   `json:"studio_facility_unit_hour"` // studio_facility_unit_hour
-	CreatedAt              time.Time `json:"created_at"`                // created_at
-	UpdatedAt              time.Time `json:"updated_at"`                // updated_at
+	StudioFacilityID       int        `json:"studio_facility_id"`        // studio_facility_id
+	FacilityID             int        `json:"facility_id"`               // facility_id
+	FacilityName           string     `json:"facility_name"`             // facility_name
+	StudioFacilityCount    *int       `json:"studio_facility_count"`     // studio_facility_count
+	StudioFacilityPrice    *float64   `json:"studio_facility_price"`     // studio_facility_price
+	StudioFacilityUnitHour *float64   `json:"studio_facility_unit_hour"` // studio_facility_unit_hour
+	CreatedAt              time.Time  `json:"created_at"`                // created_at
+	UpdatedAt              time.Time  `json:"updated_at"`                // updated_at
 }
 
 // StudioFacilitiesByStudioID runs a custom query, returning results as StudioFacilities.

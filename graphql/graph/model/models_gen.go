@@ -28,25 +28,27 @@ type Studio struct {
 }
 
 type StudioAmenity struct {
-	StudioAmenityID       int      `json:"studio_amenity_id"`
-	AmenityID             int      `json:"amenity_id"`
-	AmenityName           string   `json:"amenity_name"`
-	StudioAmenityCount    *int     `json:"studio_amenity_count"`
-	StudioAmenityPrice    *float64 `json:"studio_amenity_price"`
-	StudioAmenityUnitHour *float64 `json:"studio_amenity_unit_hour"`
-	CreatedAt             string   `json:"created_at"`
-	UpdatedAt             string   `json:"updated_at"`
+	StudioAmenityID          int      `json:"studio_amenity_id"`
+	AmenityID                int      `json:"amenity_id"`
+	AmenityName              string   `json:"amenity_name"`
+	StudioAmenityDescription *string  `json:"studio_amenity_description"`
+	StudioAmenityCount       *int     `json:"studio_amenity_count"`
+	StudioAmenityPrice       *float64 `json:"studio_amenity_price"`
+	StudioAmenityUnitHour    *float64 `json:"studio_amenity_unit_hour"`
+	CreatedAt                string   `json:"created_at"`
+	UpdatedAt                string   `json:"updated_at"`
 }
 
 type StudioFacility struct {
-	StudioFacilityID       int      `json:"studio_facility_id"`
-	FacilityID             int      `json:"facility_id"`
-	FacilityName           string   `json:"facility_name"`
-	StudioFacilityCount    *int     `json:"studio_facility_count"`
-	StudioFacilityPrice    *float64 `json:"studio_facility_price"`
-	StudioFacilityUnitHour *float64 `json:"studio_facility_unit_hour"`
-	CreatedAt              string   `json:"created_at"`
-	UpdatedAt              string   `json:"updated_at"`
+	StudioFacilityID          int      `json:"studio_facility_id"`
+	FacilityID                int      `json:"facility_id"`
+	FacilityName              string   `json:"facility_name"`
+	StudioFacilityDescription *string  `json:"studio_facility_description"`
+	StudioFacilityCount       *int     `json:"studio_facility_count"`
+	StudioFacilityPrice       *float64 `json:"studio_facility_price"`
+	StudioFacilityUnitHour    *float64 `json:"studio_facility_unit_hour"`
+	CreatedAt                 string   `json:"created_at"`
+	UpdatedAt                 string   `json:"updated_at"`
 }
 
 type StudioImage struct {

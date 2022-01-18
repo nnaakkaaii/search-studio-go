@@ -40,9 +40,9 @@ func (r *Resolver) getStudioByID(ctx context.Context, studioID int) (*model.Stud
 	return &model.Studio{
 		StudioID:       f.StudioID,
 		StudioName:     f.StudioName,
-		Introduction:   &f.Introduction,
-		Precaution:     &f.Precaution,
-		HomepageURL:    &f.HomepageURL,
+		Introduction:   f.Introduction,
+		Precaution:     f.Precaution,
+		HomepageURL:    f.HomepageURL,
 		Contact:        f.Contact,
 		AddressID:      f.AddressID,
 		AddressName:    f.AddressName,
@@ -51,7 +51,7 @@ func (r *Resolver) getStudioByID(ctx context.Context, studioID int) (*model.Stud
 		PrefectureID:   f.PrefectureID,
 		PrefectureName: f.PrefectureName,
 		RentByMinHours: f.RentByMinHours,
-		CanFreeCancel:  &f.CanFreeCancel,
+		CanFreeCancel:  f.CanFreeCancel,
 		CreatedAt:      f.CreatedAt.Format(datetime),
 		UpdatedAt:      f.UpdatedAt.Format(datetime),
 	}, nil
@@ -69,9 +69,9 @@ func (r *Resolver) getStudios(ctx context.Context, studioName *string) ([]*model
 		resp = append(resp, &model.Studio{
 			StudioID:       v.StudioID,
 			StudioName:     v.StudioName,
-			Introduction:   &v.Introduction,
-			Precaution:     &v.Precaution,
-			HomepageURL:    &v.HomepageURL,
+			Introduction:   v.Introduction,
+			Precaution:     v.Precaution,
+			HomepageURL:    v.HomepageURL,
 			Contact:        v.Contact,
 			AddressID:      v.AddressID,
 			AddressName:    v.AddressName,
@@ -80,7 +80,7 @@ func (r *Resolver) getStudios(ctx context.Context, studioName *string) ([]*model
 			PrefectureID:   v.PrefectureID,
 			PrefectureName: v.PrefectureName,
 			RentByMinHours: v.RentByMinHours,
-			CanFreeCancel:  &v.CanFreeCancel,
+			CanFreeCancel:  v.CanFreeCancel,
 			CreatedAt:      v.CreatedAt.Format(datetime),
 			UpdatedAt:      v.UpdatedAt.Format(datetime),
 		})
@@ -101,9 +101,9 @@ func (r *Resolver) studioFacilities(ctx context.Context, obj *model.Studio) ([]*
 			StudioFacilityID:       v.StudioFacilityID,
 			FacilityID:             v.FacilityID,
 			FacilityName:           v.FacilityName,
-			StudioFacilityCount:    &v.StudioFacilityCount,
-			StudioFacilityPrice:    &v.StudioFacilityPrice,
-			StudioFacilityUnitHour: &v.StudioFacilityUnitHour,
+			StudioFacilityCount:    v.StudioFacilityCount,
+			StudioFacilityPrice:    v.StudioFacilityPrice,
+			StudioFacilityUnitHour: v.StudioFacilityUnitHour,
 			CreatedAt:              v.CreatedAt.Format(datetime),
 			UpdatedAt:              v.UpdatedAt.Format(datetime),
 		})
@@ -124,9 +124,9 @@ func (r *Resolver) studioAmenities(ctx context.Context, obj *model.Studio) ([]*m
 			StudioAmenityID:       v.StudioAmenityID,
 			AmenityID:             v.AmenityID,
 			AmenityName:           v.AmenityName,
-			StudioAmenityCount:    &v.StudioAmenityCount,
-			StudioAmenityPrice:    &v.StudioAmenityPrice,
-			StudioAmenityUnitHour: &v.StudioAmenityUnitHour,
+			StudioAmenityCount:    v.StudioAmenityCount,
+			StudioAmenityPrice:    v.StudioAmenityPrice,
+			StudioAmenityUnitHour: v.StudioAmenityUnitHour,
 			CreatedAt:             v.CreatedAt.Format(datetime),
 			UpdatedAt:             v.UpdatedAt.Format(datetime),
 		})
@@ -190,7 +190,7 @@ func (r *Resolver) studioImages(ctx context.Context, obj *model.Studio) ([]*mode
 			ImagePath:     v.ImagePath,
 			CreatedAt:     v.CreatedAt.Format(datetime),
 			UpdatedAt:     v.UpdatedAt.Format(datetime),
-			Description:   &v.Description,
+			Description:   v.Description,
 		})
 	}
 	return resp, nil
@@ -215,7 +215,7 @@ func (v *Resolver) studioStationRailwayExit(ctx context.Context, obj *model.Stud
 			RailwayName:                v.RailwayName,
 			ExitID:                     v.ExitID,
 			ExitName:                   v.ExitName,
-			MinutesFromStation:         &v.MinutesFromStation,
+			MinutesFromStation:         v.MinutesFromStation,
 			CreatedAt:                  v.CreatedAt.Format(datetime),
 			UpdatedAt:                  v.UpdatedAt.Format(datetime),
 		})

@@ -22,12 +22,12 @@ type Studio {
     prefecture_name: String!
     rent_by_min_hours: Float!
     can_free_cancel: Boolean
-    studio_facilities: [StudioFacility]  # 紐付けテーブル
-    studio_amenities: [StudioAmenity]
-    studio_payments: [StudioPayment]
-    studio_reservations: [StudioReservation]
-    studio_images: [StudioImage]
-    studio_station_railway_exits: [StudioStationRailwayExit]
+    studio_facilities: [StudioFacility!]  # 紐付けテーブル
+    studio_amenities: [StudioAmenity!]
+    studio_payments: [StudioPayment!]
+    studio_reservations: [StudioReservation!]
+    studio_images: [StudioImage!]
+    studio_station_railway_exits: [StudioStationRailwayExit!]
     created_at: DateTime!
     updated_at: DateTime!
 }
@@ -35,6 +35,7 @@ type StudioFacility {
     studio_facility_id: Int!
     facility_id: Int!
     facility_name: String!
+    studio_facility_description: String
     studio_facility_count: Int
     studio_facility_price: Float
     studio_facility_unit_hour: Float
@@ -45,6 +46,7 @@ type StudioAmenity {
     studio_amenity_id: Int!
     amenity_id: Int!
     amenity_name: String!
+    studio_amenity_description: String
     studio_amenity_count: Int
     studio_amenity_price: Float
     studio_amenity_unit_hour: Float

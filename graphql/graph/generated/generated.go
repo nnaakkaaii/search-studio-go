@@ -74,25 +74,27 @@ type ComplexityRoot struct {
 	}
 
 	StudioAmenity struct {
-		AmenityID             func(childComplexity int) int
-		AmenityName           func(childComplexity int) int
-		CreatedAt             func(childComplexity int) int
-		StudioAmenityCount    func(childComplexity int) int
-		StudioAmenityID       func(childComplexity int) int
-		StudioAmenityPrice    func(childComplexity int) int
-		StudioAmenityUnitHour func(childComplexity int) int
-		UpdatedAt             func(childComplexity int) int
+		AmenityID                func(childComplexity int) int
+		AmenityName              func(childComplexity int) int
+		CreatedAt                func(childComplexity int) int
+		StudioAmenityCount       func(childComplexity int) int
+		StudioAmenityDescription func(childComplexity int) int
+		StudioAmenityID          func(childComplexity int) int
+		StudioAmenityPrice       func(childComplexity int) int
+		StudioAmenityUnitHour    func(childComplexity int) int
+		UpdatedAt                func(childComplexity int) int
 	}
 
 	StudioFacility struct {
-		CreatedAt              func(childComplexity int) int
-		FacilityID             func(childComplexity int) int
-		FacilityName           func(childComplexity int) int
-		StudioFacilityCount    func(childComplexity int) int
-		StudioFacilityID       func(childComplexity int) int
-		StudioFacilityPrice    func(childComplexity int) int
-		StudioFacilityUnitHour func(childComplexity int) int
-		UpdatedAt              func(childComplexity int) int
+		CreatedAt                 func(childComplexity int) int
+		FacilityID                func(childComplexity int) int
+		FacilityName              func(childComplexity int) int
+		StudioFacilityCount       func(childComplexity int) int
+		StudioFacilityDescription func(childComplexity int) int
+		StudioFacilityID          func(childComplexity int) int
+		StudioFacilityPrice       func(childComplexity int) int
+		StudioFacilityUnitHour    func(childComplexity int) int
+		UpdatedAt                 func(childComplexity int) int
 	}
 
 	StudioImage struct {
@@ -371,6 +373,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.StudioAmenity.StudioAmenityCount(childComplexity), true
 
+	case "StudioAmenity.studio_amenity_description":
+		if e.complexity.StudioAmenity.StudioAmenityDescription == nil {
+			break
+		}
+
+		return e.complexity.StudioAmenity.StudioAmenityDescription(childComplexity), true
+
 	case "StudioAmenity.studio_amenity_id":
 		if e.complexity.StudioAmenity.StudioAmenityID == nil {
 			break
@@ -426,6 +435,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.StudioFacility.StudioFacilityCount(childComplexity), true
+
+	case "StudioFacility.studio_facility_description":
+		if e.complexity.StudioFacility.StudioFacilityDescription == nil {
+			break
+		}
+
+		return e.complexity.StudioFacility.StudioFacilityDescription(childComplexity), true
 
 	case "StudioFacility.studio_facility_id":
 		if e.complexity.StudioFacility.StudioFacilityID == nil {
@@ -732,12 +748,12 @@ type Studio {
     prefecture_name: String!
     rent_by_min_hours: Float!
     can_free_cancel: Boolean
-    studio_facilities: [StudioFacility]  # 紐付けテーブル
-    studio_amenities: [StudioAmenity]
-    studio_payments: [StudioPayment]
-    studio_reservations: [StudioReservation]
-    studio_images: [StudioImage]
-    studio_station_railway_exits: [StudioStationRailwayExit]
+    studio_facilities: [StudioFacility!]  # 紐付けテーブル
+    studio_amenities: [StudioAmenity!]
+    studio_payments: [StudioPayment!]
+    studio_reservations: [StudioReservation!]
+    studio_images: [StudioImage!]
+    studio_station_railway_exits: [StudioStationRailwayExit!]
     created_at: DateTime!
     updated_at: DateTime!
 }
@@ -745,6 +761,7 @@ type StudioFacility {
     studio_facility_id: Int!
     facility_id: Int!
     facility_name: String!
+    studio_facility_description: String
     studio_facility_count: Int
     studio_facility_price: Float
     studio_facility_unit_hour: Float
@@ -755,6 +772,7 @@ type StudioAmenity {
     studio_amenity_id: Int!
     amenity_id: Int!
     amenity_name: String!
+    studio_amenity_description: String
     studio_amenity_count: Int
     studio_amenity_price: Float
     studio_amenity_unit_hour: Float
@@ -1544,7 +1562,7 @@ func (ec *executionContext) _Studio_studio_facilities(ctx context.Context, field
 	}
 	res := resTmp.([]*model.StudioFacility)
 	fc.Result = res
-	return ec.marshalOStudioFacility2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioFacility(ctx, field.Selections, res)
+	return ec.marshalOStudioFacility2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioFacilityᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Studio_studio_amenities(ctx context.Context, field graphql.CollectedField, obj *model.Studio) (ret graphql.Marshaler) {
@@ -1576,7 +1594,7 @@ func (ec *executionContext) _Studio_studio_amenities(ctx context.Context, field 
 	}
 	res := resTmp.([]*model.StudioAmenity)
 	fc.Result = res
-	return ec.marshalOStudioAmenity2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioAmenity(ctx, field.Selections, res)
+	return ec.marshalOStudioAmenity2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioAmenityᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Studio_studio_payments(ctx context.Context, field graphql.CollectedField, obj *model.Studio) (ret graphql.Marshaler) {
@@ -1608,7 +1626,7 @@ func (ec *executionContext) _Studio_studio_payments(ctx context.Context, field g
 	}
 	res := resTmp.([]*model.StudioPayment)
 	fc.Result = res
-	return ec.marshalOStudioPayment2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioPayment(ctx, field.Selections, res)
+	return ec.marshalOStudioPayment2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioPaymentᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Studio_studio_reservations(ctx context.Context, field graphql.CollectedField, obj *model.Studio) (ret graphql.Marshaler) {
@@ -1640,7 +1658,7 @@ func (ec *executionContext) _Studio_studio_reservations(ctx context.Context, fie
 	}
 	res := resTmp.([]*model.StudioReservation)
 	fc.Result = res
-	return ec.marshalOStudioReservation2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioReservation(ctx, field.Selections, res)
+	return ec.marshalOStudioReservation2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioReservationᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Studio_studio_images(ctx context.Context, field graphql.CollectedField, obj *model.Studio) (ret graphql.Marshaler) {
@@ -1672,7 +1690,7 @@ func (ec *executionContext) _Studio_studio_images(ctx context.Context, field gra
 	}
 	res := resTmp.([]*model.StudioImage)
 	fc.Result = res
-	return ec.marshalOStudioImage2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioImage(ctx, field.Selections, res)
+	return ec.marshalOStudioImage2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioImageᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Studio_studio_station_railway_exits(ctx context.Context, field graphql.CollectedField, obj *model.Studio) (ret graphql.Marshaler) {
@@ -1704,7 +1722,7 @@ func (ec *executionContext) _Studio_studio_station_railway_exits(ctx context.Con
 	}
 	res := resTmp.([]*model.StudioStationRailwayExit)
 	fc.Result = res
-	return ec.marshalOStudioStationRailwayExit2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioStationRailwayExit(ctx, field.Selections, res)
+	return ec.marshalOStudioStationRailwayExit2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioStationRailwayExitᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Studio_created_at(ctx context.Context, field graphql.CollectedField, obj *model.Studio) (ret graphql.Marshaler) {
@@ -1880,6 +1898,38 @@ func (ec *executionContext) _StudioAmenity_amenity_name(ctx context.Context, fie
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _StudioAmenity_studio_amenity_description(ctx context.Context, field graphql.CollectedField, obj *model.StudioAmenity) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "StudioAmenity",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StudioAmenityDescription, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _StudioAmenity_studio_amenity_count(ctx context.Context, field graphql.CollectedField, obj *model.StudioAmenity) (ret graphql.Marshaler) {
@@ -2151,6 +2201,38 @@ func (ec *executionContext) _StudioFacility_facility_name(ctx context.Context, f
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _StudioFacility_studio_facility_description(ctx context.Context, field graphql.CollectedField, obj *model.StudioFacility) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "StudioFacility",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StudioFacilityDescription, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _StudioFacility_studio_facility_count(ctx context.Context, field graphql.CollectedField, obj *model.StudioFacility) (ret graphql.Marshaler) {
@@ -4692,6 +4774,8 @@ func (ec *executionContext) _StudioAmenity(ctx context.Context, sel ast.Selectio
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "studio_amenity_description":
+			out.Values[i] = ec._StudioAmenity_studio_amenity_description(ctx, field, obj)
 		case "studio_amenity_count":
 			out.Values[i] = ec._StudioAmenity_studio_amenity_count(ctx, field, obj)
 		case "studio_amenity_price":
@@ -4745,6 +4829,8 @@ func (ec *executionContext) _StudioFacility(ctx context.Context, sel ast.Selecti
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "studio_facility_description":
+			out.Values[i] = ec._StudioFacility_studio_facility_description(ctx, field, obj)
 		case "studio_facility_count":
 			out.Values[i] = ec._StudioFacility_studio_facility_count(ctx, field, obj)
 		case "studio_facility_price":
@@ -5324,6 +5410,66 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
+func (ec *executionContext) marshalNStudioAmenity2ᚖgraphqlᚋgraphᚋmodelᚐStudioAmenity(ctx context.Context, sel ast.SelectionSet, v *model.StudioAmenity) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._StudioAmenity(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNStudioFacility2ᚖgraphqlᚋgraphᚋmodelᚐStudioFacility(ctx context.Context, sel ast.SelectionSet, v *model.StudioFacility) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._StudioFacility(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNStudioImage2ᚖgraphqlᚋgraphᚋmodelᚐStudioImage(ctx context.Context, sel ast.SelectionSet, v *model.StudioImage) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._StudioImage(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNStudioPayment2ᚖgraphqlᚋgraphᚋmodelᚐStudioPayment(ctx context.Context, sel ast.SelectionSet, v *model.StudioPayment) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._StudioPayment(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNStudioReservation2ᚖgraphqlᚋgraphᚋmodelᚐStudioReservation(ctx context.Context, sel ast.SelectionSet, v *model.StudioReservation) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._StudioReservation(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNStudioStationRailwayExit2ᚖgraphqlᚋgraphᚋmodelᚐStudioStationRailwayExit(ctx context.Context, sel ast.SelectionSet, v *model.StudioStationRailwayExit) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._StudioStationRailwayExit(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
 	return ec.___Directive(ctx, sel, &v)
 }
@@ -5707,7 +5853,7 @@ func (ec *executionContext) marshalOStudio2ᚖgraphqlᚋgraphᚋmodelᚐStudio(c
 	return ec._Studio(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOStudioAmenity2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioAmenity(ctx context.Context, sel ast.SelectionSet, v []*model.StudioAmenity) graphql.Marshaler {
+func (ec *executionContext) marshalOStudioAmenity2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioAmenityᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.StudioAmenity) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -5734,7 +5880,7 @@ func (ec *executionContext) marshalOStudioAmenity2ᚕᚖgraphqlᚋgraphᚋmodel�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOStudioAmenity2ᚖgraphqlᚋgraphᚋmodelᚐStudioAmenity(ctx, sel, v[i])
+			ret[i] = ec.marshalNStudioAmenity2ᚖgraphqlᚋgraphᚋmodelᚐStudioAmenity(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -5745,17 +5891,16 @@ func (ec *executionContext) marshalOStudioAmenity2ᚕᚖgraphqlᚋgraphᚋmodel�
 	}
 	wg.Wait()
 
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
 	return ret
 }
 
-func (ec *executionContext) marshalOStudioAmenity2ᚖgraphqlᚋgraphᚋmodelᚐStudioAmenity(ctx context.Context, sel ast.SelectionSet, v *model.StudioAmenity) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._StudioAmenity(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOStudioFacility2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioFacility(ctx context.Context, sel ast.SelectionSet, v []*model.StudioFacility) graphql.Marshaler {
+func (ec *executionContext) marshalOStudioFacility2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioFacilityᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.StudioFacility) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -5782,7 +5927,7 @@ func (ec *executionContext) marshalOStudioFacility2ᚕᚖgraphqlᚋgraphᚋmodel
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOStudioFacility2ᚖgraphqlᚋgraphᚋmodelᚐStudioFacility(ctx, sel, v[i])
+			ret[i] = ec.marshalNStudioFacility2ᚖgraphqlᚋgraphᚋmodelᚐStudioFacility(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -5793,17 +5938,16 @@ func (ec *executionContext) marshalOStudioFacility2ᚕᚖgraphqlᚋgraphᚋmodel
 	}
 	wg.Wait()
 
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
 	return ret
 }
 
-func (ec *executionContext) marshalOStudioFacility2ᚖgraphqlᚋgraphᚋmodelᚐStudioFacility(ctx context.Context, sel ast.SelectionSet, v *model.StudioFacility) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._StudioFacility(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOStudioImage2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioImage(ctx context.Context, sel ast.SelectionSet, v []*model.StudioImage) graphql.Marshaler {
+func (ec *executionContext) marshalOStudioImage2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioImageᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.StudioImage) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -5830,7 +5974,7 @@ func (ec *executionContext) marshalOStudioImage2ᚕᚖgraphqlᚋgraphᚋmodelᚐ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOStudioImage2ᚖgraphqlᚋgraphᚋmodelᚐStudioImage(ctx, sel, v[i])
+			ret[i] = ec.marshalNStudioImage2ᚖgraphqlᚋgraphᚋmodelᚐStudioImage(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -5841,17 +5985,16 @@ func (ec *executionContext) marshalOStudioImage2ᚕᚖgraphqlᚋgraphᚋmodelᚐ
 	}
 	wg.Wait()
 
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
 	return ret
 }
 
-func (ec *executionContext) marshalOStudioImage2ᚖgraphqlᚋgraphᚋmodelᚐStudioImage(ctx context.Context, sel ast.SelectionSet, v *model.StudioImage) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._StudioImage(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOStudioPayment2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioPayment(ctx context.Context, sel ast.SelectionSet, v []*model.StudioPayment) graphql.Marshaler {
+func (ec *executionContext) marshalOStudioPayment2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioPaymentᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.StudioPayment) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -5878,7 +6021,7 @@ func (ec *executionContext) marshalOStudioPayment2ᚕᚖgraphqlᚋgraphᚋmodel�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOStudioPayment2ᚖgraphqlᚋgraphᚋmodelᚐStudioPayment(ctx, sel, v[i])
+			ret[i] = ec.marshalNStudioPayment2ᚖgraphqlᚋgraphᚋmodelᚐStudioPayment(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -5889,17 +6032,16 @@ func (ec *executionContext) marshalOStudioPayment2ᚕᚖgraphqlᚋgraphᚋmodel�
 	}
 	wg.Wait()
 
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
 	return ret
 }
 
-func (ec *executionContext) marshalOStudioPayment2ᚖgraphqlᚋgraphᚋmodelᚐStudioPayment(ctx context.Context, sel ast.SelectionSet, v *model.StudioPayment) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._StudioPayment(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOStudioReservation2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioReservation(ctx context.Context, sel ast.SelectionSet, v []*model.StudioReservation) graphql.Marshaler {
+func (ec *executionContext) marshalOStudioReservation2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioReservationᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.StudioReservation) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -5926,7 +6068,7 @@ func (ec *executionContext) marshalOStudioReservation2ᚕᚖgraphqlᚋgraphᚋmo
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOStudioReservation2ᚖgraphqlᚋgraphᚋmodelᚐStudioReservation(ctx, sel, v[i])
+			ret[i] = ec.marshalNStudioReservation2ᚖgraphqlᚋgraphᚋmodelᚐStudioReservation(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -5937,17 +6079,16 @@ func (ec *executionContext) marshalOStudioReservation2ᚕᚖgraphqlᚋgraphᚋmo
 	}
 	wg.Wait()
 
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
 	return ret
 }
 
-func (ec *executionContext) marshalOStudioReservation2ᚖgraphqlᚋgraphᚋmodelᚐStudioReservation(ctx context.Context, sel ast.SelectionSet, v *model.StudioReservation) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._StudioReservation(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOStudioStationRailwayExit2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioStationRailwayExit(ctx context.Context, sel ast.SelectionSet, v []*model.StudioStationRailwayExit) graphql.Marshaler {
+func (ec *executionContext) marshalOStudioStationRailwayExit2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioStationRailwayExitᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.StudioStationRailwayExit) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -5974,7 +6115,7 @@ func (ec *executionContext) marshalOStudioStationRailwayExit2ᚕᚖgraphqlᚋgra
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOStudioStationRailwayExit2ᚖgraphqlᚋgraphᚋmodelᚐStudioStationRailwayExit(ctx, sel, v[i])
+			ret[i] = ec.marshalNStudioStationRailwayExit2ᚖgraphqlᚋgraphᚋmodelᚐStudioStationRailwayExit(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -5985,14 +6126,13 @@ func (ec *executionContext) marshalOStudioStationRailwayExit2ᚕᚖgraphqlᚋgra
 	}
 	wg.Wait()
 
-	return ret
-}
-
-func (ec *executionContext) marshalOStudioStationRailwayExit2ᚖgraphqlᚋgraphᚋmodelᚐStudioStationRailwayExit(ctx context.Context, sel ast.SelectionSet, v *model.StudioStationRailwayExit) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
 	}
-	return ec._StudioStationRailwayExit(ctx, sel, v)
+
+	return ret
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

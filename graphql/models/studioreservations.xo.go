@@ -9,11 +9,11 @@ import (
 
 // StudioReservations represents a row from 'public.studio_reservations'.
 type StudioReservations struct {
-	StudioReservationID int       `json:"studio_reservation_id"` // studio_reservation_id
-	ReservationID       int       `json:"reservation_id"`        // reservation_id
-	ReservationName     string    `json:"reservation_name"`      // reservation_name
-	CreatedAt           time.Time `json:"created_at"`            // created_at
-	UpdatedAt           time.Time `json:"updated_at"`            // updated_at
+	StudioReservationID int        `json:"studio_reservation_id"` // studio_reservation_id
+	ReservationID       int        `json:"reservation_id"`        // reservation_id
+	ReservationName     string     `json:"reservation_name"`      // reservation_name
+	CreatedAt           time.Time  `json:"created_at"`            // created_at
+	UpdatedAt           time.Time  `json:"updated_at"`            // updated_at
 }
 
 // StudioReservationsByStudioID runs a custom query, returning results as StudioReservations.

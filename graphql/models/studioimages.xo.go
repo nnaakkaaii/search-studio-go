@@ -9,13 +9,13 @@ import (
 
 // StudioImages represents a row from 'public.studio_images'.
 type StudioImages struct {
-	StudioImageID int       `json:"studio_image_id"` // studio_image_id
-	ImageID       int       `json:"image_id"`        // image_id
-	ImageName     string    `json:"image_name"`      // image_name
-	ImagePath     string    `json:"image_path"`      // image_path
-	CreatedAt     time.Time `json:"created_at"`      // created_at
-	UpdatedAt     time.Time `json:"updated_at"`      // updated_at
-	Description   string    `json:"description"`     // description
+	StudioImageID int        `json:"studio_image_id"` // studio_image_id
+	ImageID       int        `json:"image_id"`        // image_id
+	ImageName     string     `json:"image_name"`      // image_name
+	ImagePath     string     `json:"image_path"`      // image_path
+	CreatedAt     time.Time  `json:"created_at"`      // created_at
+	UpdatedAt     time.Time  `json:"updated_at"`      // updated_at
+	Description   *string    `json:"description"`     // description
 }
 
 // StudioImagesByStudioID runs a custom query, returning results as StudioImages.

@@ -9,18 +9,18 @@ import (
 
 // StudioStationRailwayExits represents a row from 'public.studio_station_railway_exits'.
 type StudioStationRailwayExits struct {
-	StudioStationRailwayExitID int       `json:"studio_station_railway_exit_id"` // studio_station_railway_exit_id
-	StationRailwayExitID       int       `json:"station_railway_exit_id"`        // station_railway_exit_id
-	StationRailwayID           int       `json:"station_railway_id"`             // station_railway_id
-	StationID                  int       `json:"station_id"`                     // station_id
-	StationName                string    `json:"station_name"`                   // station_name
-	RailwayID                  int       `json:"railway_id"`                     // railway_id
-	RailwayName                string    `json:"railway_name"`                   // railway_name
-	ExitID                     int       `json:"exit_id"`                        // exit_id
-	ExitName                   string    `json:"exit_name"`                      // exit_name
-	MinutesFromStation         int       `json:"minutes_from_station"`           // minutes_from_station
-	CreatedAt                  time.Time `json:"created_at"`                     // created_at
-	UpdatedAt                  time.Time `json:"updated_at"`                     // updated_at
+	StudioStationRailwayExitID int        `json:"studio_station_railway_exit_id"` // studio_station_railway_exit_id
+	StationRailwayExitID       int        `json:"station_railway_exit_id"`        // station_railway_exit_id
+	StationRailwayID           int        `json:"station_railway_id"`             // station_railway_id
+	StationID                  int        `json:"station_id"`                     // station_id
+	StationName                string     `json:"station_name"`                   // station_name
+	RailwayID                  int        `json:"railway_id"`                     // railway_id
+	RailwayName                string     `json:"railway_name"`                   // railway_name
+	ExitID                     int        `json:"exit_id"`                        // exit_id
+	ExitName                   string     `json:"exit_name"`                      // exit_name
+	MinutesFromStation         *int       `json:"minutes_from_station"`           // minutes_from_station
+	CreatedAt                  time.Time  `json:"created_at"`                     // created_at
+	UpdatedAt                  time.Time  `json:"updated_at"`                     // updated_at
 }
 
 // StudioStationRailwayExitsByStudioID runs a custom query, returning results as StudioStationRailwayExits.

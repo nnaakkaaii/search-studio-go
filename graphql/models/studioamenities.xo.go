@@ -9,14 +9,14 @@ import (
 
 // StudioAmenities represents a row from 'public.studio_amenities'.
 type StudioAmenities struct {
-	StudioAmenityID       int       `json:"studio_amenity_id"`        // studio_amenity_id
-	AmenityID             int       `json:"amenity_id"`               // amenity_id
-	AmenityName           string    `json:"amenity_name"`             // amenity_name
-	StudioAmenityCount    int       `json:"studio_amenity_count"`     // studio_amenity_count
-	StudioAmenityPrice    float64   `json:"studio_amenity_price"`     // studio_amenity_price
-	StudioAmenityUnitHour float64   `json:"studio_amenity_unit_hour"` // studio_amenity_unit_hour
-	CreatedAt             time.Time `json:"created_at"`               // created_at
-	UpdatedAt             time.Time `json:"updated_at"`               // updated_at
+	StudioAmenityID       int        `json:"studio_amenity_id"`        // studio_amenity_id
+	AmenityID             int        `json:"amenity_id"`               // amenity_id
+	AmenityName           string     `json:"amenity_name"`             // amenity_name
+	StudioAmenityCount    *int       `json:"studio_amenity_count"`     // studio_amenity_count
+	StudioAmenityPrice    *float64   `json:"studio_amenity_price"`     // studio_amenity_price
+	StudioAmenityUnitHour *float64   `json:"studio_amenity_unit_hour"` // studio_amenity_unit_hour
+	CreatedAt             time.Time  `json:"created_at"`               // created_at
+	UpdatedAt             time.Time  `json:"updated_at"`               // updated_at
 }
 
 // StudioAmenitiesByStudioID runs a custom query, returning results as StudioAmenities.

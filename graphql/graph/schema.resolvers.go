@@ -21,12 +21,12 @@ func (r *studioResolver) StudioFacilities(ctx context.Context, obj *model.Studio
 	return r.studioFacilities(ctx, obj)
 }
 
-func (r *studioResolver) StudioPayments(ctx context.Context, obj *model.Studio) ([]*model.StudioPayment, error) {
-	return r.studioPayments(ctx, obj)
-}
-
 func (r *studioResolver) StudioAmenities(ctx context.Context, obj *model.Studio) ([]*model.StudioAmenity, error) {
 	return r.studioAmenities(ctx, obj)
+}
+
+func (r *studioResolver) StudioPayments(ctx context.Context, obj *model.Studio) ([]*model.StudioPayment, error) {
+	return r.studioPayments(ctx, obj)
 }
 
 func (r *studioResolver) StudioReservations(ctx context.Context, obj *model.Studio) ([]*model.StudioReservation, error) {
