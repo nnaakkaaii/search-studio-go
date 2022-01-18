@@ -17,6 +17,7 @@ CREATE DATABASE studio;
 
 -- その他
 
+-- ok
 CREATE TABLE image (
     image_id SERIAL PRIMARY KEY,
     image_name VARCHAR(512) NOT NULL,
@@ -37,23 +38,27 @@ CREATE TABLE image (
 
 -- studioに関する情報
 
+-- ok
 CREATE TABLE prefecture (
     prefecture_id SERIAL PRIMARY KEY,
     prefecture_name VARCHAR(256) NOT NULL
 );
 
+-- ok
 CREATE TABLE city (
     city_id SERIAL PRIMARY KEY,
     city_name VARCHAR(256) NOT NULL,
     prefecture_id INTEGER NOT NULL REFERENCES prefecture(prefecture_id) ON DELETE RESTRICT
 );
 
+-- ok
 CREATE TABLE address (
     address_id SERIAL PRIMARY KEY,
     address_name VARCHAR(1024) NOT NULL,
     city_id INTEGER NOT NULL REFERENCES city(city_id) ON DELETE RESTRICT
 );
 
+-- ok
 CREATE TABLE studio (
     studio_id SERIAL PRIMARY KEY,
     studio_name VARCHAR(1024) NOT NULL,
@@ -70,11 +75,13 @@ CREATE TABLE studio (
     is_deleted BOOLEAN NOT NULL
 );
 
+-- ok
 CREATE TABLE reservation (
     reservation_id SERIAL PRIMARY KEY,
     reservation_name VARCHAR(128) NOT NULL
 );
 
+-- ok
 CREATE TABLE studio_reservation (
     studio_reservation_id SERIAL PRIMARY KEY,
     studio_id INTEGER NOT NULL REFERENCES studio(studio_id) ON DELETE RESTRICT,
@@ -86,11 +93,13 @@ CREATE TABLE studio_reservation (
     UNIQUE (studio_id, reservation_id)
 );
 
+-- ok
 CREATE TABLE payment (
     payment_id SERIAL PRIMARY KEY,
     payment_name VARCHAR(128) NOT NULL
 );
 
+-- ok
 CREATE TABLE studio_payment (
     studio_payment_id SERIAL PRIMARY KEY,
     studio_id INTEGER NOT NULL REFERENCES studio(studio_id) ON DELETE RESTRICT,
@@ -102,15 +111,18 @@ CREATE TABLE studio_payment (
     UNIQUE (studio_id, payment_id)
 );
 
+-- ok
 CREATE TABLE amenity (
     amenity_id SERIAL PRIMARY KEY,
     amenity_name VARCHAR(128) NOT NULL
 );
 
+-- ok
 CREATE TABLE studio_amenity (
     studio_amenity_id SERIAL PRIMARY KEY,
     studio_id INTEGER NOT NULL REFERENCES studio(studio_id) ON DELETE RESTRICT,
     amenity_id INTEGER NOT NULL REFERENCES amenity(amenity_id) ON DELETE RESTRICT,
+    studio_amenity_serial_number INTEGER NOT NULL,
     studio_amenity_count INTEGER,
     studio_amenity_price FLOAT,
     studio_amenity_unit_hour FLOAT,
@@ -121,15 +133,18 @@ CREATE TABLE studio_amenity (
     UNIQUE (studio_id, amenity_id)
 );
 
+-- ok
 CREATE TABLE facility (
     facility_id SERIAL PRIMARY KEY,
     facility_name VARCHAR(128) NOT NULL
 );
 
+-- ok
 CREATE TABLE studio_facility (
     studio_facility_id SERIAL PRIMARY KEY,
     studio_id INTEGER NOT NULL REFERENCES studio(studio_id) ON DELETE RESTRICT,
     facility_id INTEGER NOT NULL REFERENCES facility(facility_id) ON DELETE RESTRICT,
+    studio_facility_serial_number INTEGER NOT NULL,
     studio_facility_count INTEGER,
     studio_facility_price FLOAT,
     studio_facility_unit_hour FLOAT,
@@ -140,6 +155,7 @@ CREATE TABLE studio_facility (
     UNIQUE (studio_id, facility_id)
 );
 
+-- ok
 CREATE TABLE studio_image (
    studio_image_id SERIAL PRIMARY KEY,
    studio_id INTEGER NOT NULL REFERENCES studio(studio_id) ON DELETE RESTRICT,
@@ -148,16 +164,19 @@ CREATE TABLE studio_image (
    UNIQUE (studio_id, image_id)
 );
 
+-- ok
 CREATE TABLE station (
     station_id SERIAL PRIMARY KEY,
     station_name VARCHAR(256) NOT NULL
 );
 
+-- ok
 CREATE TABLE railway (
     railway_id SERIAL PRIMARY KEY,
     railway_name VARCHAR(128)
 );
 
+-- ok
 CREATE TABLE station_railway (
     station_railway_id SERIAL PRIMARY KEY,
     station_id INTEGER NOT NULL REFERENCES station(station_id) ON DELETE RESTRICT,
@@ -177,11 +196,13 @@ CREATE TABLE station_railway_line (
     UNIQUE (station_railway_id, line_id)
 );
 
+-- ok
 CREATE TABLE exit (
     exit_id SERIAL PRIMARY KEY,
     exit_name VARCHAR(128) NOT NULL
 );
 
+-- ok
 CREATE TABLE station_railway_exit (
     station_railway_exit_id SERIAL PRIMARY KEY,
     station_railway_id INTEGER NOT NULL REFERENCES station_railway(station_railway_id) ON DELETE RESTRICT,
@@ -211,6 +232,7 @@ CREATE TABLE studio_station_railway_exit (
 
 -- roomに関する情報
 
+-- ok
 CREATE TABLE room (
     room_id SERIAL PRIMARY KEY,
     studio_id INTEGER NOT NULL REFERENCES studio(studio_id) ON DELETE RESTRICT,
@@ -225,11 +247,13 @@ CREATE TABLE room (
     is_deleted BOOLEAN NOT NULL
 );
 
+-- ok
 CREATE TABLE floor_material (
     floor_material_id SERIAL PRIMARY KEY,
     floor_material_name VARCHAR(128) NOT NULL
 );
 
+-- ok
 CREATE TABLE room_floor_material (
     room_floor_material_id SERIAL PRIMARY KEY,
     room_id INTEGER NOT NULL REFERENCES room(room_id) ON DELETE RESTRICT,
@@ -241,10 +265,12 @@ CREATE TABLE room_floor_material (
     UNIQUE (room_id, floor_material_id)
 );
 
+-- ok
 CREATE TABLE room_facility (
     room_facility_id SERIAL PRIMARY KEY,
     room_id INTEGER NOT NULL REFERENCES room(room_id) ON DELETE RESTRICT,
     facility_id INTEGER NOT NULL REFERENCES facility(facility_id) ON DELETE RESTRICT,
+    room_facility_serial_number INTEGER NOT NULL,
     room_facility_count INTEGER,
     room_facility_price FLOAT,
     room_facility_unit_hour FLOAT,
@@ -255,6 +281,7 @@ CREATE TABLE room_facility (
     UNIQUE (room_id, facility_id)
 );
 
+-- ok
 CREATE TABLE room_image (
     room_image_id SERIAL PRIMARY KEY,
     room_id INTEGER NOT NULL REFERENCES room(room_id) ON DELETE RESTRICT,
@@ -273,49 +300,43 @@ CREATE TABLE room_image (
 
 -- slotに関する情報
 
-CREATE TABLE slot (
-    slot_id SERIAL PRIMARY KEY,
-    workload FLOAT NOT NULL,
-    time_begin TIME NOT NULL,
-    time_end TIME NOT NULL,
-    slot_base_price FLOAT NOT NULL,
-    slot_count INTEGER NOT NULL
-);
-
 CREATE TABLE day_template (
     day_template_id SERIAL PRIMARY KEY,
     day_template_name VARCHAR(128) NOT NULL
 );
 
-CREATE TABLE slot_day_template (
-    slot_day_template_id SERIAL PRIMARY KEY,
-    slot_id INTEGER NOT NULL REFERENCES slot(slot_id) ON DELETE RESTRICT,
+CREATE TABLE room_slot_day_template (
+    room_slot_day_template_id SERIAL PRIMARY KEY,
+    room_id INTEGER NOT NULL REFERENCES room(room_id) ON DELETE RESTRICT,
     day_template_id INTEGER NOT NULL REFERENCES day_template(day_template_id) ON DELETE RESTRICT,
+    time_begin TIME NOT NULL,
+    time_end TIME NOT NULL,
+    workload FLOAT NOT NULL,
+    slot_base_price FLOAT NOT NULL,
+    slot_count INTEGER NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     deleted_at TIMESTAMP,
     is_deleted BOOLEAN NOT NULL,
-    UNIQUE (slot_id, day_template_id)
-);
-
-CREATE TABLE date_slot (
-    date_slot_id SERIAL PRIMARY KEY,
-    date DATE NOT NULL,
-    slot_id INTEGER NOT NULL REFERENCES slot(slot_id) ON DELETE RESTRICT,
-    UNIQUE (date, slot_id)
+    UNIQUE (room_id, day_template_id, time_begin),
+    UNIQUE (room_id, day_template_id, time_end)
 );
 
 CREATE TABLE room_slot (
     room_slot_id SERIAL PRIMARY KEY,
     room_id INTEGER NOT NULL REFERENCES room(room_id) ON DELETE RESTRICT,
-    date_slot_id INTEGER NOT NULL REFERENCES date_slot(date_slot_id) ON DELETE RESTRICT,
-    remain_slot_count INTEGER NOT NULL,
+    date DATE NOT NULL,
+    time_begin TIME NOT NULL,
+    time_end TIME NOT NULL,
+    workload FLOAT NOT NULL,
     slot_price INTEGER NOT NULL,
+    remain_slot_count INTEGER NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     deleted_at TIMESTAMP,
     is_deleted BOOLEAN NOT NULL,
-    UNIQUE (room_id, date_slot_id)
+    UNIQUE (room_id, date, time_begin),
+    UNIQUE (room_id, date, time_end)
 );
 
 
