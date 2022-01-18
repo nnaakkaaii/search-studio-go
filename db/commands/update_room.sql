@@ -32,6 +32,13 @@ WHERE
     temp_room.studio_name = studio.studio_name
 ;
 
+DELETE
+FROM
+    temp_room
+WHERE
+    studio_id IS NULL
+;
+
 INSERT INTO room(
     studio_id,
     room_name,
@@ -58,10 +65,10 @@ FROM
 ON  CONFLICT(studio_id, room_name) DO
     UPDATE
     SET
-        reservation_url = temp_room.reservation_url,
-        min_reservable_people = temp_room.min_reservable_people,
-        max_reservable_people = temp_room.max_reservable_people,
-        floor_area = temp_room.floor_area,
+        reservation_url = excluded.reservation_url,
+        min_reservable_people = excluded.min_reservable_people,
+        max_reservable_people = excluded.max_reservable_people,
+        floor_area = excluded.floor_area,
         updated_at = now()
 ;
 
@@ -80,12 +87,12 @@ SELECT DISTINCT
     false
 FROM
     temp_room
-        INNER JOIN
-    room
+    INNER JOIN
+        room
     ON  room.studio_id = temp_room.studio_id
-        AND room.room_name = temp_room.room_name
-        INNER JOIN
-    floor_material
+    AND room.room_name = temp_room.room_name
+    INNER JOIN
+        floor_material
     ON  floor_material.floor_material_name = temp_room.floor_material_name
 ON  CONFLICT(room_id, floor_material_id) DO NOTHING
 ;

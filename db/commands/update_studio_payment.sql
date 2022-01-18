@@ -27,14 +27,28 @@ WHERE
     temp_studio_payment.studio_name = studio.studio_name
 ;
 
+DELETE
+FROM
+    temp_studio_payment
+WHERE
+    studio_id IS NULL
+;
+
 UPDATE
     temp_studio_payment
 SET
     payment_id = payment.payment_id
 FROM
-    temp_studio_payment
+    payment
 WHERE
     temp_studio_payment.payment_name = payment.payment_name
+;
+
+DELETE
+FROM
+    temp_studio_payment
+WHERE
+    payment_id IS NULL
 ;
 
 INSERT INTO studio_payment(
@@ -52,10 +66,7 @@ SELECT
     false
 FROM
     temp_studio_payment
-ON  CONFLICT(studio_id, payment_id) DO
-    UPDATE
-    SET
-        updated_at = now()
+ON  CONFLICT(studio_id, payment_id) DO NOTHING
 ;
 
 COMMIT

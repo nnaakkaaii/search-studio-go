@@ -27,6 +27,13 @@ WHERE
     temp_studio_image.studio_name = studio.studio_name
 ;
 
+DELETE
+FROM
+    temp_studio_image
+WHERE
+    studio_id IS NULL
+;
+
 INSERT INTO image(
     image_name,
     image_path,
@@ -42,10 +49,7 @@ SELECT
     false
 FROM
     temp_studio_image
-ON  CONFLICT(image_name, image_path) DO
-    UPDATE
-    SET
-        updated_at = now()
+ON  CONFLICT(image_name, image_path) DO NOTHING
 ;
 
 INSERT INTO studio_image(
@@ -57,10 +61,10 @@ SELECT DISTINCT
     image.image_id
 FROM
     temp_studio_image
-        INNER JOIN
-    image
+    INNER JOIN
+        image
     ON  image.image_name = temp_studio_image.image_name
-        AND image.image_path = temp_studio_image.image_path
+    AND image.image_path = temp_studio_image.image_path
 ON  CONFLICT(studio_id, image_id) DO NOTHING
 ;
 

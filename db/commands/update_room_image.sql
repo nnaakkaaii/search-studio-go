@@ -30,6 +30,13 @@ WHERE
     temp_room_image.studio_name = studio.studio_name
 ;
 
+DELETE
+FROM
+    temp_room_image
+WHERE
+    studio_id IS NULL
+;
+
 -- room_id
 UPDATE
     temp_room_image
@@ -39,7 +46,14 @@ FROM
     room
 WHERE
     temp_room_image.studio_id = room.studio_id
-    AND temp_room_image.room_name = room.room_name
+AND temp_room_image.room_name = room.room_name
+;
+
+DELETE
+FROM
+    temp_room_image
+WHERE
+    room_id IS NULL
 ;
 
 INSERT INTO image(
@@ -57,10 +71,7 @@ SELECT DISTINCT
     false
 FROM
     temp_room_image
-ON  CONFLICT(image_name, image_path) DO
-    UPDATE
-    SET
-        updated_at = now()
+ON  CONFLICT(image_name, image_path) DO NOTHING
 ;
 
 INSERT INTO room_image(
@@ -72,10 +83,10 @@ SELECT DISTINCT
     image.image_id
 FROM
     temp_room_image
-        INNER JOIN
-    image
+    INNER JOIN
+        image
     ON  image.image_name = temp_room_image.image_name
-        AND image.image_path = temp_room_image.image_path
+    AND image.image_path = temp_room_image.image_path
 ON  CONFLICT(room_id, image_id) DO NOTHING
 ;
 

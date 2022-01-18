@@ -31,6 +31,13 @@ WHERE
     temp_studio_station.studio_name = studio.studio_name
 ;
 
+DELETE
+FROM
+    temp_studio_station
+WHERE
+    studio_id IS NULL
+;
+
 UPDATE
     temp_studio_station
 SET
@@ -39,6 +46,13 @@ FROM
     station
 WHERE
     temp_studio_station.station_name = station.station_name
+;
+
+DELETE
+FROM
+    temp_studio_station
+WHERE
+    station_id IS NULL
 ;
 
 UPDATE
@@ -51,10 +65,17 @@ WHERE
     temp_studio_station.railway_name = railway.railway_name
 ;
 
+DELETE
+FROM
+    temp_studio_station
+WHERE
+    railway_id IS NULL
+;
+
 INSERT INTO exit(
     exit_name
 )
-SELECT
+SELECT DISTINCT
     exit_name
 FROM
     temp_studio_station
@@ -82,11 +103,12 @@ SELECT DISTINCT
     exit.exit_id
 FROM
     temp_studio_station
-        INNER JOIN
-    station_railway
+    INNER JOIN
+        station_railway
     ON  station_railway.station_id = temp_studio_station.station_id
-        AND station_railway.railway_id = temp_studio_station.railway_id
-    exit
+    AND station_railway.railway_id = temp_studio_station.railway_id
+    INNER JOIN
+        exit
     ON  exit.exit_name = temp_studio_station.exit_name
 ON  CONFLICT(station_railway_id, exit_id) DO NOTHING
 ;
@@ -108,15 +130,17 @@ SELECT DISTINCT
     false
 FROM
     temp_studio_station
-        INNER JOIN
-    station_railway
+    INNER JOIN
+        station_railway
     ON  station_railway.station_id = temp_studio_station.station_id
-        AND station_railway.railway_id = temp_studio_station.railway_id
-    exit
+    AND station_railway.railway_id = temp_studio_station.railway_id
+    INNER JOIN
+        exit
     ON  exit.exit_name = temp_studio_station.exit_name
-    station_railway_exit
+    INNER JOIN
+        station_railway_exit
     ON  station_railway_exit.station_railway_id = station_railway.station_railway_id
-        AND station_railway_exit.exit_id = exit.exit_id
+    AND station_railway_exit.exit_id = exit.exit_id
 ON  CONFLICT(studio_id, station_railway_exit_id) DO NOTHING
 ;
 

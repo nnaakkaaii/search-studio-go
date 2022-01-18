@@ -10,7 +10,7 @@ from django.db import models
 
 class Address(models.Model):
     address_id = models.AutoField(primary_key=True)
-    address_name = models.CharField(max_length=1024)
+    address_name = models.CharField(unique=True, max_length=1024)
     city = models.ForeignKey('City', models.DO_NOTHING)
 
     class Meta:
@@ -20,7 +20,7 @@ class Address(models.Model):
 
 class Amenity(models.Model):
     amenity_id = models.AutoField(primary_key=True)
-    amenity_name = models.CharField(max_length=128)
+    amenity_name = models.CharField(unique=True, max_length=128)
 
     class Meta:
         managed = False
@@ -35,11 +35,12 @@ class City(models.Model):
     class Meta:
         managed = False
         db_table = 'city'
+        unique_together = (('city_name', 'prefecture'),)
 
 
 class DayTemplate(models.Model):
     day_template_id = models.AutoField(primary_key=True)
-    day_template_name = models.CharField(max_length=128)
+    day_template_name = models.CharField(unique=True, max_length=128)
 
     class Meta:
         managed = False
@@ -48,7 +49,7 @@ class DayTemplate(models.Model):
 
 class Exit(models.Model):
     exit_id = models.AutoField(primary_key=True)
-    exit_name = models.CharField(max_length=128)
+    exit_name = models.CharField(unique=True, max_length=128)
 
     class Meta:
         managed = False
@@ -57,7 +58,7 @@ class Exit(models.Model):
 
 class Facility(models.Model):
     facility_id = models.AutoField(primary_key=True)
-    facility_name = models.CharField(max_length=128)
+    facility_name = models.CharField(unique=True, max_length=128)
 
     class Meta:
         managed = False
@@ -66,7 +67,7 @@ class Facility(models.Model):
 
 class FloorMaterial(models.Model):
     floor_material_id = models.AutoField(primary_key=True)
-    floor_material_name = models.CharField(max_length=128)
+    floor_material_name = models.CharField(unique=True, max_length=128)
 
     class Meta:
         managed = False
@@ -85,11 +86,12 @@ class Image(models.Model):
     class Meta:
         managed = False
         db_table = 'image'
+        unique_together = (('image_name', 'image_path'),)
 
 
 class Line(models.Model):
     line_id = models.AutoField(primary_key=True)
-    line_name = models.CharField(max_length=256)
+    line_name = models.CharField(unique=True, max_length=256)
 
     class Meta:
         managed = False
@@ -98,7 +100,7 @@ class Line(models.Model):
 
 class Payment(models.Model):
     payment_id = models.AutoField(primary_key=True)
-    payment_name = models.CharField(max_length=128)
+    payment_name = models.CharField(unique=True, max_length=128)
 
     class Meta:
         managed = False
@@ -107,7 +109,7 @@ class Payment(models.Model):
 
 class Prefecture(models.Model):
     prefecture_id = models.AutoField(primary_key=True)
-    prefecture_name = models.CharField(max_length=256)
+    prefecture_name = models.CharField(unique=True, max_length=256)
 
     class Meta:
         managed = False
@@ -116,7 +118,7 @@ class Prefecture(models.Model):
 
 class Railway(models.Model):
     railway_id = models.AutoField(primary_key=True)
-    railway_name = models.CharField(max_length=128, blank=True, null=True)
+    railway_name = models.CharField(unique=True, max_length=128, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -125,7 +127,7 @@ class Railway(models.Model):
 
 class Reservation(models.Model):
     reservation_id = models.AutoField(primary_key=True)
-    reservation_name = models.CharField(max_length=128)
+    reservation_name = models.CharField(unique=True, max_length=128)
 
     class Meta:
         managed = False
@@ -148,6 +150,7 @@ class Room(models.Model):
     class Meta:
         managed = False
         db_table = 'room'
+        unique_together = (('studio', 'room_name'),)
 
 
 class RoomFacility(models.Model):
@@ -155,6 +158,7 @@ class RoomFacility(models.Model):
     room = models.ForeignKey(Room, models.DO_NOTHING)
     facility = models.ForeignKey(Facility, models.DO_NOTHING)
     room_facility_serial_number = models.IntegerField()
+    room_facility_description = models.TextField(blank=True, null=True)
     room_facility_count = models.IntegerField(blank=True, null=True)
     room_facility_price = models.FloatField(blank=True, null=True)
     room_facility_unit_hour = models.FloatField(blank=True, null=True)
@@ -166,7 +170,7 @@ class RoomFacility(models.Model):
     class Meta:
         managed = False
         db_table = 'room_facility'
-        unique_together = (('room', 'facility'),)
+        unique_together = (('room', 'facility', 'room_facility_serial_number'),)
 
 
 class RoomFloorMaterial(models.Model):
@@ -238,7 +242,7 @@ class RoomSlotDayTemplate(models.Model):
 
 class Station(models.Model):
     station_id = models.AutoField(primary_key=True)
-    station_name = models.CharField(max_length=256)
+    station_name = models.CharField(unique=True, max_length=256)
 
     class Meta:
         managed = False
@@ -280,7 +284,7 @@ class StationRailwayLine(models.Model):
 
 class Studio(models.Model):
     studio_id = models.AutoField(primary_key=True)
-    studio_name = models.CharField(max_length=1024)
+    studio_name = models.CharField(unique=True, max_length=1024)
     introduction = models.TextField(blank=True, null=True)
     precaution = models.TextField(blank=True, null=True)
     homepage_url = models.CharField(max_length=1024, blank=True, null=True)
@@ -303,6 +307,7 @@ class StudioAmenity(models.Model):
     studio = models.ForeignKey(Studio, models.DO_NOTHING)
     amenity = models.ForeignKey(Amenity, models.DO_NOTHING)
     studio_amenity_serial_number = models.IntegerField()
+    studio_amenity_description = models.TextField(blank=True, null=True)
     studio_amenity_count = models.IntegerField(blank=True, null=True)
     studio_amenity_price = models.FloatField(blank=True, null=True)
     studio_amenity_unit_hour = models.FloatField(blank=True, null=True)
@@ -314,7 +319,7 @@ class StudioAmenity(models.Model):
     class Meta:
         managed = False
         db_table = 'studio_amenity'
-        unique_together = (('studio', 'amenity'),)
+        unique_together = (('studio', 'amenity', 'studio_amenity_serial_number'),)
 
 
 class StudioFacility(models.Model):
@@ -322,6 +327,7 @@ class StudioFacility(models.Model):
     studio = models.ForeignKey(Studio, models.DO_NOTHING)
     facility = models.ForeignKey(Facility, models.DO_NOTHING)
     studio_facility_serial_number = models.IntegerField()
+    studio_facility_description = models.TextField(blank=True, null=True)
     studio_facility_count = models.IntegerField(blank=True, null=True)
     studio_facility_price = models.FloatField(blank=True, null=True)
     studio_facility_unit_hour = models.FloatField(blank=True, null=True)
@@ -333,7 +339,7 @@ class StudioFacility(models.Model):
     class Meta:
         managed = False
         db_table = 'studio_facility'
-        unique_together = (('studio', 'facility'),)
+        unique_together = (('studio', 'facility', 'studio_facility_serial_number'),)
 
 
 class StudioImage(models.Model):

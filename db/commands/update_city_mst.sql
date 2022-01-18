@@ -15,6 +15,16 @@ COPY temp_city(prefecture_name, city_name)
     :path WITH ENCODING 'utf-8' CSV
 ;
 
+INSERT INTO prefecture(
+    prefecture_name
+)
+SELECT DISTINCT
+    prefecture_name
+FROM
+    temp_city
+ON  CONFLICT(prefecture_name) DO NOTHING
+;
+
 INSERT INTO city(
     city_name,
     prefecture_id
@@ -24,8 +34,8 @@ SELECT DISTINCT
     prefecture.prefecture_id
 FROM
     temp_city
-        INNER JOIN
-    prefecture
+    INNER JOIN
+        prefecture
     ON  prefecture.prefecture_name = temp_city.prefecture_name
 ON  CONFLICT(city_name, prefecture_id) DO NOTHING
 ;

@@ -33,6 +33,13 @@ WHERE
     temp_room_slot.studio_name = studio.studio_name
 ;
 
+DELETE
+FROM
+    temp_room_slot
+WHERE
+    studio_id IS NULL
+;
+
 UPDATE
     temp_room_slot
 SET
@@ -41,7 +48,14 @@ FROM
     room
 WHERE
     temp_room_slot.studio_id = room.studio_id
-    AND temp_room_slot.room_name = room.room_name
+AND temp_room_slot.room_name = room.room_name
+;
+
+DELETE
+FROM
+    temp_room_slot
+WHERE
+    room_id IS NULL
 ;
 
 INSERT INTO day_template(
@@ -79,15 +93,15 @@ SELECT
     false
 FROM
     temp_room_slot
-        INNER JOIN
-    day_template
-        ON day_template.day_template_name = temp_room_slot.day_template_name
-ON  CONFLICT(room_id, day_template_id, time_begin, time_end) DO
+    INNER JOIN
+        day_template
+    ON  day_template.day_template_name = temp_room_slot.day_template_name
+ON  CONFLICT(room_id, day_template_id, time_begin) DO
     UPDATE
     SET
-        workload = temp_room_slot.workload,
-        slot_base_price = temp_room_slot.slot_base_price,
-        slot_count = temp_room_slot.slot_count,
+        workload = excluded.workload,
+        slot_base_price = excluded.slot_base_price,
+        slot_count = excluded.slot_count,
         updated_at = now()
 ;
 

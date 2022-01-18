@@ -131,6 +131,7 @@ CREATE TABLE studio_amenity (
     studio_id INTEGER NOT NULL REFERENCES studio(studio_id) ON DELETE RESTRICT,
     amenity_id INTEGER NOT NULL REFERENCES amenity(amenity_id) ON DELETE RESTRICT,
     studio_amenity_serial_number INTEGER NOT NULL,
+    studio_amenity_description TEXT,
     studio_amenity_count INTEGER,
     studio_amenity_price FLOAT,
     studio_amenity_unit_hour FLOAT,
@@ -154,6 +155,7 @@ CREATE TABLE studio_facility (
     studio_id INTEGER NOT NULL REFERENCES studio(studio_id) ON DELETE RESTRICT,
     facility_id INTEGER NOT NULL REFERENCES facility(facility_id) ON DELETE RESTRICT,
     studio_facility_serial_number INTEGER NOT NULL,
+    studio_facility_description TEXT,
     studio_facility_count INTEGER,
     studio_facility_price FLOAT,
     studio_facility_unit_hour FLOAT,
@@ -197,7 +199,8 @@ CREATE TABLE station_railway (
 
 CREATE TABLE line (
     line_id SERIAL PRIMARY KEY,
-    line_name VARCHAR(256) NOT NULL
+    line_name VARCHAR(256) NOT NULL,
+    UNIQUE(line_name)
 );
 
 CREATE TABLE station_railway_line (
@@ -285,6 +288,7 @@ CREATE TABLE room_facility (
     room_id INTEGER NOT NULL REFERENCES room(room_id) ON DELETE RESTRICT,
     facility_id INTEGER NOT NULL REFERENCES facility(facility_id) ON DELETE RESTRICT,
     room_facility_serial_number INTEGER NOT NULL,
+    room_facility_description TEXT,
     room_facility_count INTEGER,
     room_facility_price FLOAT,
     room_facility_unit_hour FLOAT,

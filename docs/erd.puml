@@ -48,8 +48,8 @@ entity "Prefecture" as prefecture {
 entity "StudioStationRailwayExit" as studio_station_railway_exit {
     * スタジオ-駅-鉄道-出口紐付けID (studio_station_railway_exit_id) : integer
     --
-    * スタジオID (studio_id) : integer <<FK>>
-    * 駅-鉄道-出口紐付けID (station_railway_exit_id) : integer <<FK>>
+    + スタジオID (studio_id) : integer <<FK>>
+    + 駅-鉄道-出口紐付けID (station_railway_exit_id) : integer <<FK>>
     徒歩時間 (minutes_from_station) : integer
     * 作成日 (created_at) : datetime
     * 更新日 (updated_at) : datetime
@@ -92,14 +92,14 @@ entity "Railway" as railway {
 entity "StationRailwayLine" as station_railway_line {
     * 駅-鉄道-路線紐付けID (station_railway_line_id) : integer
     --
-    * 駅-鉄道紐付けID (station_railway_id) : integer <<FK>>
-    * 路線ID (line_id) : integer <<FK>>
+    + 駅-鉄道紐付けID (station_railway_id) : integer <<FK>>
+    + 路線ID (line_id) : integer <<FK>>
 }
 
 entity "Line" as line {
     * 路線ID (line_id) : integer
     --
-    * 路線名 (line_name) : varchar(256)
+    + 路線名 (line_name) : varchar(256)
 }
 
 entity "StudioImage" as studio_image {
@@ -188,6 +188,7 @@ entity "RoomFacility" as room_facility {
     + 部屋ID (room_id) : integer <<FK>>
     + 設備ID (facility_id) : integer <<FK>>
     + 部屋-設備通し番号 (room_facility_serial_number) : integer
+    部屋-設備説明 (room_facility_description) : text
     個数 (room_facility_count) : integer
     料金 (room_facility_price) : float
     単位時間(h) (room_facility_unit_hour) : float
@@ -220,6 +221,7 @@ entity "StudioAmenity" as studio_amenity {
     + スタジオID (studio_id) : integer <<FK>>
     + アメニティID (amenity_id) : integer <<FK>>
     + スタジオ-アメニティ通し番号 (studio_amenity_serial_number) : integer
+    + スタジオ-アメニティ説明 (studio_amenity_description) : text
     個数 (studio_amenity_count) : integer
     料金 (studio_amenity_price) : float
     単位時間(h) (studio_amenity_unit_hour) : float  /'「単位時間」だけ借りると「料金」が発生'/
@@ -241,6 +243,7 @@ entity "StudioFacility" as studio_facility {
     + スタジオID (studio_id) : integer <<FK>>
     + 設備ID (facility_id) : integer <<FK>>
     + スタジオ-設備通し番号 (studio_facility_serial_number) : integer
+    スタジオ-設備説明 (studio_facility_description) : text
     個数 (studio_facility_count) : integer
     料金 (studio_facility_price) : float
     単位時間(h) (studio_facility_unit_hour) : float  /'「単位時間」だけ借りると「料金」が発生'/

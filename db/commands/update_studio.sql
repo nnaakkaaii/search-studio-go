@@ -33,6 +33,13 @@ WHERE
     temp_studio.prefecture_name = prefecture.prefecture_name
 ;
 
+DELETE
+FROM
+    temp_studio
+WHERE
+    prefecture_id IS NULL
+;
+
 -- city_id
 UPDATE
     temp_studio
@@ -42,7 +49,14 @@ FROM
     city
 WHERE
     temp_studio.prefecture_id = city.prefecture_id
-    AND temp_studio.city_name = city.city_name
+AND temp_studio.city_name = city.city_name
+;
+
+DELETE
+FROM
+    temp_studio
+WHERE
+    city_id IS NULL
 ;
 
 INSERT INTO address(
@@ -57,7 +71,7 @@ FROM
 ON  CONFLICT(address_name) DO
     UPDATE
     SET
-        city_id = temp_studio.city_id
+        city_id = excluded.city_id
 ;
 
 INSERT INTO studio(
@@ -83,17 +97,17 @@ SELECT DISTINCT
     false
 FROM
     temp_studio
-        INNER JOIN
-    address
+    INNER JOIN
+        address
     ON  address.address_name = temp_studio.address_name
 ON  CONFLICT(studio_name) DO
     UPDATE
     SET
-        homepage_url = temp_studio.homepage_url,
-        contact = temp_studio.contact,
-        address_id = address.address_id,
-        rent_by_min_hours = temp_studio.rent_by_min_hours,
-        can_free_cancel = temp_studio.can_free_cancel
+        homepage_url = excluded.homepage_url,
+        contact = excluded.contact,
+        address_id = excluded.address_id,
+        rent_by_min_hours = excluded.rent_by_min_hours,
+        can_free_cancel = excluded.can_free_cancel
 ;
 
 COMMIT

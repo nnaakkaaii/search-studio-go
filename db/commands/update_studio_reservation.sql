@@ -27,6 +27,13 @@ WHERE
     temp_studio_reservation.studio_name = studio.studio_name
 ;
 
+DELETE
+FROM
+    temp_studio_reservation
+WHERE
+    studio_id IS NULL
+;
+
 UPDATE
     temp_studio_reservation
 SET
@@ -35,6 +42,13 @@ FROM
     reservation
 WHERE
     temp_studio_reservation.reservation_name = reservation.reservation_name
+;
+
+DELETE
+FROM
+    temp_studio_reservation
+WHERE
+    reservation_id IS NULL
 ;
 
 INSERT INTO studio_reservation(
@@ -52,10 +66,7 @@ SELECT
     false
 FROM
     temp_studio_reservation
-ON  CONFLICT(studio_id, reservation_id) DO
-    UPDATE
-    SET
-        updated_at = now()
+ON  CONFLICT(studio_id, reservation_id) DO NOTHING
 ;
 
 COMMIT

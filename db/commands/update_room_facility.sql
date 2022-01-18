@@ -12,15 +12,25 @@ CREATE TEMP TABLE temp_room_facility(
     facility_id INTEGER,
     facility_name VARCHAR,
     room_facility_serial_number INTEGER,
+    room_facility_description TEXT,
     room_facility_count INTEGER,
     room_facility_price FLOAT,
     room_facility_unit_hour FLOAT
 )
 ;
 
-COPY temp_room_facility(studio_name, room_name, facility_name, room_facility_serial_number, room_facility_count, room_facility_price, room_facility_unit_hour)
+COPY temp_room_facility(studio_name, room_name, facility_name, room_facility_serial_number, room_facility_description, room_facility_count, room_facility_price, room_facility_unit_hour)
     FROM
     :path WITH ENCODING 'utf-8' CSV HEADER
+;
+
+DELETE
+FROM
+    temp_room_facility
+WHERE
+    studio_name IS NULL
+OR  room_name IS NULL
+OR  facility_name IS NULL
 ;
 
 UPDATE
@@ -33,6 +43,13 @@ WHERE
     temp_room_facility.studio_name = studio.studio_name
 ;
 
+DELETE
+FROM
+    temp_room_facility
+WHERE
+    studio_id IS NULL
+;
+
 UPDATE
     temp_room_facility
 SET
@@ -41,7 +58,14 @@ FROM
     room
 WHERE
     temp_room_facility.studio_id = room.studio_id
-    AND temp_room_facility.room_name = room.room_name
+AND temp_room_facility.room_name = room.room_name
+;
+
+DELETE
+FROM
+    temp_room_facility
+WHERE
+    room_id IS NULL
 ;
 
 UPDATE
@@ -54,10 +78,18 @@ WHERE
     temp_room_facility.facility_name = facility.facility_name
 ;
 
+DELETE
+FROM
+    temp_room_facility
+WHERE
+    facility_id IS NULL
+;
+
 INSERT INTO room_facility(
     room_id,
     facility_id,
     room_facility_serial_number,
+    room_facility_description,
     room_facility_count,
     room_facility_price,
     room_facility_unit_hour,
@@ -69,6 +101,7 @@ SELECT
     room_id,
     facility_id,
     room_facility_serial_number,
+    room_facility_description,
     room_facility_count,
     room_facility_price,
     room_facility_unit_hour,
@@ -77,12 +110,16 @@ SELECT
     false
 FROM
     temp_room_facility
+WHERE
+    room_id IS NOT NULL
+AND facility_id IS NOT NULL
 ON  CONFLICT(room_id, facility_id, room_facility_serial_number) DO
     UPDATE
     SET
-        room_facility_count = temp_room_facility.room_facility_count,
-        room_facility_price = temp_room_facility.room_facility_price,
-        room_facility_unit_hour = temp_room_facility.room_facility_unit_hour,
+        room_facility_description = excluded.room_facility_description,
+        room_facility_count = excluded.room_facility_count,
+        room_facility_price = excluded.room_facility_price,
+        room_facility_unit_hour = excluded.room_facility_unit_hour,
         updated_at = now()
 ;
 

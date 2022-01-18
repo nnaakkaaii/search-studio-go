@@ -1,4 +1,4 @@
--- psql -U root -d studio < "/commands/update_payment_mst.sql" -v path="'/data/studio - 支払い一覧.csv'"
+-- psql -U root -d studio < "/commands/update_payment_mst.sql" -v path="'/data/studio - 支払い方法一覧.csv'"
 
 BEGIN
 ;
