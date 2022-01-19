@@ -348,7 +348,7 @@ CREATE TABLE room_slot (
     time_begin TIME NOT NULL,
     time_end TIME NOT NULL,
     workload FLOAT NOT NULL,
-    slot_price INTEGER NOT NULL,
+    slot_price FLOAT NOT NULL,
     remain_slot_count INTEGER NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP,

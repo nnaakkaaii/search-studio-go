@@ -207,7 +207,7 @@ class RoomSlot(models.Model):
     time_begin = models.TimeField()
     time_end = models.TimeField()
     workload = models.FloatField()
-    slot_price = models.IntegerField()
+    slot_price = models.FloatField()
     remain_slot_count = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True)

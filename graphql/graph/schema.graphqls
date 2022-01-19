@@ -1,4 +1,6 @@
 scalar DateTime
+scalar Date
+scalar Time
 type Query {
     getStudioByID(studio_id: Int!): Studio
     getStudios(studio_names: [String!], prefecture_ids: [Int!], city_ids: [Int!]): [Studio!]
@@ -33,6 +35,8 @@ type Studio {
     studio_images: [StudioImage!]
     getStudioStationRailwayExits(station_ids: [Int!], railway_ids: [Int!], max_minutes_from_station: Int): [StudioStationRailwayExit!]  # id検索
     studio_station_railway_exits: [StudioStationRailwayExit!]
+    rooms: [Room!]
+    getRooms(room_names: [String!], min_reserve_people: Int, max_reserve_people: Int, min_floor_area: Float): [Room!]
     created_at: DateTime!
     updated_at: DateTime
 }
@@ -94,4 +98,59 @@ type StudioStationRailwayExit {
     minutes_from_station: Int
     created_at: DateTime!
     updated_at: DateTime
+}
+type Room {
+    room_id: Int!
+    room_name: String!
+    reservation_url: String
+    min_reservable_people: Int
+    max_reservable_people: Int
+    floor_area: Float
+    created_at: DateTime!
+    updated_at: DateTime
+    room_slots: [RoomSlot!]
+    getRoomSlots(dates: [Date!], time_begin: Time, time_end: Time, min_slot_price: Float, min_remain_slot_count: Int): [RoomSlot!]
+    room_floor_materials: [RoomFloorMaterial!]
+    getRoomFloorMaterials(floor_material_names: [String!]): [RoomFloorMaterial!]
+    room_facilities: [RoomFacility!]
+    getRoomFacilities(facility_names: [String!]): [RoomFacility!]
+    room_images: [RoomImage!]
+}
+type RoomSlot {
+    room_slot_id: Int!
+    date: Date!
+    time_begin: Time!
+    time_end: Time!
+    workload: Float!
+    slot_price: Float!
+    remain_slot_count: Int!
+    created_at: DateTime!
+    updated_at: DateTime
+}
+type RoomFloorMaterial {
+    room_floor_material_id: Int!
+    floor_material_id: Int!
+    floor_material_name: String!
+    created_at: DateTime!
+    updated_at: DateTime
+}
+type RoomFacility {
+    room_facility_id: Int!
+    facility_id: Int!
+    facility_name: String!
+    room_facility_description: String
+    room_facility_count: Int
+    room_facility_price: Float
+    room_facility_unit_hour: Float
+    created_at: DateTime!
+    updated_at: DateTime
+}
+type RoomImage {
+    room_image_id: Int!
+    image_id: Int!
+    image_name: String!
+    image_path: String!
+    created_at: DateTime!
+    updated_at: DateTime
+    description: String
 }

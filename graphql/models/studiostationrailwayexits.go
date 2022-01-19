@@ -2,15 +2,7 @@ package models
 
 import (
 	"context"
-	"fmt"
 )
-
-func maxInt2Query(key string, value *int) string {
-	if value == nil {
-		return ``
-	}
-	return fmt.Sprintf(`AND %s < %d `, key, *value)
-}
 
 // StudioStationRailwayExitsByStudioIDByQueries runs a custom query, returning results as StudioStationRailwayExits.
 func StudioStationRailwayExitsByStudioIDByQueries(ctx context.Context, db DB, studioID int, stationIds []int, railwayIds []int, maxMinutesFromStation *int) ([]*StudioStationRailwayExits, error) {

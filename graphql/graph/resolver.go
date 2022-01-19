@@ -18,7 +18,8 @@ type Resolver struct{}
 
 var db *sql.DB
 
-const datetime = "2006-01-02 15:04:05"
+const dateFormat = "2006-01-02"
+const datetimeFormat = "2006-01-02 15:04:05"
 
 func init() {
 	conn, err := sql.Open("postgres", "host=db port=5432 user=root password=postgres dbname=studio sslmode=disable")
@@ -29,7 +30,11 @@ func init() {
 }
 
 func toDt(d time.Time) string {
-	return d.Format(datetime)
+	return d.Format(datetimeFormat)
+}
+
+func toD(d time.Time) string {
+	return d.Format(dateFormat)
 }
 
 func toPtrDt(d *time.Time) *string {
@@ -37,6 +42,14 @@ func toPtrDt(d *time.Time) *string {
 		return nil
 	}
 	tmp := toDt(*d)
+	return &tmp
+}
+
+func toPtrD(d *time.Time) *string {
+	if d == nil {
+		return nil
+	}
+	tmp := toD(*d)
 	return &tmp
 }
 
@@ -95,6 +108,164 @@ func (r *Resolver) getStudios(ctx context.Context, studioNames []string, prefect
 			CanFreeCancel:  v.CanFreeCancel,
 			CreatedAt:      toDt(v.CreatedAt),
 			UpdatedAt:      toPtrDt(v.UpdatedAt),
+		})
+	}
+	return resp, nil
+}
+
+func (r *Resolver) roomSlots(ctx context.Context, obj *model.Room) ([]*model.RoomSlot, error) {
+	roomID := obj.RoomID
+	rs, err := models.RoomSlotsByRoomID(ctx, db, roomID)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make([]*model.RoomSlot, 0, len(rs))
+	for _, v := range rs {
+		resp = append(resp, &model.RoomSlot{
+			RoomSlotID:      v.RoomSlotID,
+			Date:            toD(v.Date),
+			TimeBegin:       v.TimeBegin,
+			TimeEnd:         v.TimeEnd,
+			Workload:        v.Workload,
+			SlotPrice:       v.SlotPrice,
+			RemainSlotCount: v.RemainSlotCount,
+			CreatedAt:       toDt(v.CreatedAt),
+			UpdatedAt:       toPtrDt(v.UpdatedAt),
+		})
+	}
+	return resp, nil
+}
+
+func (r *Resolver) getRoomSlots(ctx context.Context, obj *model.Room, dates []string, timeBegin *time.Time, timeEnd *time.Time, minSlotPrice *float64, minRemainSlotCount *int) ([]*model.RoomSlot, error) {
+	roomID := obj.RoomID
+	rs, err := models.RoomSlotsByRoomIDByQueries(ctx, db, roomID, dates, timeBegin, timeEnd, minSlotPrice, minRemainSlotCount)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make([]*model.RoomSlot, 0, len(rs))
+	for _, v := range rs {
+		resp = append(resp, &model.RoomSlot{
+			RoomSlotID:      v.RoomSlotID,
+			Date:            toD(v.Date),
+			TimeBegin:       v.TimeBegin,
+			TimeEnd:         v.TimeEnd,
+			Workload:        v.Workload,
+			SlotPrice:       v.SlotPrice,
+			RemainSlotCount: v.RemainSlotCount,
+			CreatedAt:       toDt(v.CreatedAt),
+			UpdatedAt:       toPtrDt(v.UpdatedAt),
+		})
+	}
+	return resp, nil
+}
+
+func (r *Resolver) roomFloorMaterials(ctx context.Context, obj *model.Room) ([]*model.RoomFloorMaterial, error) {
+	roomID := obj.RoomID
+	rfm, err := models.RoomFloorMaterialsByRoomID(ctx, db, roomID)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make([]*model.RoomFloorMaterial, 0, len(rfm))
+	for _, v := range rfm {
+		resp = append(resp, &model.RoomFloorMaterial{
+			RoomFloorMaterialID: v.RoomFloorMaterialID,
+			FloorMaterialID:     v.FloorMaterialID,
+			FloorMaterialName:   v.FloorMaterialName,
+			CreatedAt:           toDt(v.CreatedAt),
+			UpdatedAt:           toPtrDt(v.UpdatedAt),
+		})
+	}
+	return resp, nil
+}
+
+func (r *Resolver) getRoomFloorMaterials(ctx context.Context, obj *model.Room, floorMaterialNames []string) ([]*model.RoomFloorMaterial, error) {
+	roomID := obj.RoomID
+	rfm, err := models.RoomFloorMaterialsByRoomIDByQueries(ctx, db, roomID, floorMaterialNames)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make([]*model.RoomFloorMaterial, 0, len(rfm))
+	for _, v := range rfm {
+		resp = append(resp, &model.RoomFloorMaterial{
+			RoomFloorMaterialID: v.RoomFloorMaterialID,
+			FloorMaterialID:     v.FloorMaterialID,
+			FloorMaterialName:   v.FloorMaterialName,
+			CreatedAt:           toDt(v.CreatedAt),
+			UpdatedAt:           toPtrDt(v.UpdatedAt),
+		})
+	}
+	return resp, nil
+}
+
+func (r *Resolver) roomFacilities(ctx context.Context, obj *model.Room) ([]*model.RoomFacility, error) {
+	roomID := obj.RoomID
+	rf, err := models.RoomFacilitiesByRoomID(ctx, db, roomID)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make([]*model.RoomFacility, 0, len(rf))
+	for _, v := range rf {
+		resp = append(resp, &model.RoomFacility{
+			RoomFacilityID:          v.RoomFacilityID,
+			FacilityID:              v.FacilityID,
+			FacilityName:            v.FacilityName,
+			RoomFacilityDescription: v.RoomFacilityDescription,
+			RoomFacilityCount:       v.RoomFacilityCount,
+			RoomFacilityPrice:       v.RoomFacilityPrice,
+			RoomFacilityUnitHour:    v.RoomFacilityUnitHour,
+			CreatedAt:               toDt(v.CreatedAt),
+			UpdatedAt:               toPtrDt(v.UpdatedAt),
+		})
+	}
+	return resp, nil
+}
+
+func (r *Resolver) getRoomFacilities(ctx context.Context, obj *model.Room, facilityNames []string) ([]*model.RoomFacility, error) {
+	roomID := obj.RoomID
+	rf, err := models.RoomFacilitiesByRoomIDByQueries(ctx, db, roomID, facilityNames)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make([]*model.RoomFacility, 0, len(rf))
+	for _, v := range rf {
+		resp = append(resp, &model.RoomFacility{
+			RoomFacilityID:          v.RoomFacilityID,
+			FacilityID:              v.FacilityID,
+			FacilityName:            v.FacilityName,
+			RoomFacilityDescription: v.RoomFacilityDescription,
+			RoomFacilityCount:       v.RoomFacilityCount,
+			RoomFacilityPrice:       v.RoomFacilityPrice,
+			RoomFacilityUnitHour:    v.RoomFacilityUnitHour,
+			CreatedAt:               toDt(v.CreatedAt),
+			UpdatedAt:               toPtrDt(v.UpdatedAt),
+		})
+	}
+	return resp, nil
+}
+
+func (r *Resolver) roomImages(ctx context.Context, obj *model.Room) ([]*model.RoomImage, error) {
+	roomID := obj.RoomID
+	ri, err := models.RoomImagesByRoomID(ctx, db, roomID)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make([]*model.RoomImage, 0, len(ri))
+	for _, v := range ri {
+		resp = append(resp, &model.RoomImage{
+			RoomImageID: v.RoomImageID,
+			ImageID:     v.ImageID,
+			ImageName:   v.ImageName,
+			ImagePath:   v.ImagePath,
+			CreatedAt:   toDt(v.CreatedAt),
+			UpdatedAt:   toPtrDt(v.UpdatedAt),
+			Description: v.Description,
 		})
 	}
 	return resp, nil
@@ -294,7 +465,7 @@ func (r *Resolver) studioImages(ctx context.Context, obj *model.Studio) ([]*mode
 	return resp, nil
 }
 
-func (v *Resolver) studioStationRailwayExits(ctx context.Context, obj *model.Studio) ([]*model.StudioStationRailwayExit, error) {
+func (r *Resolver) studioStationRailwayExits(ctx context.Context, obj *model.Studio) ([]*model.StudioStationRailwayExit, error) {
 	studioID := obj.StudioID
 	ssre, err := models.StudioStationRailwayExitsByStudioID(ctx, db, studioID)
 	if err != nil {
@@ -321,7 +492,7 @@ func (v *Resolver) studioStationRailwayExits(ctx context.Context, obj *model.Stu
 	return resp, nil
 }
 
-func (v *Resolver) getStudioStationRailwayExits(ctx context.Context, obj *model.Studio, stationIds []int, railwayIds []int, maxMinutesFromStation *int) ([]*model.StudioStationRailwayExit, error) {
+func (r *Resolver) getStudioStationRailwayExits(ctx context.Context, obj *model.Studio, stationIds []int, railwayIds []int, maxMinutesFromStation *int) ([]*model.StudioStationRailwayExit, error) {
 	studioID := obj.StudioID
 	ssre, err := models.StudioStationRailwayExitsByStudioIDByQueries(ctx, db, studioID, stationIds, railwayIds, maxMinutesFromStation)
 	if err != nil {
@@ -343,6 +514,52 @@ func (v *Resolver) getStudioStationRailwayExits(ctx context.Context, obj *model.
 			MinutesFromStation:         v.MinutesFromStation,
 			CreatedAt:                  toDt(v.CreatedAt),
 			UpdatedAt:                  toPtrDt(v.UpdatedAt),
+		})
+	}
+	return resp, nil
+}
+
+func (r *Resolver) rooms(ctx context.Context, obj *model.Studio) ([]*model.Room, error) {
+	studioID := obj.StudioID
+	rs, err := models.RoomsByStudioID(ctx, db, studioID)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make([]*model.Room, 0, len(rs))
+	for _, v := range rs {
+		resp = append(resp, &model.Room{
+			RoomID:               v.RoomID,
+			RoomName:             v.RoomName,
+			ReservationURL:       v.ReservationURL,
+			MinReservablePeople:  v.MinReservablePeople,
+			MaxReservablePeople:  v.MaxReservablePeople,
+			FloorArea:            v.FloorArea,
+			CreatedAt:            toDt(v.CreatedAt),
+			UpdatedAt:            toPtrDt(v.UpdatedAt),
+		})
+	}
+	return resp, nil
+}
+
+func (r *Resolver) getRooms(ctx context.Context, obj *model.Studio, roomNames []string, minReservePeople *int, maxReservePeople *int, minFloorArea *float64) ([]*model.Room, error) {
+	studioID := obj.StudioID
+	rs, err := models.RoomsByStudioIDByQueries(ctx, db, studioID, roomNames, minReservePeople, maxReservePeople, minFloorArea)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make([]*model.Room, 0, len(rs))
+	for _, v := range rs {
+		resp = append(resp, &model.Room{
+			RoomID:               v.RoomID,
+			RoomName:             v.RoomName,
+			ReservationURL:       v.ReservationURL,
+			MinReservablePeople:  v.MinReservablePeople,
+			MaxReservablePeople:  v.MaxReservablePeople,
+			FloorArea:            v.FloorArea,
+			CreatedAt:            toDt(v.CreatedAt),
+			UpdatedAt:            toPtrDt(v.UpdatedAt),
 		})
 	}
 	return resp, nil

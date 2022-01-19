@@ -72,6 +72,7 @@ SELECT
     sf.studio_facility_id,
     sf.facility_id,
     f.facility_name,
+    sf.studio_facility_description,
     sf.studio_facility_count,
     sf.studio_facility_price,
     sf.studio_facility_unit_hour,
@@ -93,6 +94,7 @@ SELECT
     sa.studio_amenity_id,
     sa.amenity_id,
     a.amenity_name,
+    sa.studio_amenity_description,
     sa.studio_amenity_count,
     sa.studio_amenity_price,
     sa.studio_amenity_unit_hour,
@@ -195,5 +197,103 @@ WHERE
 AND ssre.is_deleted IS FALSE
 ;
 ENDSQL
+
+~/go/bin/xo query 'postgresql://root:postgres@127.0.0.1:5432/studio?sslmode=disable' -M -B -T Rooms -o models/ <<ENDSQL
+SELECT
+    room_id,
+    room_name,
+    reservation_url,
+    min_reservable_people,
+    max_reservable_people,
+    floor_area,
+    created_at,
+    updated_at
+FROM
+    room
+WHERE
+    studio_id = %%studioID int%%
+AND is_deleted IS FALSE
+;
+ENDSQL
+
+~/go/bin/xo query 'postgresql://root:postgres@127.0.0.1:5432/studio?sslmode=disable' -M -B -T RoomSlots -o models/ <<ENDSQL
+SELECT
+    room_slot_id,
+    date,
+    time_begin,
+    time_end,
+    workload,
+    slot_price,
+    remain_slot_count,
+    created_at,
+    updated_at
+FROM
+    room_slot
+WHERE
+    room_id = %%roomID int%%
+AND is_deleted IS FALSE
+;
+ENDSQL
+
+~/go/bin/xo query 'postgresql://root:postgres@127.0.0.1:5432/studio?sslmode=disable' -M -B -T RoomFloorMaterials -o models/ <<ENDSQL
+SELECT
+    rfm.room_floor_material_id,
+    rfm.floor_material_id,
+    fm.floor_material_name,
+    rfm.created_at,
+    rfm.updated_at
+FROM
+    room_floor_material AS rfm
+    LEFT JOIN
+        floor_material AS fm
+    ON  rfm.floor_material_id = fm.floor_material_id
+WHERE
+    rfm.room_id = %%roomID int%%
+AND rfm.is_deleted IS FALSE
+;
+ENDSQL
+
+~/go/bin/xo query 'postgresql://root:postgres@127.0.0.1:5432/studio?sslmode=disable' -M -B -T RoomFacilities -o models/ <<ENDSQL
+SELECT
+    rf.room_facility_id,
+    rf.facility_id,
+    f.facility_name,
+    rf.room_facility_description,
+    rf.room_facility_count,
+    rf.room_facility_price,
+    rf.room_facility_unit_hour,
+    rf.created_at,
+    rf.updated_at
+FROM
+    room_facility AS rf
+    LEFT JOIN
+        facility AS f
+    ON  rf.facility_id = f.facility_id
+WHERE
+    rf.room_id = %%roomID int%%
+AND rf.is_deleted IS FALSE
+;
+ENDSQL
+
+~/go/bin/xo query 'postgresql://root:postgres@127.0.0.1:5432/studio?sslmode=disable' -M -B -T RoomImages -o models/ <<ENDSQL
+SELECT
+    ri.room_image_id,
+    ri.image_id,
+    i.image_name,
+    i.image_path,
+    i.created_at,
+    i.updated_at,
+    ri.description
+FROM
+    room_image AS ri
+        LEFT JOIN
+    Image AS i
+    ON  ri.image_id = i.image_id
+WHERE
+    ri.room_id = %%roomID int%%
+AND i.is_deleted IS FALSE
+;
+ENDSQL
+
 
 python3 ./preprocess/preprocess_xo.py

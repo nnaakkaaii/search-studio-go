@@ -78,3 +78,23 @@ models:
         resolver: true
       getStudioStationRailwayExits:
         resolver: true
+      rooms:
+        resolver: true
+      getRooms:
+        resolver: true
+  Room:
+    fields:
+      room_slots:
+        resolver: true
+      getRoomSlots:
+        resolver: true
+      room_floor_materials:
+        resolver: true
+      getRoomFloorMaterials:
+        resolver: true
+      room_facilities:
+        resolver: true
+      getRoomFacilities:
+        resolver: true
+      room_images:
+        resolver: true

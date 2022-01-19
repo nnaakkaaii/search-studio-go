@@ -9,14 +9,15 @@ import (
 
 // StudioFacilities represents a row from 'public.studio_facilities'.
 type StudioFacilities struct {
-	StudioFacilityID       int        `json:"studio_facility_id"`        // studio_facility_id
-	FacilityID             int        `json:"facility_id"`               // facility_id
-	FacilityName           string     `json:"facility_name"`             // facility_name
-	StudioFacilityCount    *int       `json:"studio_facility_count"`     // studio_facility_count
-	StudioFacilityPrice    *float64   `json:"studio_facility_price"`     // studio_facility_price
-	StudioFacilityUnitHour *float64   `json:"studio_facility_unit_hour"` // studio_facility_unit_hour
-	CreatedAt              time.Time  `json:"created_at"`                // created_at
-	UpdatedAt              *time.Time `json:"updated_at"`                // updated_at
+	StudioFacilityID          int        `json:"studio_facility_id"`          // studio_facility_id
+	FacilityID                int        `json:"facility_id"`                 // facility_id
+	FacilityName              string     `json:"facility_name"`               // facility_name
+	StudioFacilityDescription *string    `json:"studio_facility_description"` // studio_facility_description
+	StudioFacilityCount       *int       `json:"studio_facility_count"`       // studio_facility_count
+	StudioFacilityPrice       *float64   `json:"studio_facility_price"`       // studio_facility_price
+	StudioFacilityUnitHour    *float64   `json:"studio_facility_unit_hour"`   // studio_facility_unit_hour
+	CreatedAt                 time.Time  `json:"created_at"`                  // created_at
+	UpdatedAt                 *time.Time `json:"updated_at"`                  // updated_at
 }
 
 // StudioFacilitiesByStudioID runs a custom query, returning results as StudioFacilities.
@@ -26,6 +27,7 @@ func StudioFacilitiesByStudioID(ctx context.Context, db DB, studioID int) ([]*St
 		`sf.studio_facility_id, ` +
 		`sf.facility_id, ` +
 		`f.facility_name, ` +
+		`sf.studio_facility_description, ` +
 		`sf.studio_facility_count, ` +
 		`sf.studio_facility_price, ` +
 		`sf.studio_facility_unit_hour, ` +
@@ -52,7 +54,7 @@ func StudioFacilitiesByStudioID(ctx context.Context, db DB, studioID int) ([]*St
 	for rows.Next() {
 		var sf StudioFacilities
 		// scan
-		if err := rows.Scan(&sf.StudioFacilityID, &sf.FacilityID, &sf.FacilityName, &sf.StudioFacilityCount, &sf.StudioFacilityPrice, &sf.StudioFacilityUnitHour, &sf.CreatedAt, &sf.UpdatedAt); err != nil {
+		if err := rows.Scan(&sf.StudioFacilityID, &sf.FacilityID, &sf.FacilityName, &sf.StudioFacilityDescription, &sf.StudioFacilityCount, &sf.StudioFacilityPrice, &sf.StudioFacilityUnitHour, &sf.CreatedAt, &sf.UpdatedAt); err != nil {
 			return nil, logerror(err)
 		}
 		res = append(res, &sf)

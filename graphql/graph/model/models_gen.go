@@ -2,6 +2,70 @@
 
 package model
 
+import (
+	"time"
+)
+
+type Room struct {
+	RoomID                int                  `json:"room_id"`
+	RoomName              string               `json:"room_name"`
+	ReservationURL        *string              `json:"reservation_url"`
+	MinReservablePeople   *int                 `json:"min_reservable_people"`
+	MaxReservablePeople   *int                 `json:"max_reservable_people"`
+	FloorArea             *float64             `json:"floor_area"`
+	CreatedAt             string               `json:"created_at"`
+	UpdatedAt             *string              `json:"updated_at"`
+	RoomSlots             []*RoomSlot          `json:"room_slots"`
+	GetRoomSlots          []*RoomSlot          `json:"getRoomSlots"`
+	RoomFloorMaterials    []*RoomFloorMaterial `json:"room_floor_materials"`
+	GetRoomFloorMaterials []*RoomFloorMaterial `json:"getRoomFloorMaterials"`
+	RoomFacilities        []*RoomFacility      `json:"room_facilities"`
+	GetRoomFacilities     []*RoomFacility      `json:"getRoomFacilities"`
+	RoomImages            []*RoomImage         `json:"room_images"`
+}
+
+type RoomFacility struct {
+	RoomFacilityID          int      `json:"room_facility_id"`
+	FacilityID              int      `json:"facility_id"`
+	FacilityName            string   `json:"facility_name"`
+	RoomFacilityDescription *string  `json:"room_facility_description"`
+	RoomFacilityCount       *int     `json:"room_facility_count"`
+	RoomFacilityPrice       *float64 `json:"room_facility_price"`
+	RoomFacilityUnitHour    *float64 `json:"room_facility_unit_hour"`
+	CreatedAt               string   `json:"created_at"`
+	UpdatedAt               *string  `json:"updated_at"`
+}
+
+type RoomFloorMaterial struct {
+	RoomFloorMaterialID int     `json:"room_floor_material_id"`
+	FloorMaterialID     int     `json:"floor_material_id"`
+	FloorMaterialName   string  `json:"floor_material_name"`
+	CreatedAt           string  `json:"created_at"`
+	UpdatedAt           *string `json:"updated_at"`
+}
+
+type RoomImage struct {
+	RoomImageID int     `json:"room_image_id"`
+	ImageID     int     `json:"image_id"`
+	ImageName   string  `json:"image_name"`
+	ImagePath   string  `json:"image_path"`
+	CreatedAt   string  `json:"created_at"`
+	UpdatedAt   *string `json:"updated_at"`
+	Description *string `json:"description"`
+}
+
+type RoomSlot struct {
+	RoomSlotID      int       `json:"room_slot_id"`
+	Date            string    `json:"date"`
+	TimeBegin       time.Time `json:"time_begin"`
+	TimeEnd         time.Time `json:"time_end"`
+	Workload        float64   `json:"workload"`
+	SlotPrice       float64   `json:"slot_price"`
+	RemainSlotCount int       `json:"remain_slot_count"`
+	CreatedAt       string    `json:"created_at"`
+	UpdatedAt       *string   `json:"updated_at"`
+}
+
 type Studio struct {
 	StudioID                     int                         `json:"studio_id"`
 	StudioName                   string                      `json:"studio_name"`
@@ -28,6 +92,8 @@ type Studio struct {
 	StudioImages                 []*StudioImage              `json:"studio_images"`
 	GetStudioStationRailwayExits []*StudioStationRailwayExit `json:"getStudioStationRailwayExits"`
 	StudioStationRailwayExits    []*StudioStationRailwayExit `json:"studio_station_railway_exits"`
+	Rooms                        []*Room                     `json:"rooms"`
+	GetRooms                     []*Room                     `json:"getRooms"`
 	CreatedAt                    string                      `json:"created_at"`
 	UpdatedAt                    *string                     `json:"updated_at"`
 }

@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -36,6 +37,7 @@ type Config struct {
 
 type ResolverRoot interface {
 	Query() QueryResolver
+	Room() RoomResolver
 	Studio() StudioResolver
 }
 
@@ -48,6 +50,66 @@ type ComplexityRoot struct {
 		GetStudios    func(childComplexity int, studioNames []string, prefectureIds []int, cityIds []int) int
 	}
 
+	Room struct {
+		CreatedAt             func(childComplexity int) int
+		FloorArea             func(childComplexity int) int
+		GetRoomFacilities     func(childComplexity int, facilityNames []string) int
+		GetRoomFloorMaterials func(childComplexity int, floorMaterialNames []string) int
+		GetRoomSlots          func(childComplexity int, dates []string, timeBegin *time.Time, timeEnd *time.Time, minSlotPrice *float64, minRemainSlotCount *int) int
+		MaxReservablePeople   func(childComplexity int) int
+		MinReservablePeople   func(childComplexity int) int
+		ReservationURL        func(childComplexity int) int
+		RoomFacilities        func(childComplexity int) int
+		RoomFloorMaterials    func(childComplexity int) int
+		RoomID                func(childComplexity int) int
+		RoomImages            func(childComplexity int) int
+		RoomName              func(childComplexity int) int
+		RoomSlots             func(childComplexity int) int
+		UpdatedAt             func(childComplexity int) int
+	}
+
+	RoomFacility struct {
+		CreatedAt               func(childComplexity int) int
+		FacilityID              func(childComplexity int) int
+		FacilityName            func(childComplexity int) int
+		RoomFacilityCount       func(childComplexity int) int
+		RoomFacilityDescription func(childComplexity int) int
+		RoomFacilityID          func(childComplexity int) int
+		RoomFacilityPrice       func(childComplexity int) int
+		RoomFacilityUnitHour    func(childComplexity int) int
+		UpdatedAt               func(childComplexity int) int
+	}
+
+	RoomFloorMaterial struct {
+		CreatedAt           func(childComplexity int) int
+		FloorMaterialID     func(childComplexity int) int
+		FloorMaterialName   func(childComplexity int) int
+		RoomFloorMaterialID func(childComplexity int) int
+		UpdatedAt           func(childComplexity int) int
+	}
+
+	RoomImage struct {
+		CreatedAt   func(childComplexity int) int
+		Description func(childComplexity int) int
+		ImageID     func(childComplexity int) int
+		ImageName   func(childComplexity int) int
+		ImagePath   func(childComplexity int) int
+		RoomImageID func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
+	}
+
+	RoomSlot struct {
+		CreatedAt       func(childComplexity int) int
+		Date            func(childComplexity int) int
+		RemainSlotCount func(childComplexity int) int
+		RoomSlotID      func(childComplexity int) int
+		SlotPrice       func(childComplexity int) int
+		TimeBegin       func(childComplexity int) int
+		TimeEnd         func(childComplexity int) int
+		UpdatedAt       func(childComplexity int) int
+		Workload        func(childComplexity int) int
+	}
+
 	Studio struct {
 		AddressID                    func(childComplexity int) int
 		AddressName                  func(childComplexity int) int
@@ -56,6 +118,7 @@ type ComplexityRoot struct {
 		CityName                     func(childComplexity int) int
 		Contact                      func(childComplexity int) int
 		CreatedAt                    func(childComplexity int) int
+		GetRooms                     func(childComplexity int, roomNames []string, minReservePeople *int, maxReservePeople *int, minFloorArea *float64) int
 		GetStudioAmenities           func(childComplexity int, amenityIds []int) int
 		GetStudioFacilities          func(childComplexity int, facilityIds []int) int
 		GetStudioPayments            func(childComplexity int, paymentIds []int) int
@@ -67,6 +130,7 @@ type ComplexityRoot struct {
 		PrefectureID                 func(childComplexity int) int
 		PrefectureName               func(childComplexity int) int
 		RentByMinHours               func(childComplexity int) int
+		Rooms                        func(childComplexity int) int
 		StudioAmenities              func(childComplexity int) int
 		StudioFacilities             func(childComplexity int) int
 		StudioID                     func(childComplexity int) int
@@ -148,6 +212,15 @@ type QueryResolver interface {
 	GetStudioByID(ctx context.Context, studioID int) (*model.Studio, error)
 	GetStudios(ctx context.Context, studioNames []string, prefectureIds []int, cityIds []int) ([]*model.Studio, error)
 }
+type RoomResolver interface {
+	RoomSlots(ctx context.Context, obj *model.Room) ([]*model.RoomSlot, error)
+	GetRoomSlots(ctx context.Context, obj *model.Room, dates []string, timeBegin *time.Time, timeEnd *time.Time, minSlotPrice *float64, minRemainSlotCount *int) ([]*model.RoomSlot, error)
+	RoomFloorMaterials(ctx context.Context, obj *model.Room) ([]*model.RoomFloorMaterial, error)
+	GetRoomFloorMaterials(ctx context.Context, obj *model.Room, floorMaterialNames []string) ([]*model.RoomFloorMaterial, error)
+	RoomFacilities(ctx context.Context, obj *model.Room) ([]*model.RoomFacility, error)
+	GetRoomFacilities(ctx context.Context, obj *model.Room, facilityNames []string) ([]*model.RoomFacility, error)
+	RoomImages(ctx context.Context, obj *model.Room) ([]*model.RoomImage, error)
+}
 type StudioResolver interface {
 	StudioFacilities(ctx context.Context, obj *model.Studio) ([]*model.StudioFacility, error)
 	GetStudioFacilities(ctx context.Context, obj *model.Studio, facilityIds []int) ([]*model.StudioFacility, error)
@@ -160,6 +233,8 @@ type StudioResolver interface {
 	StudioImages(ctx context.Context, obj *model.Studio) ([]*model.StudioImage, error)
 	GetStudioStationRailwayExits(ctx context.Context, obj *model.Studio, stationIds []int, railwayIds []int, maxMinutesFromStation *int) ([]*model.StudioStationRailwayExit, error)
 	StudioStationRailwayExits(ctx context.Context, obj *model.Studio) ([]*model.StudioStationRailwayExit, error)
+	Rooms(ctx context.Context, obj *model.Studio) ([]*model.Room, error)
+	GetRooms(ctx context.Context, obj *model.Studio, roomNames []string, minReservePeople *int, maxReservePeople *int, minFloorArea *float64) ([]*model.Room, error)
 }
 
 type executableSchema struct {
@@ -200,6 +275,336 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.GetStudios(childComplexity, args["studio_names"].([]string), args["prefecture_ids"].([]int), args["city_ids"].([]int)), true
+
+	case "Room.created_at":
+		if e.complexity.Room.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Room.CreatedAt(childComplexity), true
+
+	case "Room.floor_area":
+		if e.complexity.Room.FloorArea == nil {
+			break
+		}
+
+		return e.complexity.Room.FloorArea(childComplexity), true
+
+	case "Room.getRoomFacilities":
+		if e.complexity.Room.GetRoomFacilities == nil {
+			break
+		}
+
+		args, err := ec.field_Room_getRoomFacilities_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Room.GetRoomFacilities(childComplexity, args["facility_names"].([]string)), true
+
+	case "Room.getRoomFloorMaterials":
+		if e.complexity.Room.GetRoomFloorMaterials == nil {
+			break
+		}
+
+		args, err := ec.field_Room_getRoomFloorMaterials_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Room.GetRoomFloorMaterials(childComplexity, args["floor_material_names"].([]string)), true
+
+	case "Room.getRoomSlots":
+		if e.complexity.Room.GetRoomSlots == nil {
+			break
+		}
+
+		args, err := ec.field_Room_getRoomSlots_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Room.GetRoomSlots(childComplexity, args["dates"].([]string), args["time_begin"].(*time.Time), args["time_end"].(*time.Time), args["min_slot_price"].(*float64), args["min_remain_slot_count"].(*int)), true
+
+	case "Room.max_reservable_people":
+		if e.complexity.Room.MaxReservablePeople == nil {
+			break
+		}
+
+		return e.complexity.Room.MaxReservablePeople(childComplexity), true
+
+	case "Room.min_reservable_people":
+		if e.complexity.Room.MinReservablePeople == nil {
+			break
+		}
+
+		return e.complexity.Room.MinReservablePeople(childComplexity), true
+
+	case "Room.reservation_url":
+		if e.complexity.Room.ReservationURL == nil {
+			break
+		}
+
+		return e.complexity.Room.ReservationURL(childComplexity), true
+
+	case "Room.room_facilities":
+		if e.complexity.Room.RoomFacilities == nil {
+			break
+		}
+
+		return e.complexity.Room.RoomFacilities(childComplexity), true
+
+	case "Room.room_floor_materials":
+		if e.complexity.Room.RoomFloorMaterials == nil {
+			break
+		}
+
+		return e.complexity.Room.RoomFloorMaterials(childComplexity), true
+
+	case "Room.room_id":
+		if e.complexity.Room.RoomID == nil {
+			break
+		}
+
+		return e.complexity.Room.RoomID(childComplexity), true
+
+	case "Room.room_images":
+		if e.complexity.Room.RoomImages == nil {
+			break
+		}
+
+		return e.complexity.Room.RoomImages(childComplexity), true
+
+	case "Room.room_name":
+		if e.complexity.Room.RoomName == nil {
+			break
+		}
+
+		return e.complexity.Room.RoomName(childComplexity), true
+
+	case "Room.room_slots":
+		if e.complexity.Room.RoomSlots == nil {
+			break
+		}
+
+		return e.complexity.Room.RoomSlots(childComplexity), true
+
+	case "Room.updated_at":
+		if e.complexity.Room.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Room.UpdatedAt(childComplexity), true
+
+	case "RoomFacility.created_at":
+		if e.complexity.RoomFacility.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.RoomFacility.CreatedAt(childComplexity), true
+
+	case "RoomFacility.facility_id":
+		if e.complexity.RoomFacility.FacilityID == nil {
+			break
+		}
+
+		return e.complexity.RoomFacility.FacilityID(childComplexity), true
+
+	case "RoomFacility.facility_name":
+		if e.complexity.RoomFacility.FacilityName == nil {
+			break
+		}
+
+		return e.complexity.RoomFacility.FacilityName(childComplexity), true
+
+	case "RoomFacility.room_facility_count":
+		if e.complexity.RoomFacility.RoomFacilityCount == nil {
+			break
+		}
+
+		return e.complexity.RoomFacility.RoomFacilityCount(childComplexity), true
+
+	case "RoomFacility.room_facility_description":
+		if e.complexity.RoomFacility.RoomFacilityDescription == nil {
+			break
+		}
+
+		return e.complexity.RoomFacility.RoomFacilityDescription(childComplexity), true
+
+	case "RoomFacility.room_facility_id":
+		if e.complexity.RoomFacility.RoomFacilityID == nil {
+			break
+		}
+
+		return e.complexity.RoomFacility.RoomFacilityID(childComplexity), true
+
+	case "RoomFacility.room_facility_price":
+		if e.complexity.RoomFacility.RoomFacilityPrice == nil {
+			break
+		}
+
+		return e.complexity.RoomFacility.RoomFacilityPrice(childComplexity), true
+
+	case "RoomFacility.room_facility_unit_hour":
+		if e.complexity.RoomFacility.RoomFacilityUnitHour == nil {
+			break
+		}
+
+		return e.complexity.RoomFacility.RoomFacilityUnitHour(childComplexity), true
+
+	case "RoomFacility.updated_at":
+		if e.complexity.RoomFacility.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.RoomFacility.UpdatedAt(childComplexity), true
+
+	case "RoomFloorMaterial.created_at":
+		if e.complexity.RoomFloorMaterial.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.RoomFloorMaterial.CreatedAt(childComplexity), true
+
+	case "RoomFloorMaterial.floor_material_id":
+		if e.complexity.RoomFloorMaterial.FloorMaterialID == nil {
+			break
+		}
+
+		return e.complexity.RoomFloorMaterial.FloorMaterialID(childComplexity), true
+
+	case "RoomFloorMaterial.floor_material_name":
+		if e.complexity.RoomFloorMaterial.FloorMaterialName == nil {
+			break
+		}
+
+		return e.complexity.RoomFloorMaterial.FloorMaterialName(childComplexity), true
+
+	case "RoomFloorMaterial.room_floor_material_id":
+		if e.complexity.RoomFloorMaterial.RoomFloorMaterialID == nil {
+			break
+		}
+
+		return e.complexity.RoomFloorMaterial.RoomFloorMaterialID(childComplexity), true
+
+	case "RoomFloorMaterial.updated_at":
+		if e.complexity.RoomFloorMaterial.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.RoomFloorMaterial.UpdatedAt(childComplexity), true
+
+	case "RoomImage.created_at":
+		if e.complexity.RoomImage.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.RoomImage.CreatedAt(childComplexity), true
+
+	case "RoomImage.description":
+		if e.complexity.RoomImage.Description == nil {
+			break
+		}
+
+		return e.complexity.RoomImage.Description(childComplexity), true
+
+	case "RoomImage.image_id":
+		if e.complexity.RoomImage.ImageID == nil {
+			break
+		}
+
+		return e.complexity.RoomImage.ImageID(childComplexity), true
+
+	case "RoomImage.image_name":
+		if e.complexity.RoomImage.ImageName == nil {
+			break
+		}
+
+		return e.complexity.RoomImage.ImageName(childComplexity), true
+
+	case "RoomImage.image_path":
+		if e.complexity.RoomImage.ImagePath == nil {
+			break
+		}
+
+		return e.complexity.RoomImage.ImagePath(childComplexity), true
+
+	case "RoomImage.room_image_id":
+		if e.complexity.RoomImage.RoomImageID == nil {
+			break
+		}
+
+		return e.complexity.RoomImage.RoomImageID(childComplexity), true
+
+	case "RoomImage.updated_at":
+		if e.complexity.RoomImage.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.RoomImage.UpdatedAt(childComplexity), true
+
+	case "RoomSlot.created_at":
+		if e.complexity.RoomSlot.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.RoomSlot.CreatedAt(childComplexity), true
+
+	case "RoomSlot.date":
+		if e.complexity.RoomSlot.Date == nil {
+			break
+		}
+
+		return e.complexity.RoomSlot.Date(childComplexity), true
+
+	case "RoomSlot.remain_slot_count":
+		if e.complexity.RoomSlot.RemainSlotCount == nil {
+			break
+		}
+
+		return e.complexity.RoomSlot.RemainSlotCount(childComplexity), true
+
+	case "RoomSlot.room_slot_id":
+		if e.complexity.RoomSlot.RoomSlotID == nil {
+			break
+		}
+
+		return e.complexity.RoomSlot.RoomSlotID(childComplexity), true
+
+	case "RoomSlot.slot_price":
+		if e.complexity.RoomSlot.SlotPrice == nil {
+			break
+		}
+
+		return e.complexity.RoomSlot.SlotPrice(childComplexity), true
+
+	case "RoomSlot.time_begin":
+		if e.complexity.RoomSlot.TimeBegin == nil {
+			break
+		}
+
+		return e.complexity.RoomSlot.TimeBegin(childComplexity), true
+
+	case "RoomSlot.time_end":
+		if e.complexity.RoomSlot.TimeEnd == nil {
+			break
+		}
+
+		return e.complexity.RoomSlot.TimeEnd(childComplexity), true
+
+	case "RoomSlot.updated_at":
+		if e.complexity.RoomSlot.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.RoomSlot.UpdatedAt(childComplexity), true
+
+	case "RoomSlot.workload":
+		if e.complexity.RoomSlot.Workload == nil {
+			break
+		}
+
+		return e.complexity.RoomSlot.Workload(childComplexity), true
 
 	case "Studio.address_id":
 		if e.complexity.Studio.AddressID == nil {
@@ -249,6 +654,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Studio.CreatedAt(childComplexity), true
+
+	case "Studio.getRooms":
+		if e.complexity.Studio.GetRooms == nil {
+			break
+		}
+
+		args, err := ec.field_Studio_getRooms_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Studio.GetRooms(childComplexity, args["room_names"].([]string), args["min_reserve_people"].(*int), args["max_reserve_people"].(*int), args["min_floor_area"].(*float64)), true
 
 	case "Studio.getStudioAmenities":
 		if e.complexity.Studio.GetStudioAmenities == nil {
@@ -351,6 +768,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Studio.RentByMinHours(childComplexity), true
+
+	case "Studio.rooms":
+		if e.complexity.Studio.Rooms == nil {
+			break
+		}
+
+		return e.complexity.Studio.Rooms(childComplexity), true
 
 	case "Studio.studio_amenities":
 		if e.complexity.Studio.StudioAmenities == nil {
@@ -795,6 +1219,8 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 
 var sources = []*ast.Source{
 	{Name: "graph/schema.graphqls", Input: `scalar DateTime
+scalar Date
+scalar Time
 type Query {
     getStudioByID(studio_id: Int!): Studio
     getStudios(studio_names: [String!], prefecture_ids: [Int!], city_ids: [Int!]): [Studio!]
@@ -829,6 +1255,8 @@ type Studio {
     studio_images: [StudioImage!]
     getStudioStationRailwayExits(station_ids: [Int!], railway_ids: [Int!], max_minutes_from_station: Int): [StudioStationRailwayExit!]  # id検索
     studio_station_railway_exits: [StudioStationRailwayExit!]
+    rooms: [Room!]
+    getRooms(room_names: [String!], min_reserve_people: Int, max_reserve_people: Int, min_floor_area: Float): [Room!]
     created_at: DateTime!
     updated_at: DateTime
 }
@@ -890,6 +1318,61 @@ type StudioStationRailwayExit {
     minutes_from_station: Int
     created_at: DateTime!
     updated_at: DateTime
+}
+type Room {
+    room_id: Int!
+    room_name: String!
+    reservation_url: String
+    min_reservable_people: Int
+    max_reservable_people: Int
+    floor_area: Float
+    created_at: DateTime!
+    updated_at: DateTime
+    room_slots: [RoomSlot!]
+    getRoomSlots(dates: [Date!], time_begin: Time, time_end: Time, min_slot_price: Float, min_remain_slot_count: Int): [RoomSlot!]
+    room_floor_materials: [RoomFloorMaterial!]
+    getRoomFloorMaterials(floor_material_names: [String!]): [RoomFloorMaterial!]
+    room_facilities: [RoomFacility!]
+    getRoomFacilities(facility_names: [String!]): [RoomFacility!]
+    room_images: [RoomImage!]
+}
+type RoomSlot {
+    room_slot_id: Int!
+    date: Date!
+    time_begin: Time!
+    time_end: Time!
+    workload: Float!
+    slot_price: Float!
+    remain_slot_count: Int!
+    created_at: DateTime!
+    updated_at: DateTime
+}
+type RoomFloorMaterial {
+    room_floor_material_id: Int!
+    floor_material_id: Int!
+    floor_material_name: String!
+    created_at: DateTime!
+    updated_at: DateTime
+}
+type RoomFacility {
+    room_facility_id: Int!
+    facility_id: Int!
+    facility_name: String!
+    room_facility_description: String
+    room_facility_count: Int
+    room_facility_price: Float
+    room_facility_unit_hour: Float
+    created_at: DateTime!
+    updated_at: DateTime
+}
+type RoomImage {
+    room_image_id: Int!
+    image_id: Int!
+    image_name: String!
+    image_path: String!
+    created_at: DateTime!
+    updated_at: DateTime
+    description: String
 }`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -958,6 +1441,129 @@ func (ec *executionContext) field_Query_getStudios_args(ctx context.Context, raw
 		}
 	}
 	args["city_ids"] = arg2
+	return args, nil
+}
+
+func (ec *executionContext) field_Room_getRoomFacilities_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []string
+	if tmp, ok := rawArgs["facility_names"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("facility_names"))
+		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["facility_names"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Room_getRoomFloorMaterials_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []string
+	if tmp, ok := rawArgs["floor_material_names"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("floor_material_names"))
+		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["floor_material_names"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Room_getRoomSlots_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []string
+	if tmp, ok := rawArgs["dates"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dates"))
+		arg0, err = ec.unmarshalODate2ᚕstringᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["dates"] = arg0
+	var arg1 *time.Time
+	if tmp, ok := rawArgs["time_begin"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("time_begin"))
+		arg1, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["time_begin"] = arg1
+	var arg2 *time.Time
+	if tmp, ok := rawArgs["time_end"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("time_end"))
+		arg2, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["time_end"] = arg2
+	var arg3 *float64
+	if tmp, ok := rawArgs["min_slot_price"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("min_slot_price"))
+		arg3, err = ec.unmarshalOFloat2ᚖfloat64(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["min_slot_price"] = arg3
+	var arg4 *int
+	if tmp, ok := rawArgs["min_remain_slot_count"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("min_remain_slot_count"))
+		arg4, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["min_remain_slot_count"] = arg4
+	return args, nil
+}
+
+func (ec *executionContext) field_Studio_getRooms_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []string
+	if tmp, ok := rawArgs["room_names"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("room_names"))
+		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["room_names"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["min_reserve_people"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("min_reserve_people"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["min_reserve_people"] = arg1
+	var arg2 *int
+	if tmp, ok := rawArgs["max_reserve_people"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("max_reserve_people"))
+		arg2, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["max_reserve_people"] = arg2
+	var arg3 *float64
+	if tmp, ok := rawArgs["min_floor_area"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("min_floor_area"))
+		arg3, err = ec.unmarshalOFloat2ᚖfloat64(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["min_floor_area"] = arg3
 	return args, nil
 }
 
@@ -1239,6 +1845,1539 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	res := resTmp.(*introspection.Schema)
 	fc.Result = res
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_room_id(ctx context.Context, field graphql.CollectedField, obj *model.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RoomID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_room_name(ctx context.Context, field graphql.CollectedField, obj *model.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RoomName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_reservation_url(ctx context.Context, field graphql.CollectedField, obj *model.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ReservationURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_min_reservable_people(ctx context.Context, field graphql.CollectedField, obj *model.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MinReservablePeople, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_max_reservable_people(ctx context.Context, field graphql.CollectedField, obj *model.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MaxReservablePeople, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_floor_area(ctx context.Context, field graphql.CollectedField, obj *model.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FloorArea, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_created_at(ctx context.Context, field graphql.CollectedField, obj *model.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNDateTime2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_updated_at(ctx context.Context, field graphql.CollectedField, obj *model.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalODateTime2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_room_slots(ctx context.Context, field graphql.CollectedField, obj *model.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Room().RoomSlots(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.RoomSlot)
+	fc.Result = res
+	return ec.marshalORoomSlot2ᚕᚖgraphqlᚋgraphᚋmodelᚐRoomSlotᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_getRoomSlots(ctx context.Context, field graphql.CollectedField, obj *model.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Room_getRoomSlots_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Room().GetRoomSlots(rctx, obj, args["dates"].([]string), args["time_begin"].(*time.Time), args["time_end"].(*time.Time), args["min_slot_price"].(*float64), args["min_remain_slot_count"].(*int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.RoomSlot)
+	fc.Result = res
+	return ec.marshalORoomSlot2ᚕᚖgraphqlᚋgraphᚋmodelᚐRoomSlotᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_room_floor_materials(ctx context.Context, field graphql.CollectedField, obj *model.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Room().RoomFloorMaterials(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.RoomFloorMaterial)
+	fc.Result = res
+	return ec.marshalORoomFloorMaterial2ᚕᚖgraphqlᚋgraphᚋmodelᚐRoomFloorMaterialᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_getRoomFloorMaterials(ctx context.Context, field graphql.CollectedField, obj *model.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Room_getRoomFloorMaterials_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Room().GetRoomFloorMaterials(rctx, obj, args["floor_material_names"].([]string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.RoomFloorMaterial)
+	fc.Result = res
+	return ec.marshalORoomFloorMaterial2ᚕᚖgraphqlᚋgraphᚋmodelᚐRoomFloorMaterialᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_room_facilities(ctx context.Context, field graphql.CollectedField, obj *model.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Room().RoomFacilities(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.RoomFacility)
+	fc.Result = res
+	return ec.marshalORoomFacility2ᚕᚖgraphqlᚋgraphᚋmodelᚐRoomFacilityᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_getRoomFacilities(ctx context.Context, field graphql.CollectedField, obj *model.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Room_getRoomFacilities_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Room().GetRoomFacilities(rctx, obj, args["facility_names"].([]string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.RoomFacility)
+	fc.Result = res
+	return ec.marshalORoomFacility2ᚕᚖgraphqlᚋgraphᚋmodelᚐRoomFacilityᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Room_room_images(ctx context.Context, field graphql.CollectedField, obj *model.Room) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Room",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Room().RoomImages(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.RoomImage)
+	fc.Result = res
+	return ec.marshalORoomImage2ᚕᚖgraphqlᚋgraphᚋmodelᚐRoomImageᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomFacility_room_facility_id(ctx context.Context, field graphql.CollectedField, obj *model.RoomFacility) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomFacility",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RoomFacilityID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomFacility_facility_id(ctx context.Context, field graphql.CollectedField, obj *model.RoomFacility) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomFacility",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FacilityID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomFacility_facility_name(ctx context.Context, field graphql.CollectedField, obj *model.RoomFacility) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomFacility",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FacilityName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomFacility_room_facility_description(ctx context.Context, field graphql.CollectedField, obj *model.RoomFacility) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomFacility",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RoomFacilityDescription, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomFacility_room_facility_count(ctx context.Context, field graphql.CollectedField, obj *model.RoomFacility) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomFacility",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RoomFacilityCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomFacility_room_facility_price(ctx context.Context, field graphql.CollectedField, obj *model.RoomFacility) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomFacility",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RoomFacilityPrice, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomFacility_room_facility_unit_hour(ctx context.Context, field graphql.CollectedField, obj *model.RoomFacility) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomFacility",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RoomFacilityUnitHour, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomFacility_created_at(ctx context.Context, field graphql.CollectedField, obj *model.RoomFacility) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomFacility",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNDateTime2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomFacility_updated_at(ctx context.Context, field graphql.CollectedField, obj *model.RoomFacility) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomFacility",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalODateTime2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomFloorMaterial_room_floor_material_id(ctx context.Context, field graphql.CollectedField, obj *model.RoomFloorMaterial) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomFloorMaterial",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RoomFloorMaterialID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomFloorMaterial_floor_material_id(ctx context.Context, field graphql.CollectedField, obj *model.RoomFloorMaterial) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomFloorMaterial",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FloorMaterialID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomFloorMaterial_floor_material_name(ctx context.Context, field graphql.CollectedField, obj *model.RoomFloorMaterial) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomFloorMaterial",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FloorMaterialName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomFloorMaterial_created_at(ctx context.Context, field graphql.CollectedField, obj *model.RoomFloorMaterial) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomFloorMaterial",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNDateTime2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomFloorMaterial_updated_at(ctx context.Context, field graphql.CollectedField, obj *model.RoomFloorMaterial) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomFloorMaterial",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalODateTime2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomImage_room_image_id(ctx context.Context, field graphql.CollectedField, obj *model.RoomImage) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomImage",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RoomImageID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomImage_image_id(ctx context.Context, field graphql.CollectedField, obj *model.RoomImage) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomImage",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ImageID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomImage_image_name(ctx context.Context, field graphql.CollectedField, obj *model.RoomImage) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomImage",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ImageName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomImage_image_path(ctx context.Context, field graphql.CollectedField, obj *model.RoomImage) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomImage",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ImagePath, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomImage_created_at(ctx context.Context, field graphql.CollectedField, obj *model.RoomImage) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomImage",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNDateTime2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomImage_updated_at(ctx context.Context, field graphql.CollectedField, obj *model.RoomImage) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomImage",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalODateTime2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomImage_description(ctx context.Context, field graphql.CollectedField, obj *model.RoomImage) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomImage",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomSlot_room_slot_id(ctx context.Context, field graphql.CollectedField, obj *model.RoomSlot) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomSlot",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RoomSlotID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomSlot_date(ctx context.Context, field graphql.CollectedField, obj *model.RoomSlot) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomSlot",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Date, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNDate2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomSlot_time_begin(ctx context.Context, field graphql.CollectedField, obj *model.RoomSlot) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomSlot",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TimeBegin, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomSlot_time_end(ctx context.Context, field graphql.CollectedField, obj *model.RoomSlot) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomSlot",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TimeEnd, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomSlot_workload(ctx context.Context, field graphql.CollectedField, obj *model.RoomSlot) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomSlot",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Workload, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomSlot_slot_price(ctx context.Context, field graphql.CollectedField, obj *model.RoomSlot) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomSlot",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SlotPrice, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomSlot_remain_slot_count(ctx context.Context, field graphql.CollectedField, obj *model.RoomSlot) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomSlot",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RemainSlotCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomSlot_created_at(ctx context.Context, field graphql.CollectedField, obj *model.RoomSlot) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomSlot",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNDateTime2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RoomSlot_updated_at(ctx context.Context, field graphql.CollectedField, obj *model.RoomSlot) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RoomSlot",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalODateTime2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Studio_studio_id(ctx context.Context, field graphql.CollectedField, obj *model.Studio) (ret graphql.Marshaler) {
@@ -2104,6 +4243,77 @@ func (ec *executionContext) _Studio_studio_station_railway_exits(ctx context.Con
 	res := resTmp.([]*model.StudioStationRailwayExit)
 	fc.Result = res
 	return ec.marshalOStudioStationRailwayExit2ᚕᚖgraphqlᚋgraphᚋmodelᚐStudioStationRailwayExitᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Studio_rooms(ctx context.Context, field graphql.CollectedField, obj *model.Studio) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Studio",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Studio().Rooms(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Room)
+	fc.Result = res
+	return ec.marshalORoom2ᚕᚖgraphqlᚋgraphᚋmodelᚐRoomᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Studio_getRooms(ctx context.Context, field graphql.CollectedField, obj *model.Studio) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Studio",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Studio_getRooms_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Studio().GetRooms(rctx, obj, args["room_names"].([]string), args["min_reserve_people"].(*int), args["max_reserve_people"].(*int), args["min_floor_area"].(*float64))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Room)
+	fc.Result = res
+	return ec.marshalORoom2ᚕᚖgraphqlᚋgraphᚋmodelᚐRoomᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Studio_created_at(ctx context.Context, field graphql.CollectedField, obj *model.Studio) (ret graphql.Marshaler) {
@@ -4952,6 +7162,341 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 	return out
 }
 
+var roomImplementors = []string{"Room"}
+
+func (ec *executionContext) _Room(ctx context.Context, sel ast.SelectionSet, obj *model.Room) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, roomImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Room")
+		case "room_id":
+			out.Values[i] = ec._Room_room_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "room_name":
+			out.Values[i] = ec._Room_room_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "reservation_url":
+			out.Values[i] = ec._Room_reservation_url(ctx, field, obj)
+		case "min_reservable_people":
+			out.Values[i] = ec._Room_min_reservable_people(ctx, field, obj)
+		case "max_reservable_people":
+			out.Values[i] = ec._Room_max_reservable_people(ctx, field, obj)
+		case "floor_area":
+			out.Values[i] = ec._Room_floor_area(ctx, field, obj)
+		case "created_at":
+			out.Values[i] = ec._Room_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "updated_at":
+			out.Values[i] = ec._Room_updated_at(ctx, field, obj)
+		case "room_slots":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Room_room_slots(ctx, field, obj)
+				return res
+			})
+		case "getRoomSlots":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Room_getRoomSlots(ctx, field, obj)
+				return res
+			})
+		case "room_floor_materials":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Room_room_floor_materials(ctx, field, obj)
+				return res
+			})
+		case "getRoomFloorMaterials":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Room_getRoomFloorMaterials(ctx, field, obj)
+				return res
+			})
+		case "room_facilities":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Room_room_facilities(ctx, field, obj)
+				return res
+			})
+		case "getRoomFacilities":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Room_getRoomFacilities(ctx, field, obj)
+				return res
+			})
+		case "room_images":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Room_room_images(ctx, field, obj)
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var roomFacilityImplementors = []string{"RoomFacility"}
+
+func (ec *executionContext) _RoomFacility(ctx context.Context, sel ast.SelectionSet, obj *model.RoomFacility) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, roomFacilityImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RoomFacility")
+		case "room_facility_id":
+			out.Values[i] = ec._RoomFacility_room_facility_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "facility_id":
+			out.Values[i] = ec._RoomFacility_facility_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "facility_name":
+			out.Values[i] = ec._RoomFacility_facility_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "room_facility_description":
+			out.Values[i] = ec._RoomFacility_room_facility_description(ctx, field, obj)
+		case "room_facility_count":
+			out.Values[i] = ec._RoomFacility_room_facility_count(ctx, field, obj)
+		case "room_facility_price":
+			out.Values[i] = ec._RoomFacility_room_facility_price(ctx, field, obj)
+		case "room_facility_unit_hour":
+			out.Values[i] = ec._RoomFacility_room_facility_unit_hour(ctx, field, obj)
+		case "created_at":
+			out.Values[i] = ec._RoomFacility_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updated_at":
+			out.Values[i] = ec._RoomFacility_updated_at(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var roomFloorMaterialImplementors = []string{"RoomFloorMaterial"}
+
+func (ec *executionContext) _RoomFloorMaterial(ctx context.Context, sel ast.SelectionSet, obj *model.RoomFloorMaterial) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, roomFloorMaterialImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RoomFloorMaterial")
+		case "room_floor_material_id":
+			out.Values[i] = ec._RoomFloorMaterial_room_floor_material_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "floor_material_id":
+			out.Values[i] = ec._RoomFloorMaterial_floor_material_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "floor_material_name":
+			out.Values[i] = ec._RoomFloorMaterial_floor_material_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "created_at":
+			out.Values[i] = ec._RoomFloorMaterial_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updated_at":
+			out.Values[i] = ec._RoomFloorMaterial_updated_at(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var roomImageImplementors = []string{"RoomImage"}
+
+func (ec *executionContext) _RoomImage(ctx context.Context, sel ast.SelectionSet, obj *model.RoomImage) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, roomImageImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RoomImage")
+		case "room_image_id":
+			out.Values[i] = ec._RoomImage_room_image_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "image_id":
+			out.Values[i] = ec._RoomImage_image_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "image_name":
+			out.Values[i] = ec._RoomImage_image_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "image_path":
+			out.Values[i] = ec._RoomImage_image_path(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "created_at":
+			out.Values[i] = ec._RoomImage_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updated_at":
+			out.Values[i] = ec._RoomImage_updated_at(ctx, field, obj)
+		case "description":
+			out.Values[i] = ec._RoomImage_description(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var roomSlotImplementors = []string{"RoomSlot"}
+
+func (ec *executionContext) _RoomSlot(ctx context.Context, sel ast.SelectionSet, obj *model.RoomSlot) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, roomSlotImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RoomSlot")
+		case "room_slot_id":
+			out.Values[i] = ec._RoomSlot_room_slot_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "date":
+			out.Values[i] = ec._RoomSlot_date(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "time_begin":
+			out.Values[i] = ec._RoomSlot_time_begin(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "time_end":
+			out.Values[i] = ec._RoomSlot_time_end(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "workload":
+			out.Values[i] = ec._RoomSlot_workload(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "slot_price":
+			out.Values[i] = ec._RoomSlot_slot_price(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "remain_slot_count":
+			out.Values[i] = ec._RoomSlot_remain_slot_count(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "created_at":
+			out.Values[i] = ec._RoomSlot_created_at(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updated_at":
+			out.Values[i] = ec._RoomSlot_updated_at(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var studioImplementors = []string{"Studio"}
 
 func (ec *executionContext) _Studio(ctx context.Context, sel ast.SelectionSet, obj *model.Studio) graphql.Marshaler {
@@ -5140,6 +7685,28 @@ func (ec *executionContext) _Studio(ctx context.Context, sel ast.SelectionSet, o
 					}
 				}()
 				res = ec._Studio_studio_station_railway_exits(ctx, field, obj)
+				return res
+			})
+		case "rooms":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Studio_rooms(ctx, field, obj)
+				return res
+			})
+		case "getRooms":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Studio_getRooms(ctx, field, obj)
 				return res
 			})
 		case "created_at":
@@ -5744,6 +8311,21 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) unmarshalNDate2string(ctx context.Context, v interface{}) (string, error) {
+	res, err := graphql.UnmarshalString(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNDate2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	res := graphql.MarshalString(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) unmarshalNDateTime2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -5787,6 +8369,56 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNRoom2ᚖgraphqlᚋgraphᚋmodelᚐRoom(ctx context.Context, sel ast.SelectionSet, v *model.Room) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Room(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNRoomFacility2ᚖgraphqlᚋgraphᚋmodelᚐRoomFacility(ctx context.Context, sel ast.SelectionSet, v *model.RoomFacility) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._RoomFacility(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNRoomFloorMaterial2ᚖgraphqlᚋgraphᚋmodelᚐRoomFloorMaterial(ctx context.Context, sel ast.SelectionSet, v *model.RoomFloorMaterial) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._RoomFloorMaterial(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNRoomImage2ᚖgraphqlᚋgraphᚋmodelᚐRoomImage(ctx context.Context, sel ast.SelectionSet, v *model.RoomImage) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._RoomImage(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNRoomSlot2ᚖgraphqlᚋgraphᚋmodelᚐRoomSlot(ctx context.Context, sel ast.SelectionSet, v *model.RoomSlot) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._RoomSlot(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -5872,6 +8504,21 @@ func (ec *executionContext) marshalNStudioStationRailwayExit2ᚖgraphqlᚋgraph�
 		return graphql.Null
 	}
 	return ec._StudioStationRailwayExit(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
+	res, err := graphql.UnmarshalTime(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	res := graphql.MarshalTime(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
@@ -6155,6 +8802,48 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return graphql.MarshalBoolean(*v)
 }
 
+func (ec *executionContext) unmarshalODate2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNDate2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalODate2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNDate2string(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) unmarshalODateTime2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
 	if v == nil {
 		return nil, nil
@@ -6240,6 +8929,241 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 		return graphql.Null
 	}
 	return graphql.MarshalInt(*v)
+}
+
+func (ec *executionContext) marshalORoom2ᚕᚖgraphqlᚋgraphᚋmodelᚐRoomᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Room) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNRoom2ᚖgraphqlᚋgraphᚋmodelᚐRoom(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalORoomFacility2ᚕᚖgraphqlᚋgraphᚋmodelᚐRoomFacilityᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.RoomFacility) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNRoomFacility2ᚖgraphqlᚋgraphᚋmodelᚐRoomFacility(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalORoomFloorMaterial2ᚕᚖgraphqlᚋgraphᚋmodelᚐRoomFloorMaterialᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.RoomFloorMaterial) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNRoomFloorMaterial2ᚖgraphqlᚋgraphᚋmodelᚐRoomFloorMaterial(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalORoomImage2ᚕᚖgraphqlᚋgraphᚋmodelᚐRoomImageᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.RoomImage) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNRoomImage2ᚖgraphqlᚋgraphᚋmodelᚐRoomImage(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalORoomSlot2ᚕᚖgraphqlᚋgraphᚋmodelᚐRoomSlotᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.RoomSlot) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNRoomSlot2ᚖgraphqlᚋgraphᚋmodelᚐRoomSlot(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
@@ -6642,6 +9566,21 @@ func (ec *executionContext) marshalOStudioStationRailwayExit2ᚕᚖgraphqlᚋgra
 	}
 
 	return ret
+}
+
+func (ec *executionContext) unmarshalOTime2ᚖtimeᚐTime(ctx context.Context, v interface{}) (*time.Time, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalTime(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel ast.SelectionSet, v *time.Time) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalTime(*v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

@@ -14,7 +14,7 @@ ENDSQL
 
 ```graphql
 type Studio {
-    studio_id: ID!
+    studio_id: Int!
     studio_name: String!
     introduction: String
     precaution: String
@@ -28,14 +28,8 @@ type Studio {
     prefecture_name: String!
     rent_by_min_hours: Float!
     can_free_cancel: Boolean
-    studio_facilities: [StudioFacility]  # 紐付けテーブル
-    studio_amenities: [StudioAmenity]
-    studio_payments: [StudioPayment]
-    studio_reservations: [StudioReservation]
-    studio_images: [StudioImage]
-    studio_station_railway_exits: [StudioStationRailwayExit]
     created_at: DateTime!
-    updated_at: DateTime!
+    updated_at: DateTime
 }
 ```
 
@@ -108,11 +102,7 @@ FROM
         prefecture AS p
     ON  p.prefecture_id = c.prefecture_id
 WHERE
-    (
-        %%studioName string%% IS NOT NULL
-    AND s.studio_name = %%studioName string%%
-    )
-AND s.is_deleted IS FALSE
+    s.is_deleted IS FALSE
 ;
 ```
 
@@ -120,14 +110,15 @@ AND s.is_deleted IS FALSE
 
 ```graphql
 type StudioFacility {
-    studio_facility_id: ID!
+    studio_facility_id: Int!
     facility_id: Int!
     facility_name: String!
+    studio_facility_description: String
     studio_facility_count: Int
     studio_facility_price: Float
     studio_facility_unit_hour: Float
     created_at: DateTime!
-    updated_at: DateTime!
+    updated_at: DateTime
 }
 ```
 
@@ -138,6 +129,7 @@ SELECT
     sf.studio_facility_id,
     sf.facility_id,
     f.facility_name,
+    sf.studio_facility_description,
     sf.studio_facility_count,
     sf.studio_facility_price,
     sf.studio_facility_unit_hour,
@@ -158,14 +150,15 @@ AND sf.is_deleted IS FALSE
 
 ```graphql
 type StudioAmenity {
-    studio_amenity_id: ID!
+    studio_amenity_id: Int!
     amenity_id: Int!
     amenity_name: String!
+    studio_amenity_description: String
     studio_amenity_count: Int
     studio_amenity_price: Float
     studio_amenity_unit_hour: Float
     created_at: DateTime!
-    updated_at: DateTime!
+    updated_at: DateTime
 }
 ```
 
@@ -176,6 +169,7 @@ SELECT
     sa.studio_amenity_id,
     sa.amenity_id,
     a.amenity_name,
+    sa.studio_amenity_description,
     sa.studio_amenity_count,
     sa.studio_amenity_price,
     sa.studio_amenity_unit_hour,
@@ -200,7 +194,7 @@ type StudioPayment {
     payment_id: Int!
     payment_name: String!
     created_at: DateTime!
-    updated_at: DateTime!
+    updated_at: DateTime
 }
 ```
 
@@ -232,7 +226,7 @@ type StudioReservation {
     reservation_id: Int!
     reservation_name: String!
     created_at: DateTime!
-    updated_at: DateTime!
+    updated_at: DateTime
 }
 ```
 
@@ -265,7 +259,7 @@ type StudioImage {
     image_name: String!
     image_path: String!
     created_at: DateTime!
-    updated_at: DateTime!
+    updated_at: DateTime
     description: String
 }
 ```
@@ -307,7 +301,7 @@ type StudioStationRailwayExit {
     exit_name: String!
     minutes_from_station: Int
     created_at: DateTime!
-    updated_at: DateTime!
+    updated_at: DateTime
 }
 ```
 
@@ -347,5 +341,185 @@ FROM
 WHERE
     ssre.studio_id = %%studioID int%%
 AND ssre.is_deleted IS FALSE
+;
+```
+
+### Room
+
+```graphql
+type Room {
+    room_id: Int!
+    room_name: String!
+    reservation_url: String
+    min_reservable_people: Int
+    max_reservable_people: Int
+    floor_area: Float
+    created_at: DateTime!
+    updated_at: DateTime
+}
+```
+
+#### Rooms
+
+```sql
+SELECT
+    room_id,
+    room_name,
+    reservation_url,
+    min_reservable_people,
+    max_reservable_people,
+    floor_area,
+    created_at,
+    updated_at
+FROM
+    room
+WHERE
+    studio_id = %%studioID int%%
+AND is_deleted IS FALSE
+;
+```
+
+### RoomSlot
+
+```graphql
+type RoomSlot {
+    room_slot_id: Int!
+    date: Date!
+    time_begin: Time!
+    time_end: Time!
+    workload: Float!
+    slot_price: Float!
+    remain_slot_count: Int!
+    created_at: DateTime!
+    updated_at: DateTime
+}
+```
+
+#### RoomSlots
+
+```sql
+SELECT
+    room_slot_id,
+    date,
+    time_begin,
+    time_end,
+    workload,
+    slot_price,
+    remain_slot_count,
+    created_at,
+    updated_at
+FROM
+    room_slot
+WHERE
+    room_id = %%roomID int%%
+AND is_deleted IS FALSE
+;
+```
+
+### RoomFloorMaterial
+
+```graphql
+type RoomFloorMaterial {
+    room_floor_material_id: Int!
+    floor_material_id: Int!
+    floor_material_name: String!
+    created_at: DateTime!
+    updated_at: DateTime
+}
+```
+
+#### RoomFloorMaterials
+
+```sql
+SELECT
+    rfm.room_floor_material_id,
+    rfm.floor_material_id,
+    fm.floor_material_name,
+    rfm.created_at,
+    rfm.updated_at
+FROM
+    room_floor_material AS rfm
+    LEFT JOIN
+        floor_material AS fm
+    ON  rfm.floor_material_id = fm.floor_material_id
+WHERE
+    rfm.room_id = %%roomID int%%
+AND rfm.is_deleted IS FALSE
+;
+```
+
+### RoomFacility
+
+```graphql
+type RoomFacility {
+    room_facility_id: Int!
+    facility_id: Int!
+    facility_name: String!
+    room_facility_description: String
+    room_facility_count: Int
+    room_facility_price: Float
+    room_facility_unit_hour: Float
+    created_at: DateTime!
+    updated_at: DateTime
+}
+```
+
+#### RoomFacilities
+
+```sql
+SELECT
+    rf.room_facility_id,
+    rf.facility_id,
+    f.facility_name,
+    rf.room_facility_description,
+    rf.room_facility_count,
+    rf.room_facility_price,
+    rf.room_facility_unit_hour,
+    rf.created_at,
+    rf.updated_at
+FROM
+    room_facility AS rf
+    LEFT JOIN
+        facility AS f
+    ON  rf.facility_id = f.facility_id
+WHERE
+    rf.room_id = %%roomID int%%
+AND rf.is_deleted IS FALSE
+;
+```
+
+### RoomImage
+
+```graphql
+type RoomImage {
+    room_image_id: Int!
+    image_id: Int!
+    image_name: String!
+    image_path: String!
+    created_at: DateTime!
+    updated_at: DateTime
+    description: String
+}
+```
+
+#### RoomImages
+
+```sql
+SELECT
+    ri.room_image_id,
+    ri.image_id,
+    i.image_name,
+    i.image_path,
+    i.created_at,
+    i.updated_at,
+    ri.description
+FROM
+    room_image AS ri
+        LEFT JOIN
+    Image AS i
+    ON  ri.image_id = i.image_id
+WHERE
+    ri.room_id = %%roomID int%%
+AND i.is_deleted IS FALSE
 ;
 ```

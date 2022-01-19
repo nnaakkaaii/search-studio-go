@@ -9,14 +9,15 @@ import (
 
 // StudioAmenities represents a row from 'public.studio_amenities'.
 type StudioAmenities struct {
-	StudioAmenityID       int        `json:"studio_amenity_id"`        // studio_amenity_id
-	AmenityID             int        `json:"amenity_id"`               // amenity_id
-	AmenityName           string     `json:"amenity_name"`             // amenity_name
-	StudioAmenityCount    *int       `json:"studio_amenity_count"`     // studio_amenity_count
-	StudioAmenityPrice    *float64   `json:"studio_amenity_price"`     // studio_amenity_price
-	StudioAmenityUnitHour *float64   `json:"studio_amenity_unit_hour"` // studio_amenity_unit_hour
-	CreatedAt             time.Time  `json:"created_at"`               // created_at
-	UpdatedAt             *time.Time `json:"updated_at"`               // updated_at
+	StudioAmenityID          int        `json:"studio_amenity_id"`          // studio_amenity_id
+	AmenityID                int        `json:"amenity_id"`                 // amenity_id
+	AmenityName              string     `json:"amenity_name"`               // amenity_name
+	StudioAmenityDescription *string    `json:"studio_amenity_description"` // studio_amenity_description
+	StudioAmenityCount       *int       `json:"studio_amenity_count"`       // studio_amenity_count
+	StudioAmenityPrice       *float64   `json:"studio_amenity_price"`       // studio_amenity_price
+	StudioAmenityUnitHour    *float64   `json:"studio_amenity_unit_hour"`   // studio_amenity_unit_hour
+	CreatedAt                time.Time  `json:"created_at"`                 // created_at
+	UpdatedAt                *time.Time `json:"updated_at"`                 // updated_at
 }
 
 // StudioAmenitiesByStudioID runs a custom query, returning results as StudioAmenities.
@@ -26,6 +27,7 @@ func StudioAmenitiesByStudioID(ctx context.Context, db DB, studioID int) ([]*Stu
 		`sa.studio_amenity_id, ` +
 		`sa.amenity_id, ` +
 		`a.amenity_name, ` +
+		`sa.studio_amenity_description, ` +
 		`sa.studio_amenity_count, ` +
 		`sa.studio_amenity_price, ` +
 		`sa.studio_amenity_unit_hour, ` +
@@ -52,7 +54,7 @@ func StudioAmenitiesByStudioID(ctx context.Context, db DB, studioID int) ([]*Stu
 	for rows.Next() {
 		var sa StudioAmenities
 		// scan
-		if err := rows.Scan(&sa.StudioAmenityID, &sa.AmenityID, &sa.AmenityName, &sa.StudioAmenityCount, &sa.StudioAmenityPrice, &sa.StudioAmenityUnitHour, &sa.CreatedAt, &sa.UpdatedAt); err != nil {
+		if err := rows.Scan(&sa.StudioAmenityID, &sa.AmenityID, &sa.AmenityName, &sa.StudioAmenityDescription, &sa.StudioAmenityCount, &sa.StudioAmenityPrice, &sa.StudioAmenityUnitHour, &sa.CreatedAt, &sa.UpdatedAt); err != nil {
 			return nil, logerror(err)
 		}
 		res = append(res, &sa)
