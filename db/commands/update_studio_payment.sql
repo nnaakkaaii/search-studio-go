@@ -55,13 +55,11 @@ INSERT INTO studio_payment(
     studio_id,
     payment_id,
     created_at,
-    updated_at,
     is_deleted
 )
 SELECT
     studio_id,
     payment_id,
-    now(),
     now(),
     false
 FROM

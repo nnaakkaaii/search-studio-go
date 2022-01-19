@@ -1,7 +1,7 @@
 scalar DateTime
 type Query {
     getStudioByID(studio_id: Int!): Studio
-    getStudios(studio_name: String): [Studio]
+    getStudios(studio_names: [String!], prefecture_ids: [Int!], city_ids: [Int!]): [Studio!]
 }
 # type Mutation {
 #     createStudio(input: CreateStudioInput!): CreateStudioPayload!
@@ -23,13 +23,18 @@ type Studio {
     rent_by_min_hours: Float!
     can_free_cancel: Boolean
     studio_facilities: [StudioFacility!]  # 紐付けテーブル
+    getStudioFacilities(facility_ids: [Int!]): [StudioFacility!]  # id検索
     studio_amenities: [StudioAmenity!]
+    getStudioAmenities(amenity_ids: [Int!]): [StudioAmenity!]  # id検索
     studio_payments: [StudioPayment!]
+    getStudioPayments(payment_ids: [Int!]): [StudioPayment!]  # id検索
     studio_reservations: [StudioReservation!]
+    getStudioReservations(reservation_ids: [Int!]): [StudioReservation!]
     studio_images: [StudioImage!]
+    getStudioStationRailwayExits(station_ids: [Int!], railway_ids: [Int!], max_minutes_from_station: Int): [StudioStationRailwayExit!]  # id検索
     studio_station_railway_exits: [StudioStationRailwayExit!]
     created_at: DateTime!
-    updated_at: DateTime!
+    updated_at: DateTime
 }
 type StudioFacility {
     studio_facility_id: Int!
@@ -40,7 +45,7 @@ type StudioFacility {
     studio_facility_price: Float
     studio_facility_unit_hour: Float
     created_at: DateTime!
-    updated_at: DateTime!
+    updated_at: DateTime
 }
 type StudioAmenity {
     studio_amenity_id: Int!
@@ -51,21 +56,21 @@ type StudioAmenity {
     studio_amenity_price: Float
     studio_amenity_unit_hour: Float
     created_at: DateTime!
-    updated_at: DateTime!
+    updated_at: DateTime
 }
 type StudioPayment {
     studio_payment_id: Int!
     payment_id: Int!
     payment_name: String!
     created_at: DateTime!
-    updated_at: DateTime!
+    updated_at: DateTime
 }
 type StudioReservation {
     studio_reservation_id: Int!
     reservation_id: Int!
     reservation_name: String!
     created_at: DateTime!
-    updated_at: DateTime!
+    updated_at: DateTime
 }
 type StudioImage {
     studio_image_id: Int!
@@ -73,7 +78,7 @@ type StudioImage {
     image_name: String!
     image_path: String!
     created_at: DateTime!
-    updated_at: DateTime!
+    updated_at: DateTime
     description: String
 }
 type StudioStationRailwayExit {
@@ -88,5 +93,5 @@ type StudioStationRailwayExit {
     exit_name: String!
     minutes_from_station: Int
     created_at: DateTime!
-    updated_at: DateTime!
+    updated_at: DateTime
 }

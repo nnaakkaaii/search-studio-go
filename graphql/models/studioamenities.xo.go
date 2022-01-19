@@ -16,13 +16,14 @@ type StudioAmenities struct {
 	StudioAmenityPrice    *float64   `json:"studio_amenity_price"`     // studio_amenity_price
 	StudioAmenityUnitHour *float64   `json:"studio_amenity_unit_hour"` // studio_amenity_unit_hour
 	CreatedAt             time.Time  `json:"created_at"`               // created_at
-	UpdatedAt             time.Time  `json:"updated_at"`               // updated_at
+	UpdatedAt             *time.Time `json:"updated_at"`               // updated_at
 }
 
 // StudioAmenitiesByStudioID runs a custom query, returning results as StudioAmenities.
 func StudioAmenitiesByStudioID(ctx context.Context, db DB, studioID int) ([]*StudioAmenities, error) {
 	// query
-	const sqlstr = `SELECT sa.studio_amenity_id, ` +
+	const sqlstr = `SELECT ` +
+		`sa.studio_amenity_id, ` +
 		`sa.amenity_id, ` +
 		`a.amenity_name, ` +
 		`sa.studio_amenity_count, ` +
@@ -30,10 +31,15 @@ func StudioAmenitiesByStudioID(ctx context.Context, db DB, studioID int) ([]*Stu
 		`sa.studio_amenity_unit_hour, ` +
 		`sa.created_at, ` +
 		`sa.updated_at ` +
-		`FROM studio_amenity AS sa ` +
-		`LEFT JOIN amenity AS a ON sa.amenity_id = a.amenity_id ` +
-		`WHERE sa.studio_id = $1 ` +
-		`AND sa.is_deleted IS FALSE;`
+		`FROM ` +
+		`studio_amenity AS sa ` +
+		`LEFT JOIN ` +
+		`amenity AS a ` +
+		`ON  sa.amenity_id = a.amenity_id ` +
+		`WHERE ` +
+		`sa.studio_id = $1 ` +
+		`AND sa.is_deleted IS FALSE ` +
+		`;`
 	// run
 	logf(sqlstr, studioID)
 	rows, err := db.QueryContext(ctx, sqlstr, studioID)

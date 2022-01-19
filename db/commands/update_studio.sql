@@ -82,7 +82,6 @@ INSERT INTO studio(
     rent_by_min_hours,
     can_free_cancel,
     created_at,
-    updated_at,
     is_deleted
 )
 SELECT DISTINCT
@@ -92,7 +91,6 @@ SELECT DISTINCT
     address.address_id,
     temp_studio.rent_by_min_hours,
     temp_studio.can_free_cancel,
-    now(),
     now(),
     false
 FROM

@@ -39,7 +39,7 @@ class City(models.Model):
 
 
 class DayTemplate(models.Model):
-    day_template_id = models.AutoField(primary_key=True)
+    day_template_id = models.IntegerField(primary_key=True)
     day_template_name = models.CharField(unique=True, max_length=128)
 
     class Meta:
@@ -79,7 +79,7 @@ class Image(models.Model):
     image_name = models.CharField(max_length=512)
     image_path = models.CharField(max_length=1024)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
     is_deleted = models.BooleanField()
 
@@ -143,7 +143,7 @@ class Room(models.Model):
     max_reservable_people = models.IntegerField(blank=True, null=True)
     floor_area = models.FloatField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
     is_deleted = models.BooleanField()
 
@@ -163,7 +163,7 @@ class RoomFacility(models.Model):
     room_facility_price = models.FloatField(blank=True, null=True)
     room_facility_unit_hour = models.FloatField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
     is_deleted = models.BooleanField()
 
@@ -178,7 +178,7 @@ class RoomFloorMaterial(models.Model):
     room = models.ForeignKey(Room, models.DO_NOTHING)
     floor_material = models.ForeignKey(FloorMaterial, models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
     is_deleted = models.BooleanField()
 
@@ -210,7 +210,7 @@ class RoomSlot(models.Model):
     slot_price = models.IntegerField()
     remain_slot_count = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
     is_deleted = models.BooleanField()
 
@@ -230,7 +230,7 @@ class RoomSlotDayTemplate(models.Model):
     slot_base_price = models.FloatField()
     slot_count = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
     is_deleted = models.BooleanField()
 
@@ -293,7 +293,7 @@ class Studio(models.Model):
     rent_by_min_hours = models.FloatField()
     can_free_cancel = models.BooleanField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
     is_deleted = models.BooleanField()
 
@@ -312,7 +312,7 @@ class StudioAmenity(models.Model):
     studio_amenity_price = models.FloatField(blank=True, null=True)
     studio_amenity_unit_hour = models.FloatField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
     is_deleted = models.BooleanField()
 
@@ -332,7 +332,7 @@ class StudioFacility(models.Model):
     studio_facility_price = models.FloatField(blank=True, null=True)
     studio_facility_unit_hour = models.FloatField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
     is_deleted = models.BooleanField()
 
@@ -359,7 +359,7 @@ class StudioPayment(models.Model):
     studio = models.ForeignKey(Studio, models.DO_NOTHING)
     payment = models.ForeignKey(Payment, models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
     is_deleted = models.BooleanField()
 
@@ -374,7 +374,7 @@ class StudioReservation(models.Model):
     studio = models.ForeignKey(Studio, models.DO_NOTHING)
     reservation = models.ForeignKey(Reservation, models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
     is_deleted = models.BooleanField()
 
@@ -390,7 +390,7 @@ class StudioStationRailwayExit(models.Model):
     station_railway_exit = models.ForeignKey(StationRailwayExit, models.DO_NOTHING)
     minutes_from_station = models.IntegerField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
     is_deleted = models.BooleanField()
 

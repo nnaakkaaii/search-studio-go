@@ -14,7 +14,7 @@ type StudioImages struct {
 	ImageName     string     `json:"image_name"`      // image_name
 	ImagePath     string     `json:"image_path"`      // image_path
 	CreatedAt     time.Time  `json:"created_at"`      // created_at
-	UpdatedAt     time.Time  `json:"updated_at"`      // updated_at
+	UpdatedAt     *time.Time `json:"updated_at"`      // updated_at
 	Description   *string    `json:"description"`     // description
 }
 

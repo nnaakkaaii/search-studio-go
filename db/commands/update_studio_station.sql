@@ -118,14 +118,12 @@ INSERT INTO studio_station_railway_exit(
     station_railway_exit_id,
     minutes_from_station,
     created_at,
-    updated_at,
     is_deleted
 )
 SELECT DISTINCT
     temp_studio_station.studio_id,
     station_railway_exit.station_railway_exit_id,
     temp_studio_station.minutes_from_station,
-    now(),
     now(),
     false
 FROM

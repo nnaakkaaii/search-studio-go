@@ -9,6 +9,7 @@ CREATE TEMP TABLE temp_room_slot(
     studio_name VARCHAR,
     room_id INTEGER,
     room_name VARCHAR,
+    day_template_id INTEGER,
     day_template_name VARCHAR,
     workload FLOAT,
     time_begin TIME,
@@ -23,6 +24,25 @@ COPY temp_room_slot(studio_name, room_name, day_template_name, workload, time_be
     :path WITH ENCODING 'utf-8' CSV HEADER
 ;
 
+-- day_template_id 付与
+UPDATE
+    temp_room_slot
+SET
+    day_template_id = day_template.day_template_id
+FROM
+    day_template
+WHERE
+    temp_room_slot.day_template_name = day_template.day_template_name
+;
+
+DELETE
+FROM
+    temp_room_slot
+WHERE
+    day_template_id IS NULL
+;
+
+-- studio_id 付与
 UPDATE
     temp_room_slot
 SET
@@ -40,6 +60,7 @@ WHERE
     studio_id IS NULL
 ;
 
+-- room_id 付与
 UPDATE
     temp_room_slot
 SET
@@ -58,16 +79,56 @@ WHERE
     room_id IS NULL
 ;
 
-INSERT INTO day_template(
-    day_template_name
-)
-SELECT DISTINCT
-    day_template_name
+-- 重複行確認
+SELECT
+    *
 FROM
     temp_room_slot
-ON  CONFLICT(day_template_name) DO NOTHING
+WHERE EXISTS(
+    SELECT
+        room_id,
+        day_template_id,
+        time_begin
+    FROM
+        temp_room_slot
+    GROUP BY
+        room_id,
+        day_template_id,
+        time_begin
+    HAVING
+            COUNT(room_id) > 1
+       AND COUNT(day_template_id) > 1
+       AND COUNT(time_begin) > 1
+)
+LIMIT
+    10
 ;
 
+SELECT
+    *
+FROM
+    temp_room_slot
+WHERE EXISTS(
+    SELECT
+        room_id,
+        day_template_id,
+        time_end
+    FROM
+        temp_room_slot
+    GROUP BY
+        room_id,
+        day_template_id,
+        time_end
+    HAVING
+        COUNT(room_id) > 1
+    AND COUNT(day_template_id) > 1
+    AND COUNT(time_end) > 1
+)
+LIMIT
+    10
+;
+
+-- 代入
 INSERT INTO room_slot_day_template(
     room_id,
     day_template_id,
@@ -77,25 +138,20 @@ INSERT INTO room_slot_day_template(
     slot_base_price,
     slot_count,
     created_at,
-    updated_at,
     is_deleted
 )
 SELECT
     temp_room_slot.room_id,
-    day_template.day_template_id,
+    temp_room_slot.day_template_id,
     temp_room_slot.time_begin,
     temp_room_slot.time_end,
     temp_room_slot.workload,
     temp_room_slot.slot_base_price,
     temp_room_slot.slot_count,
     now(),
-    now(),
     false
 FROM
     temp_room_slot
-    INNER JOIN
-        day_template
-    ON  day_template.day_template_name = temp_room_slot.day_template_name
 ON  CONFLICT(room_id, day_template_id, time_begin) DO
     UPDATE
     SET
@@ -104,6 +160,8 @@ ON  CONFLICT(room_id, day_template_id, time_begin) DO
         slot_count = excluded.slot_count,
         updated_at = now()
 ;
+
+select * from room_slot_day_template limit 30;
 
 COMMIT
 ;

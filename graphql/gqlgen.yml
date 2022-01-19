@@ -58,13 +58,23 @@ models:
     fields:
       studio_facilities:
         resolver: true
+      getStudioFacilities:
+        resolver: true
       studio_amenities:
+        resolver: true
+      getStudioAmenities:
         resolver: true
       studio_payments:
         resolver: true
+      getStudioPayments:
+        resolver: true
       studio_reservations:
+        resolver: true
+      getStudioReservations:
         resolver: true
       studio_images:
         resolver: true
       studio_station_railway_exits:
+        resolver: true
+      getStudioStationRailwayExits:
         resolver: true

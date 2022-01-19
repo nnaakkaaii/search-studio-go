@@ -23,7 +23,7 @@ CREATE TABLE image (
     image_name VARCHAR(512) NOT NULL,
     image_path VARCHAR(1024) NOT NULL,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
     is_deleted BOOLEAN NOT NULL,
     UNIQUE(image_name, image_path)
@@ -74,7 +74,7 @@ CREATE TABLE studio (
     rent_by_min_hours FLOAT NOT NULL,
     can_free_cancel BOOLEAN,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
     is_deleted BOOLEAN NOT NULL,
     UNIQUE(studio_name)
@@ -93,7 +93,7 @@ CREATE TABLE studio_reservation (
     studio_id INTEGER NOT NULL REFERENCES studio(studio_id) ON DELETE RESTRICT,
     reservation_id INTEGER NOT NULL REFERENCES reservation(reservation_id) ON DELETE RESTRICT,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
     is_deleted BOOLEAN NOT NULL,
     UNIQUE (studio_id, reservation_id)
@@ -112,7 +112,7 @@ CREATE TABLE studio_payment (
     studio_id INTEGER NOT NULL REFERENCES studio(studio_id) ON DELETE RESTRICT,
     payment_id INTEGER NOT NULL REFERENCES payment(payment_id) ON DELETE RESTRICT,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
     is_deleted BOOLEAN NOT NULL,
     UNIQUE (studio_id, payment_id)
@@ -136,7 +136,7 @@ CREATE TABLE studio_amenity (
     studio_amenity_price FLOAT,
     studio_amenity_unit_hour FLOAT,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
     is_deleted BOOLEAN NOT NULL,
     UNIQUE (studio_id, amenity_id, studio_amenity_serial_number)
@@ -160,7 +160,7 @@ CREATE TABLE studio_facility (
     studio_facility_price FLOAT,
     studio_facility_unit_hour FLOAT,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
     is_deleted BOOLEAN NOT NULL,
     UNIQUE (studio_id, facility_id, studio_facility_serial_number)
@@ -231,7 +231,7 @@ CREATE TABLE studio_station_railway_exit (
     station_railway_exit_id INTEGER NOT NULL REFERENCES station_railway_exit(station_railway_exit_id) ON DELETE RESTRICT,
     minutes_from_station INTEGER,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
     is_deleted BOOLEAN NOT NULL,
     UNIQUE (studio_id, station_railway_exit_id)
@@ -257,7 +257,7 @@ CREATE TABLE room (
     max_reservable_people INTEGER,
     floor_area FLOAT,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
     is_deleted BOOLEAN NOT NULL,
     UNIQUE(studio_id, room_name)
@@ -276,7 +276,7 @@ CREATE TABLE room_floor_material (
     room_id INTEGER NOT NULL REFERENCES room(room_id) ON DELETE RESTRICT,
     floor_material_id INTEGER NOT NULL REFERENCES floor_material(floor_material_id) ON DELETE RESTRICT,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
     is_deleted BOOLEAN NOT NULL,
     UNIQUE (room_id, floor_material_id)
@@ -293,7 +293,7 @@ CREATE TABLE room_facility (
     room_facility_price FLOAT,
     room_facility_unit_hour FLOAT,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
     is_deleted BOOLEAN NOT NULL,
     UNIQUE (room_id, facility_id, room_facility_serial_number)
@@ -319,7 +319,7 @@ CREATE TABLE room_image (
 -- slotに関する情報
 
 CREATE TABLE day_template (
-    day_template_id SERIAL PRIMARY KEY,
+    day_template_id INTEGER PRIMARY KEY,
     day_template_name VARCHAR(128) NOT NULL,
     UNIQUE(day_template_name)
 );
@@ -334,7 +334,7 @@ CREATE TABLE room_slot_day_template (
     slot_base_price FLOAT NOT NULL,
     slot_count INTEGER NOT NULL,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
     is_deleted BOOLEAN NOT NULL,
     UNIQUE (room_id, day_template_id, time_begin),
@@ -351,7 +351,7 @@ CREATE TABLE room_slot (
     slot_price INTEGER NOT NULL,
     remain_slot_count INTEGER NOT NULL,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
     is_deleted BOOLEAN NOT NULL,
     UNIQUE (room_id, date, time_begin),

@@ -55,13 +55,11 @@ INSERT INTO studio_reservation(
     studio_id,
     reservation_id,
     created_at,
-    updated_at,
     is_deleted
 )
 SELECT
     studio_id,
     reservation_id,
-    now(),
     now(),
     false
 FROM

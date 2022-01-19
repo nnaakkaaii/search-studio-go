@@ -38,13 +38,11 @@ INSERT INTO image(
     image_name,
     image_path,
     created_at,
-    updated_at,
     is_deleted
 )
 SELECT
     image_name,
     image_path,
-    now(),
     now(),
     false
 FROM

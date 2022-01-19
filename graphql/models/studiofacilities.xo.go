@@ -16,13 +16,14 @@ type StudioFacilities struct {
 	StudioFacilityPrice    *float64   `json:"studio_facility_price"`     // studio_facility_price
 	StudioFacilityUnitHour *float64   `json:"studio_facility_unit_hour"` // studio_facility_unit_hour
 	CreatedAt              time.Time  `json:"created_at"`                // created_at
-	UpdatedAt              time.Time  `json:"updated_at"`                // updated_at
+	UpdatedAt              *time.Time `json:"updated_at"`                // updated_at
 }
 
 // StudioFacilitiesByStudioID runs a custom query, returning results as StudioFacilities.
 func StudioFacilitiesByStudioID(ctx context.Context, db DB, studioID int) ([]*StudioFacilities, error) {
 	// query
-	const sqlstr = `SELECT sf.studio_facility_id, ` +
+	const sqlstr = `SELECT ` +
+		`sf.studio_facility_id, ` +
 		`sf.facility_id, ` +
 		`f.facility_name, ` +
 		`sf.studio_facility_count, ` +
@@ -30,10 +31,15 @@ func StudioFacilitiesByStudioID(ctx context.Context, db DB, studioID int) ([]*St
 		`sf.studio_facility_unit_hour, ` +
 		`sf.created_at, ` +
 		`sf.updated_at ` +
-		`FROM studio_facility AS sf ` +
-		`LEFT JOIN facility AS f ON sf.facility_id = f.facility_id ` +
-		`WHERE sf.studio_id = $1 ` +
-		`AND sf.is_deleted IS FALSE;`
+		`FROM ` +
+		`studio_facility AS sf ` +
+		`LEFT JOIN ` +
+		`facility AS f ` +
+		`ON  sf.facility_id = f.facility_id ` +
+		`WHERE ` +
+		`sf.studio_id = $1 ` +
+		`AND sf.is_deleted IS FALSE ` +
+		`;`
 	// run
 	logf(sqlstr, studioID)
 	rows, err := db.QueryContext(ctx, sqlstr, studioID)

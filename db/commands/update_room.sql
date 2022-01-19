@@ -47,7 +47,6 @@ INSERT INTO room(
     max_reservable_people,
     floor_area,
     created_at,
-    updated_at,
     is_deleted
 )
 SELECT DISTINCT
@@ -57,7 +56,6 @@ SELECT DISTINCT
     min_reservable_people,
     max_reservable_people,
     floor_area,
-    now(),
     now(),
     false
 FROM
@@ -76,13 +74,11 @@ INSERT INTO room_floor_material(
     room_id,
     floor_material_id,
     created_at,
-    updated_at,
     is_deleted
 )
 SELECT DISTINCT
     room.room_id,
     floor_material.floor_material_id,
-    now(),
     now(),
     false
 FROM

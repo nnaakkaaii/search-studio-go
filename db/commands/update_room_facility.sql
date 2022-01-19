@@ -94,7 +94,6 @@ INSERT INTO room_facility(
     room_facility_price,
     room_facility_unit_hour,
     created_at,
-    updated_at,
     is_deleted
 )
 SELECT
@@ -105,7 +104,6 @@ SELECT
     room_facility_count,
     room_facility_price,
     room_facility_unit_hour,
-    now(),
     now(),
     false
 FROM

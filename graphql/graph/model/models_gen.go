@@ -3,28 +3,33 @@
 package model
 
 type Studio struct {
-	StudioID                  int                         `json:"studio_id"`
-	StudioName                string                      `json:"studio_name"`
-	Introduction              *string                     `json:"introduction"`
-	Precaution                *string                     `json:"precaution"`
-	HomepageURL               *string                     `json:"homepage_url"`
-	Contact                   string                      `json:"contact"`
-	AddressID                 int                         `json:"address_id"`
-	AddressName               string                      `json:"address_name"`
-	CityID                    int                         `json:"city_id"`
-	CityName                  string                      `json:"city_name"`
-	PrefectureID              int                         `json:"prefecture_id"`
-	PrefectureName            string                      `json:"prefecture_name"`
-	RentByMinHours            float64                     `json:"rent_by_min_hours"`
-	CanFreeCancel             *bool                       `json:"can_free_cancel"`
-	StudioFacilities          []*StudioFacility           `json:"studio_facilities"`
-	StudioAmenities           []*StudioAmenity            `json:"studio_amenities"`
-	StudioPayments            []*StudioPayment            `json:"studio_payments"`
-	StudioReservations        []*StudioReservation        `json:"studio_reservations"`
-	StudioImages              []*StudioImage              `json:"studio_images"`
-	StudioStationRailwayExits []*StudioStationRailwayExit `json:"studio_station_railway_exits"`
-	CreatedAt                 string                      `json:"created_at"`
-	UpdatedAt                 string                      `json:"updated_at"`
+	StudioID                     int                         `json:"studio_id"`
+	StudioName                   string                      `json:"studio_name"`
+	Introduction                 *string                     `json:"introduction"`
+	Precaution                   *string                     `json:"precaution"`
+	HomepageURL                  *string                     `json:"homepage_url"`
+	Contact                      string                      `json:"contact"`
+	AddressID                    int                         `json:"address_id"`
+	AddressName                  string                      `json:"address_name"`
+	CityID                       int                         `json:"city_id"`
+	CityName                     string                      `json:"city_name"`
+	PrefectureID                 int                         `json:"prefecture_id"`
+	PrefectureName               string                      `json:"prefecture_name"`
+	RentByMinHours               float64                     `json:"rent_by_min_hours"`
+	CanFreeCancel                *bool                       `json:"can_free_cancel"`
+	StudioFacilities             []*StudioFacility           `json:"studio_facilities"`
+	GetStudioFacilities          []*StudioFacility           `json:"getStudioFacilities"`
+	StudioAmenities              []*StudioAmenity            `json:"studio_amenities"`
+	GetStudioAmenities           []*StudioAmenity            `json:"getStudioAmenities"`
+	StudioPayments               []*StudioPayment            `json:"studio_payments"`
+	GetStudioPayments            []*StudioPayment            `json:"getStudioPayments"`
+	StudioReservations           []*StudioReservation        `json:"studio_reservations"`
+	GetStudioReservations        []*StudioReservation        `json:"getStudioReservations"`
+	StudioImages                 []*StudioImage              `json:"studio_images"`
+	GetStudioStationRailwayExits []*StudioStationRailwayExit `json:"getStudioStationRailwayExits"`
+	StudioStationRailwayExits    []*StudioStationRailwayExit `json:"studio_station_railway_exits"`
+	CreatedAt                    string                      `json:"created_at"`
+	UpdatedAt                    *string                     `json:"updated_at"`
 }
 
 type StudioAmenity struct {
@@ -36,7 +41,7 @@ type StudioAmenity struct {
 	StudioAmenityPrice       *float64 `json:"studio_amenity_price"`
 	StudioAmenityUnitHour    *float64 `json:"studio_amenity_unit_hour"`
 	CreatedAt                string   `json:"created_at"`
-	UpdatedAt                string   `json:"updated_at"`
+	UpdatedAt                *string  `json:"updated_at"`
 }
 
 type StudioFacility struct {
@@ -48,7 +53,7 @@ type StudioFacility struct {
 	StudioFacilityPrice       *float64 `json:"studio_facility_price"`
 	StudioFacilityUnitHour    *float64 `json:"studio_facility_unit_hour"`
 	CreatedAt                 string   `json:"created_at"`
-	UpdatedAt                 string   `json:"updated_at"`
+	UpdatedAt                 *string  `json:"updated_at"`
 }
 
 type StudioImage struct {
@@ -57,37 +62,37 @@ type StudioImage struct {
 	ImageName     string  `json:"image_name"`
 	ImagePath     string  `json:"image_path"`
 	CreatedAt     string  `json:"created_at"`
-	UpdatedAt     string  `json:"updated_at"`
+	UpdatedAt     *string `json:"updated_at"`
 	Description   *string `json:"description"`
 }
 
 type StudioPayment struct {
-	StudioPaymentID int    `json:"studio_payment_id"`
-	PaymentID       int    `json:"payment_id"`
-	PaymentName     string `json:"payment_name"`
-	CreatedAt       string `json:"created_at"`
-	UpdatedAt       string `json:"updated_at"`
+	StudioPaymentID int     `json:"studio_payment_id"`
+	PaymentID       int     `json:"payment_id"`
+	PaymentName     string  `json:"payment_name"`
+	CreatedAt       string  `json:"created_at"`
+	UpdatedAt       *string `json:"updated_at"`
 }
 
 type StudioReservation struct {
-	StudioReservationID int    `json:"studio_reservation_id"`
-	ReservationID       int    `json:"reservation_id"`
-	ReservationName     string `json:"reservation_name"`
-	CreatedAt           string `json:"created_at"`
-	UpdatedAt           string `json:"updated_at"`
+	StudioReservationID int     `json:"studio_reservation_id"`
+	ReservationID       int     `json:"reservation_id"`
+	ReservationName     string  `json:"reservation_name"`
+	CreatedAt           string  `json:"created_at"`
+	UpdatedAt           *string `json:"updated_at"`
 }
 
 type StudioStationRailwayExit struct {
-	StudioStationRailwayExitID int    `json:"studio_station_railway_exit_id"`
-	StationRailwayExitID       int    `json:"station_railway_exit_id"`
-	StationRailwayID           int    `json:"station_railway_id"`
-	StationID                  int    `json:"station_id"`
-	StationName                string `json:"station_name"`
-	RailwayID                  int    `json:"railway_id"`
-	RailwayName                string `json:"railway_name"`
-	ExitID                     int    `json:"exit_id"`
-	ExitName                   string `json:"exit_name"`
-	MinutesFromStation         *int   `json:"minutes_from_station"`
-	CreatedAt                  string `json:"created_at"`
-	UpdatedAt                  string `json:"updated_at"`
+	StudioStationRailwayExitID int     `json:"studio_station_railway_exit_id"`
+	StationRailwayExitID       int     `json:"station_railway_exit_id"`
+	StationRailwayID           int     `json:"station_railway_id"`
+	StationID                  int     `json:"station_id"`
+	StationName                string  `json:"station_name"`
+	RailwayID                  int     `json:"railway_id"`
+	RailwayName                string  `json:"railway_name"`
+	ExitID                     int     `json:"exit_id"`
+	ExitName                   string  `json:"exit_name"`
+	MinutesFromStation         *int    `json:"minutes_from_station"`
+	CreatedAt                  string  `json:"created_at"`
+	UpdatedAt                  *string `json:"updated_at"`
 }

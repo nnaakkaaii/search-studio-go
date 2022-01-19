@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-// StudioByID represents a row from 'public.studio_by_id'.
-type StudioByID struct {
+// Studios represents a row from 'public.studios'.
+type Studios struct {
 	StudioID       int        `json:"studio_id"`         // studio_id
 	StudioName     string     `json:"studio_name"`       // studio_name
 	Introduction   *string    `json:"introduction"`      // introduction
@@ -24,13 +24,14 @@ type StudioByID struct {
 	RentByMinHours float64    `json:"rent_by_min_hours"` // rent_by_min_hours
 	CanFreeCancel  *bool      `json:"can_free_cancel"`   // can_free_cancel
 	CreatedAt      time.Time  `json:"created_at"`        // created_at
-	UpdatedAt      time.Time  `json:"updated_at"`        // updated_at
+	UpdatedAt      *time.Time `json:"updated_at"`        // updated_at
 }
 
-// StudioByIDsByStudioID runs a custom query, returning results as StudioByID.
-func StudioByIDsByStudioID(ctx context.Context, db DB, studioID int) ([]*StudioByID, error) {
+// GetStudios runs a custom query, returning results as Studios.
+func GetStudios(ctx context.Context, db DB) ([]*Studios, error) {
 	// query
-	const sqlstr = `SELECT s.studio_id, ` +
+	const sqlstr = `SELECT ` +
+		`s.studio_id, ` +
 		`s.studio_name, ` +
 		`s.introduction, ` +
 		`s.precaution, ` +
@@ -46,28 +47,36 @@ func StudioByIDsByStudioID(ctx context.Context, db DB, studioID int) ([]*StudioB
 		`s.can_free_cancel, ` +
 		`s.created_at, ` +
 		`s.updated_at ` +
-		`FROM studio AS s ` +
-		`LEFT JOIN address AS a ON s.address_id = a.address_id ` +
-		`LEFT JOIN city AS c ON a.city_id = c.city_id ` +
-		`LEFT JOIN prefecture AS p ON p.prefecture_id = c.prefecture_id ` +
-		`WHERE s.studio_id = $1 ` +
-		`AND s.is_deleted IS FALSE;`
+		`FROM ` +
+		`studio AS s ` +
+		`LEFT JOIN ` +
+		`address AS a ` +
+		`ON  s.address_id = a.address_id ` +
+		`LEFT JOIN ` +
+		`city AS c ` +
+		`ON  a.city_id = c.city_id ` +
+		`LEFT JOIN ` +
+		`prefecture AS p ` +
+		`ON  p.prefecture_id = c.prefecture_id ` +
+		`WHERE ` +
+		`s.is_deleted IS FALSE ` +
+		`;`
 	// run
-	logf(sqlstr, studioID)
-	rows, err := db.QueryContext(ctx, sqlstr, studioID)
+	logf(sqlstr)
+	rows, err := db.QueryContext(ctx, sqlstr)
 	if err != nil {
 		return nil, logerror(err)
 	}
 	defer rows.Close()
 	// load results
-	var res []*StudioByID
+	var res []*Studios
 	for rows.Next() {
-		var sb StudioByID
+		var s Studios
 		// scan
-		if err := rows.Scan(&sb.StudioID, &sb.StudioName, &sb.Introduction, &sb.Precaution, &sb.HomepageURL, &sb.Contact, &sb.AddressID, &sb.AddressName, &sb.CityID, &sb.CityName, &sb.PrefectureID, &sb.PrefectureName, &sb.RentByMinHours, &sb.CanFreeCancel, &sb.CreatedAt, &sb.UpdatedAt); err != nil {
+		if err := rows.Scan(&s.StudioID, &s.StudioName, &s.Introduction, &s.Precaution, &s.HomepageURL, &s.Contact, &s.AddressID, &s.AddressName, &s.CityID, &s.CityName, &s.PrefectureID, &s.PrefectureName, &s.RentByMinHours, &s.CanFreeCancel, &s.CreatedAt, &s.UpdatedAt); err != nil {
 			return nil, logerror(err)
 		}
-		res = append(res, &sb)
+		res = append(res, &s)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, logerror(err)

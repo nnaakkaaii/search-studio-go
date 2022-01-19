@@ -73,7 +73,6 @@ INSERT INTO studio_facility(
     studio_facility_price,
     studio_facility_unit_hour,
     created_at,
-    updated_at,
     is_deleted
 )
 SELECT
@@ -84,7 +83,6 @@ SELECT
     studio_facility_count,
     studio_facility_price,
     studio_facility_unit_hour,
-    now(),
     now(),
     false
 FROM

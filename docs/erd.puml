@@ -20,7 +20,7 @@ entity "Studio" as studio {
     * 最小予約単位(h) (rent_by_min_hours) : float
     キャンセル可否 (can_free_cancel) : boolean
     * 作成日 (created_at) : datetime
-    * 更新日 (updated_at) : datetime
+    更新日 (updated_at) : datetime
     削除日 (deleted_at) : datetime
     * 削除フラグ (is_deleted) : boolean
 }
@@ -52,7 +52,7 @@ entity "StudioStationRailwayExit" as studio_station_railway_exit {
     + 駅-鉄道-出口紐付けID (station_railway_exit_id) : integer <<FK>>
     徒歩時間 (minutes_from_station) : integer
     * 作成日 (created_at) : datetime
-    * 更新日 (updated_at) : datetime
+    更新日 (updated_at) : datetime
     削除日 (deleted_at) : datetime
     * 削除フラグ (is_deleted) : boolean
 }
@@ -116,7 +116,7 @@ entity "Image" as image {
     + 画像名 (image_name) : varchar(512)
     + 画像パス (image_path) : varchar(1024)
     * 作成日 (created_at) : datetime
-    * 更新日 (updated_at) : datetime
+    更新日 (updated_at) : datetime
     削除日 (deleted_at) : datetime
     * 削除フラグ (is_deleted) : boolean
 }
@@ -131,7 +131,7 @@ entity "Room" as room {
     最大予約可能人数 (max_reservable_people) : integer
     床面積 (floor_area) : float
     * 作成日 (created_at) : datetime
-    * 更新日 (updated_at) : datetime
+    更新日 (updated_at) : datetime
     削除日 (deleted_at) : datetime
     * 削除フラグ (is_deleted) : boolean
 }
@@ -155,7 +155,7 @@ entity "RoomSlot" as room_slot {
     * 予約枠料金 (slot_price) : float
     * 残り枠数 (remain_slot_count) : integer
     * 作成日 (created_at) : datetime
-    * 更新日 (updated_at) : datetime
+    更新日 (updated_at) : datetime
     削除日 (deleted_at) : datetime
     * 削除フラグ (is_deleted) : boolean
 }
@@ -171,7 +171,7 @@ entity "RoomSlotDayTemplate" as room_slot_day_template {
     * 予約枠基本料金 (slot_base_price) : float
     * 予約枠母数 (slot_count) : integer
     * 作成日 (created_at) : datetime
-    * 更新日 (updated_at) : datetime
+    更新日 (updated_at) : datetime
     削除日 (deleted_at) : datetime
     * 削除フラグ (is_deleted) : boolean
 }
@@ -193,7 +193,7 @@ entity "RoomFacility" as room_facility {
     料金 (room_facility_price) : float
     単位時間(h) (room_facility_unit_hour) : float
     * 作成日 (created_at) : datetime
-    * 更新日 (updated_at) : datetime
+    更新日 (updated_at) : datetime
     削除日 (deleted_at) : datetime
     * 削除フラグ (is_deleted) : boolean
 }
@@ -204,7 +204,7 @@ entity "RoomFloorMaterial" as room_floor_material {
     + 部屋ID (room_id) : integer <<FK>>
     + 床素材ID (floor_material_id) : integer <<FK>>
     * 作成日 (created_at) : datetime
-    * 更新日 (updated_at) : datetime
+    更新日 (updated_at) : datetime
     削除日 (deleted_at) : datetime
     * 削除フラグ (is_deleted) : boolean
 }
@@ -226,7 +226,7 @@ entity "StudioAmenity" as studio_amenity {
     料金 (studio_amenity_price) : float
     単位時間(h) (studio_amenity_unit_hour) : float  /'「単位時間」だけ借りると「料金」が発生'/
     * 作成日 (created_at) : datetime
-    * 更新日 (updated_at) : datetime
+    更新日 (updated_at) : datetime
     削除日 (deleted_at) : datetime
     * 削除フラグ (is_deleted) : boolean
 }
@@ -248,7 +248,7 @@ entity "StudioFacility" as studio_facility {
     料金 (studio_facility_price) : float
     単位時間(h) (studio_facility_unit_hour) : float  /'「単位時間」だけ借りると「料金」が発生'/
     * 作成日 (created_at) : datetime
-    * 更新日 (updated_at) : datetime
+    更新日 (updated_at) : datetime
     削除日 (deleted_at) : datetime
     * 削除フラグ (is_deleted) : boolean
 }
@@ -265,7 +265,7 @@ entity "StudioPayment" as studio_payment {
     + スタジオID (studio_id) : integer <<FK>>
     + 支払い方法ID (payment_id) : integer <<FK>>
     * 作成日 (created_at) : datetime
-    * 更新日 (updated_at) : datetime
+    更新日 (updated_at) : datetime
     削除日 (deleted_at) : datetime
     * 削除フラグ (is_deleted) : boolean
 }
@@ -282,7 +282,7 @@ entity "StudioReservation" as studio_reservation {
     + スタジオID (studio_id) : integer <<FK>>
     + 予約方法ID (reservation_id) : integer <<FK>>
     * 作成日 (created_at) : datetime
-    * 更新日 (updated_at) : datetime
+    更新日 (updated_at) : datetime
     削除日 (deleted_at) : datetime
     * 削除フラグ (is_deleted) : boolean
 }

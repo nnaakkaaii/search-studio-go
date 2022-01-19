@@ -73,7 +73,6 @@ INSERT INTO studio_amenity(
     studio_amenity_price,
     studio_amenity_unit_hour,
     created_at,
-    updated_at,
     is_deleted
 )
 SELECT
@@ -84,7 +83,6 @@ SELECT
     studio_amenity_count,
     studio_amenity_price,
     studio_amenity_unit_hour,
-    now(),
     now(),
     false
 FROM
