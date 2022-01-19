@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"time"
 )
 
 const timeFormat = "15:04:05"
@@ -32,13 +31,6 @@ func strs2Query(key string, value []string) string {
 	return ret
 }
 
-func int2Query(key string, value *int) string {
-	if value == nil {
-		return ``
-	}
-	return fmt.Sprintf(`AND %s = %d `, key, *value)
-}
-
 func ints2Query(key string, value []int) string {
 	if len(value) == 0 {
 		return ``
@@ -55,6 +47,20 @@ func ints2Query(key string, value []int) string {
 		}
 	}
 	return ret
+}
+
+func minStr2Query(key string, value *string) string {
+	if value == nil {
+		return ``
+	}
+	return fmt.Sprintf(`AND %s >= '%s'`, key, *value)
+}
+
+func maxStr2Query(key string, value *string) string {
+	if value == nil {
+		return ``
+	}
+	return fmt.Sprintf(`AND %s <= '%s'`, key, *value)
 }
 
 func minInt2Query(key string, value *int) string {
@@ -90,18 +96,4 @@ func minFloat2Query(key string, value *float64) string {
 		return ``
 	}
 	return fmt.Sprintf(`AND %s >= %f `, key, *value)
-}
-
-func minOptionalTime2Query(key string, value *time.Time) string {
-	if value == nil {
-		return ``
-	}
-	return fmt.Sprintf(`AND %s >= %s`, key, value.Format(timeFormat))
-}
-
-func maxOptionalTime2Query(key string, value *time.Time) string {
-	if value == nil {
-		return ``
-	}
-	return fmt.Sprintf(`AND %s <= %s`, key, value.Format(timeFormat))
 }

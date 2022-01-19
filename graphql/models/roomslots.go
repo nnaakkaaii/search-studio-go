@@ -2,11 +2,10 @@ package models
 
 import (
 	"context"
-	"time"
 )
 
 // RoomSlotsByRoomIDByQueries runs a custom query, returning results as RoomSlots.
-func RoomSlotsByRoomIDByQueries(ctx context.Context, db DB, roomID int, dates []string, timeBegin *time.Time, timeEnd *time.Time, minSlotPrice *float64, minRemainSlotCount *int) ([]*RoomSlots, error) {
+func RoomSlotsByRoomIDByQueries(ctx context.Context, db DB, roomID int, dates []string, timeBegin *string, timeEnd *string, minSlotPrice *float64, minRemainSlotCount *int) ([]*RoomSlots, error) {
 	// query
 	var sqlstr = `SELECT ` +
 		`room_slot_id, ` +
@@ -24,8 +23,8 @@ func RoomSlotsByRoomIDByQueries(ctx context.Context, db DB, roomID int, dates []
 		`room_id = $1 ` +
 		`AND is_deleted IS FALSE ` +
 		strs2Query("date", dates) +
-		maxOptionalTime2Query("time_begin", timeBegin) +
-		minOptionalTime2Query("time_end", timeEnd) +
+		minStr2Query("time_begin", timeBegin) +
+		maxStr2Query("time_end", timeEnd) +
 		minFloat2Query("slot_price", minSlotPrice) +
 		minInt2Query("remain_slot_count", minRemainSlotCount) +
 		`;`

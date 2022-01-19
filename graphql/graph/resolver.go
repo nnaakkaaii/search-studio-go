@@ -20,6 +20,7 @@ var db *sql.DB
 
 const dateFormat = "2006-01-02"
 const datetimeFormat = "2006-01-02 15:04:05"
+const timeFormat = "15:04:05"
 
 func init() {
 	conn, err := sql.Open("postgres", "host=db port=5432 user=root password=postgres dbname=studio sslmode=disable")
@@ -37,19 +38,15 @@ func toD(d time.Time) string {
 	return d.Format(dateFormat)
 }
 
+func toT(t time.Time) string {
+	return t.Format(timeFormat)
+}
+
 func toPtrDt(d *time.Time) *string {
 	if d == nil {
 		return nil
 	}
 	tmp := toDt(*d)
-	return &tmp
-}
-
-func toPtrD(d *time.Time) *string {
-	if d == nil {
-		return nil
-	}
-	tmp := toD(*d)
 	return &tmp
 }
 
@@ -125,8 +122,8 @@ func (r *Resolver) roomSlots(ctx context.Context, obj *model.Room) ([]*model.Roo
 		resp = append(resp, &model.RoomSlot{
 			RoomSlotID:      v.RoomSlotID,
 			Date:            toD(v.Date),
-			TimeBegin:       v.TimeBegin,
-			TimeEnd:         v.TimeEnd,
+			TimeBegin:       toT(v.TimeBegin),
+			TimeEnd:         toT(v.TimeEnd),
 			Workload:        v.Workload,
 			SlotPrice:       v.SlotPrice,
 			RemainSlotCount: v.RemainSlotCount,
@@ -137,7 +134,7 @@ func (r *Resolver) roomSlots(ctx context.Context, obj *model.Room) ([]*model.Roo
 	return resp, nil
 }
 
-func (r *Resolver) getRoomSlots(ctx context.Context, obj *model.Room, dates []string, timeBegin *time.Time, timeEnd *time.Time, minSlotPrice *float64, minRemainSlotCount *int) ([]*model.RoomSlot, error) {
+func (r *Resolver) getRoomSlots(ctx context.Context, obj *model.Room, dates []string, timeBegin *string, timeEnd *string, minSlotPrice *float64, minRemainSlotCount *int) ([]*model.RoomSlot, error) {
 	roomID := obj.RoomID
 	rs, err := models.RoomSlotsByRoomIDByQueries(ctx, db, roomID, dates, timeBegin, timeEnd, minSlotPrice, minRemainSlotCount)
 	if err != nil {
@@ -149,8 +146,8 @@ func (r *Resolver) getRoomSlots(ctx context.Context, obj *model.Room, dates []st
 		resp = append(resp, &model.RoomSlot{
 			RoomSlotID:      v.RoomSlotID,
 			Date:            toD(v.Date),
-			TimeBegin:       v.TimeBegin,
-			TimeEnd:         v.TimeEnd,
+			TimeBegin:       toT(v.TimeBegin),
+			TimeEnd:         toT(v.TimeEnd),
 			Workload:        v.Workload,
 			SlotPrice:       v.SlotPrice,
 			RemainSlotCount: v.RemainSlotCount,
@@ -281,14 +278,15 @@ func (r *Resolver) studioFacilities(ctx context.Context, obj *model.Studio) ([]*
 	resp := make([]*model.StudioFacility, 0, len(sf))
 	for _, v := range sf {
 		resp = append(resp, &model.StudioFacility{
-			StudioFacilityID:       v.StudioFacilityID,
-			FacilityID:             v.FacilityID,
-			FacilityName:           v.FacilityName,
-			StudioFacilityCount:    v.StudioFacilityCount,
-			StudioFacilityPrice:    v.StudioFacilityPrice,
-			StudioFacilityUnitHour: v.StudioFacilityUnitHour,
-			CreatedAt:              toDt(v.CreatedAt),
-			UpdatedAt:              toPtrDt(v.UpdatedAt),
+			StudioFacilityID:          v.StudioFacilityID,
+			FacilityID:                v.FacilityID,
+			FacilityName:              v.FacilityName,
+			StudioFacilityDescription: v.StudioFacilityDescription,
+			StudioFacilityCount:       v.StudioFacilityCount,
+			StudioFacilityPrice:       v.StudioFacilityPrice,
+			StudioFacilityUnitHour:    v.StudioFacilityUnitHour,
+			CreatedAt:                 toDt(v.CreatedAt),
+			UpdatedAt:                 toPtrDt(v.UpdatedAt),
 		})
 	}
 	return resp, nil
@@ -304,14 +302,15 @@ func (r *Resolver) getStudioFacilities(ctx context.Context, obj *model.Studio, f
 	resp := make([]*model.StudioFacility, 0, len(sf))
 	for _, v := range sf {
 		resp = append(resp, &model.StudioFacility{
-			StudioFacilityID:       v.StudioFacilityID,
-			FacilityID:             v.FacilityID,
-			FacilityName:           v.FacilityName,
-			StudioFacilityCount:    v.StudioFacilityCount,
-			StudioFacilityPrice:    v.StudioFacilityPrice,
-			StudioFacilityUnitHour: v.StudioFacilityUnitHour,
-			CreatedAt:              toDt(v.CreatedAt),
-			UpdatedAt:              toPtrDt(v.UpdatedAt),
+			StudioFacilityID:          v.StudioFacilityID,
+			FacilityID:                v.FacilityID,
+			FacilityName:              v.FacilityName,
+			StudioFacilityDescription: v.StudioFacilityDescription,
+			StudioFacilityCount:       v.StudioFacilityCount,
+			StudioFacilityPrice:       v.StudioFacilityPrice,
+			StudioFacilityUnitHour:    v.StudioFacilityUnitHour,
+			CreatedAt:                 toDt(v.CreatedAt),
+			UpdatedAt:                 toPtrDt(v.UpdatedAt),
 		})
 	}
 	return resp, nil
@@ -327,14 +326,15 @@ func (r *Resolver) studioAmenities(ctx context.Context, obj *model.Studio) ([]*m
 	resp := make([]*model.StudioAmenity, 0, len(sa))
 	for _, v := range sa {
 		resp = append(resp, &model.StudioAmenity{
-			StudioAmenityID:       v.StudioAmenityID,
-			AmenityID:             v.AmenityID,
-			AmenityName:           v.AmenityName,
-			StudioAmenityCount:    v.StudioAmenityCount,
-			StudioAmenityPrice:    v.StudioAmenityPrice,
-			StudioAmenityUnitHour: v.StudioAmenityUnitHour,
-			CreatedAt:             toDt(v.CreatedAt),
-			UpdatedAt:             toPtrDt(v.UpdatedAt),
+			StudioAmenityID:          v.StudioAmenityID,
+			AmenityID:                v.AmenityID,
+			AmenityName:              v.AmenityName,
+			StudioAmenityDescription: v.StudioAmenityDescription,
+			StudioAmenityCount:       v.StudioAmenityCount,
+			StudioAmenityPrice:       v.StudioAmenityPrice,
+			StudioAmenityUnitHour:    v.StudioAmenityUnitHour,
+			CreatedAt:                toDt(v.CreatedAt),
+			UpdatedAt:                toPtrDt(v.UpdatedAt),
 		})
 	}
 	return resp, nil
@@ -350,14 +350,15 @@ func (r *Resolver) getStudioAmenities(ctx context.Context, obj *model.Studio, am
 	resp := make([]*model.StudioAmenity, 0, len(sa))
 	for _, v := range sa {
 		resp = append(resp, &model.StudioAmenity{
-			StudioAmenityID:       v.StudioAmenityID,
-			AmenityID:             v.AmenityID,
-			AmenityName:           v.AmenityName,
-			StudioAmenityCount:    v.StudioAmenityCount,
-			StudioAmenityPrice:    v.StudioAmenityPrice,
-			StudioAmenityUnitHour: v.StudioAmenityUnitHour,
-			CreatedAt:             toDt(v.CreatedAt),
-			UpdatedAt:             toPtrDt(v.UpdatedAt),
+			StudioAmenityID:          v.StudioAmenityID,
+			AmenityID:                v.AmenityID,
+			AmenityName:              v.AmenityName,
+			StudioAmenityDescription: v.StudioAmenityDescription,
+			StudioAmenityCount:       v.StudioAmenityCount,
+			StudioAmenityPrice:       v.StudioAmenityPrice,
+			StudioAmenityUnitHour:    v.StudioAmenityUnitHour,
+			CreatedAt:                toDt(v.CreatedAt),
+			UpdatedAt:                toPtrDt(v.UpdatedAt),
 		})
 	}
 	return resp, nil

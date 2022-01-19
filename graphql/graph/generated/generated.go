@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
-	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -55,7 +54,7 @@ type ComplexityRoot struct {
 		FloorArea             func(childComplexity int) int
 		GetRoomFacilities     func(childComplexity int, facilityNames []string) int
 		GetRoomFloorMaterials func(childComplexity int, floorMaterialNames []string) int
-		GetRoomSlots          func(childComplexity int, dates []string, timeBegin *time.Time, timeEnd *time.Time, minSlotPrice *float64, minRemainSlotCount *int) int
+		GetRoomSlots          func(childComplexity int, dates []string, timeBegin *string, timeEnd *string, minSlotPrice *float64, minRemainSlotCount *int) int
 		MaxReservablePeople   func(childComplexity int) int
 		MinReservablePeople   func(childComplexity int) int
 		ReservationURL        func(childComplexity int) int
@@ -214,7 +213,7 @@ type QueryResolver interface {
 }
 type RoomResolver interface {
 	RoomSlots(ctx context.Context, obj *model.Room) ([]*model.RoomSlot, error)
-	GetRoomSlots(ctx context.Context, obj *model.Room, dates []string, timeBegin *time.Time, timeEnd *time.Time, minSlotPrice *float64, minRemainSlotCount *int) ([]*model.RoomSlot, error)
+	GetRoomSlots(ctx context.Context, obj *model.Room, dates []string, timeBegin *string, timeEnd *string, minSlotPrice *float64, minRemainSlotCount *int) ([]*model.RoomSlot, error)
 	RoomFloorMaterials(ctx context.Context, obj *model.Room) ([]*model.RoomFloorMaterial, error)
 	GetRoomFloorMaterials(ctx context.Context, obj *model.Room, floorMaterialNames []string) ([]*model.RoomFloorMaterial, error)
 	RoomFacilities(ctx context.Context, obj *model.Room) ([]*model.RoomFacility, error)
@@ -324,7 +323,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Room.GetRoomSlots(childComplexity, args["dates"].([]string), args["time_begin"].(*time.Time), args["time_end"].(*time.Time), args["min_slot_price"].(*float64), args["min_remain_slot_count"].(*int)), true
+		return e.complexity.Room.GetRoomSlots(childComplexity, args["dates"].([]string), args["time_begin"].(*string), args["time_end"].(*string), args["min_slot_price"].(*float64), args["min_remain_slot_count"].(*int)), true
 
 	case "Room.max_reservable_people":
 		if e.complexity.Room.MaxReservablePeople == nil {
@@ -1220,7 +1219,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 var sources = []*ast.Source{
 	{Name: "graph/schema.graphqls", Input: `scalar DateTime
 scalar Date
-scalar Time
+scalar MyTime
 type Query {
     getStudioByID(studio_id: Int!): Studio
     getStudios(studio_names: [String!], prefecture_ids: [Int!], city_ids: [Int!]): [Studio!]
@@ -1329,7 +1328,7 @@ type Room {
     created_at: DateTime!
     updated_at: DateTime
     room_slots: [RoomSlot!]
-    getRoomSlots(dates: [Date!], time_begin: Time, time_end: Time, min_slot_price: Float, min_remain_slot_count: Int): [RoomSlot!]
+    getRoomSlots(dates: [Date!], time_begin: MyTime, time_end: MyTime, min_slot_price: Float, min_remain_slot_count: Int): [RoomSlot!]
     room_floor_materials: [RoomFloorMaterial!]
     getRoomFloorMaterials(floor_material_names: [String!]): [RoomFloorMaterial!]
     room_facilities: [RoomFacility!]
@@ -1339,8 +1338,8 @@ type Room {
 type RoomSlot {
     room_slot_id: Int!
     date: Date!
-    time_begin: Time!
-    time_end: Time!
+    time_begin: MyTime!
+    time_end: MyTime!
     workload: Float!
     slot_price: Float!
     remain_slot_count: Int!
@@ -1486,19 +1485,19 @@ func (ec *executionContext) field_Room_getRoomSlots_args(ctx context.Context, ra
 		}
 	}
 	args["dates"] = arg0
-	var arg1 *time.Time
+	var arg1 *string
 	if tmp, ok := rawArgs["time_begin"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("time_begin"))
-		arg1, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, tmp)
+		arg1, err = ec.unmarshalOMyTime2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
 	args["time_begin"] = arg1
-	var arg2 *time.Time
+	var arg2 *string
 	if tmp, ok := rawArgs["time_end"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("time_end"))
-		arg2, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, tmp)
+		arg2, err = ec.unmarshalOMyTime2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2169,7 +2168,7 @@ func (ec *executionContext) _Room_getRoomSlots(ctx context.Context, field graphq
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Room().GetRoomSlots(rctx, obj, args["dates"].([]string), args["time_begin"].(*time.Time), args["time_end"].(*time.Time), args["min_slot_price"].(*float64), args["min_remain_slot_count"].(*int))
+		return ec.resolvers.Room().GetRoomSlots(rctx, obj, args["dates"].([]string), args["time_begin"].(*string), args["time_end"].(*string), args["min_slot_price"].(*float64), args["min_remain_slot_count"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3168,9 +3167,9 @@ func (ec *executionContext) _RoomSlot_time_begin(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(time.Time)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+	return ec.marshalNMyTime2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _RoomSlot_time_end(ctx context.Context, field graphql.CollectedField, obj *model.RoomSlot) (ret graphql.Marshaler) {
@@ -3203,9 +3202,9 @@ func (ec *executionContext) _RoomSlot_time_end(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.(time.Time)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+	return ec.marshalNMyTime2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _RoomSlot_workload(ctx context.Context, field graphql.CollectedField, obj *model.RoomSlot) (ret graphql.Marshaler) {
@@ -8371,6 +8370,21 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
+func (ec *executionContext) unmarshalNMyTime2string(ctx context.Context, v interface{}) (string, error) {
+	res, err := graphql.UnmarshalString(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNMyTime2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	res := graphql.MarshalString(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) marshalNRoom2ᚖgraphqlᚋgraphᚋmodelᚐRoom(ctx context.Context, sel ast.SelectionSet, v *model.Room) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -8504,21 +8518,6 @@ func (ec *executionContext) marshalNStudioStationRailwayExit2ᚖgraphqlᚋgraph�
 		return graphql.Null
 	}
 	return ec._StudioStationRailwayExit(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
-	res, err := graphql.UnmarshalTime(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
-	res := graphql.MarshalTime(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-	}
-	return res
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
@@ -8929,6 +8928,21 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 		return graphql.Null
 	}
 	return graphql.MarshalInt(*v)
+}
+
+func (ec *executionContext) unmarshalOMyTime2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalString(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOMyTime2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalString(*v)
 }
 
 func (ec *executionContext) marshalORoom2ᚕᚖgraphqlᚋgraphᚋmodelᚐRoomᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Room) graphql.Marshaler {
@@ -9566,21 +9580,6 @@ func (ec *executionContext) marshalOStudioStationRailwayExit2ᚕᚖgraphqlᚋgra
 	}
 
 	return ret
-}
-
-func (ec *executionContext) unmarshalOTime2ᚖtimeᚐTime(ctx context.Context, v interface{}) (*time.Time, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := graphql.UnmarshalTime(v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel ast.SelectionSet, v *time.Time) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return graphql.MarshalTime(*v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

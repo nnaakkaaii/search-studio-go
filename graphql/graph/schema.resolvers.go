@@ -7,7 +7,6 @@ import (
 	"context"
 	"graphql/graph/generated"
 	"graphql/graph/model"
-	"time"
 )
 
 func (r *queryResolver) GetStudioByID(ctx context.Context, studioID int) (*model.Studio, error) {
@@ -22,7 +21,7 @@ func (r *roomResolver) RoomSlots(ctx context.Context, obj *model.Room) ([]*model
 	return r.roomSlots(ctx, obj)
 }
 
-func (r *roomResolver) GetRoomSlots(ctx context.Context, obj *model.Room, dates []string, timeBegin *time.Time, timeEnd *time.Time, minSlotPrice *float64, minRemainSlotCount *int) ([]*model.RoomSlot, error) {
+func (r *roomResolver) GetRoomSlots(ctx context.Context, obj *model.Room, dates []string, timeBegin *string, timeEnd *string, minSlotPrice *float64, minRemainSlotCount *int) ([]*model.RoomSlot, error) {
 	return r.getRoomSlots(ctx, obj, dates, timeBegin, timeEnd, minSlotPrice, minRemainSlotCount)
 }
 

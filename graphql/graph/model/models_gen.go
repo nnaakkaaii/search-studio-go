@@ -2,10 +2,6 @@
 
 package model
 
-import (
-	"time"
-)
-
 type Room struct {
 	RoomID                int                  `json:"room_id"`
 	RoomName              string               `json:"room_name"`
@@ -55,15 +51,15 @@ type RoomImage struct {
 }
 
 type RoomSlot struct {
-	RoomSlotID      int       `json:"room_slot_id"`
-	Date            string    `json:"date"`
-	TimeBegin       time.Time `json:"time_begin"`
-	TimeEnd         time.Time `json:"time_end"`
-	Workload        float64   `json:"workload"`
-	SlotPrice       float64   `json:"slot_price"`
-	RemainSlotCount int       `json:"remain_slot_count"`
-	CreatedAt       string    `json:"created_at"`
-	UpdatedAt       *string   `json:"updated_at"`
+	RoomSlotID      int     `json:"room_slot_id"`
+	Date            string  `json:"date"`
+	TimeBegin       string  `json:"time_begin"`
+	TimeEnd         string  `json:"time_end"`
+	Workload        float64 `json:"workload"`
+	SlotPrice       float64 `json:"slot_price"`
+	RemainSlotCount int     `json:"remain_slot_count"`
+	CreatedAt       string  `json:"created_at"`
+	UpdatedAt       *string `json:"updated_at"`
 }
 
 type Studio struct {

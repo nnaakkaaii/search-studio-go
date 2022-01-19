@@ -1,6 +1,6 @@
 scalar DateTime
 scalar Date
-scalar Time
+scalar MyTime
 type Query {
     getStudioByID(studio_id: Int!): Studio
     getStudios(studio_names: [String!], prefecture_ids: [Int!], city_ids: [Int!]): [Studio!]
@@ -109,7 +109,7 @@ type Room {
     created_at: DateTime!
     updated_at: DateTime
     room_slots: [RoomSlot!]
-    getRoomSlots(dates: [Date!], time_begin: Time, time_end: Time, min_slot_price: Float, min_remain_slot_count: Int): [RoomSlot!]
+    getRoomSlots(dates: [Date!], time_begin: MyTime, time_end: MyTime, min_slot_price: Float, min_remain_slot_count: Int): [RoomSlot!]
     room_floor_materials: [RoomFloorMaterial!]
     getRoomFloorMaterials(floor_material_names: [String!]): [RoomFloorMaterial!]
     room_facilities: [RoomFacility!]
@@ -119,8 +119,8 @@ type Room {
 type RoomSlot {
     room_slot_id: Int!
     date: Date!
-    time_begin: Time!
-    time_end: Time!
+    time_begin: MyTime!
+    time_end: MyTime!
     workload: Float!
     slot_price: Float!
     remain_slot_count: Int!
