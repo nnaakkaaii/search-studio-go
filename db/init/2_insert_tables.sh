@@ -1,6 +1,6 @@
 psql -U root -d studio < "/commands/update_amenity_mst.sql" -v path="'/data/studio - アメニティ一覧.csv'" \
   && psql -U root -d studio < "/commands/update_city_mst.sql" -v path="'/data/studio - 市区町村一覧.csv'" \
-  && psql -U root -d studio < "/commands/update_day_template_mst.sql" -v path="'/data/day_template.csv'" \
+  && psql -U root -d studio < "/commands/update_day_template_mst.sql" -v path="'/data/studio - 曜日一覧.csv'" \
   && psql -U root -d studio < "/commands/update_facility_mst.sql" -v path="'/data/studio - 部屋設備一覧.csv'" \
   && psql -U root -d studio < "/commands/update_facility_mst.sql" -v path="'/data/studio - スタジオ設備一覧.csv'" \
   && psql -U root -d studio < "/commands/update_floor_material_mst.sql" -v path="'/data/studio - 部屋床素材一覧.csv'" \
@@ -18,5 +18,4 @@ psql -U root -d studio < "/commands/update_amenity_mst.sql" -v path="'/data/stud
   && psql -U root -d studio < "/commands/update_room.sql" -v path="'/data/studio - 部屋.csv'" \
   && psql -U root -d studio < "/commands/update_room_facility.sql" -v path="'/data/studio - 部屋設備.csv'" \
   && psql -U root -d studio < "/commands/update_room_image.sql" -v path="'/data/studio - 部屋画像.csv'" \
-  && psql -U root -d studio < "/commands/update_room_slot.sql" -v path="'/data/studio - 部屋予約_processed.csv'" \
-  && psql -U root -d studio < "/commands/update_day_template_mst.sql" -v path="'/data/studio - 曜日一覧.csv'"
+  && psql -U root -d studio < "/commands/update_room_slot.sql" -v path="'/data/studio - 部屋予約_processed.csv'"
