@@ -1,4 +1,4 @@
--- psql -U root -d studio < "/commands/update_day_template_mst.sql" -v path="'/data/day_template.csv'"
+-- psql -U root -d studio < "/commands/update_day_template_mst.sql" -v path="'/data/studio - 曜日一覧.csv'"
 
 BEGIN
 ;
