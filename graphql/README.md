@@ -10,6 +10,14 @@ $ ~/go/bin/xo query 'postgresql://root:postgres@127.0.0.1:5432/studio?sslmode=di
 ENDSQL
 ```
 
+## xo
+
+データベースのスキーマを変更したあと & structを新たに作成するあとは、 `xo.sh` を実行
+
+## gqlgen
+
+gqlgen.ymlやschema.graphqlsを変更した場合は、 `gqlgen generate` を実行
+
 ### studio
 
 ```graphql
