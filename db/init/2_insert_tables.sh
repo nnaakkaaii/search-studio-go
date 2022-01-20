@@ -18,4 +18,5 @@ psql -U root -d studio < "/commands/update_amenity_mst.sql" -v path="'/data/stud
   && psql -U root -d studio < "/commands/update_room.sql" -v path="'/data/studio - 部屋.csv'" \
   && psql -U root -d studio < "/commands/update_room_facility.sql" -v path="'/data/studio - 部屋設備.csv'" \
   && psql -U root -d studio < "/commands/update_room_image.sql" -v path="'/data/studio - 部屋画像.csv'" \
-  && psql -U root -d studio < "/commands/update_room_slot.sql" -v path="'/data/studio - 部屋予約_processed.csv'"
+  && psql -U root -d studio < "/commands/update_room_slot.sql" -v path="'/data/studio - 部屋予約_processed.csv'" \
+  && psql -U root -d studio < "/commands/insert_slots_from_template.sql"
