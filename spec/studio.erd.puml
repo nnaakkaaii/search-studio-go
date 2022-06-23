@@ -1,0 +1,152 @@
+@startuml
+
+entity "スタジオ" as Studio {
+    * id : integer
+    --
+    * name : string
+    * introduction : string
+    precaution : string
+    homepage_url : string
+    contact : string
+    * address_id : integer <<FK>>
+    * payments : string
+    * reservations : string
+    * min_reservable_hours : float
+    * free_cancel_date : integer
+}
+
+entity "住所" as Address {
+    * id : integer
+    --
+    * full_address : string
+    * latitude : float
+    * longitude : float
+    * city_id : integer <<FK>>
+    * station_id : integer <<FK>>
+}
+
+entity "市区町村" as City {
+    * id : integer
+    --
+    * name : string
+    * prefecture_id : integer <<FK>>
+}
+
+entity "都道府県" as Prefecture {
+    * id : integer
+    --
+    * name : string
+}
+
+entity "駅" as Station {
+    * id : integer
+    --
+    * name : string
+}
+
+entity "住所-駅" as AddressStation {
+    * address_id : integer <<FK>>
+    * station_id : integer <<FK>>
+    --
+    * minutes_from_station : number
+}
+
+entity "駅-路線" as StationLine {
+    * station_id : integer <<FK>>
+    * line_id : integer <<FK>>
+}
+
+entity "路線" as Line {
+    * id : integer
+    --
+    * name : string
+}
+
+entity "スタジオ画像" as StudioImage {
+    * studio_id : integer <<FK>>
+    * studio_image_id : integer
+    --
+    * name : string
+    * description : string
+    * path : string
+}
+
+entity "スタジオ施設" as StudioFacility {
+     * id : integer
+     --
+     * name : string
+     * icon_path : string
+}
+
+entity "スタジオ-スタジオ施設" as StudioStudioFacility {
+    * studio_id : integer <<FK>>
+    * studio_facility_id : integer <<FK>>
+}
+
+entity "アメニティ" as Amenity {
+    * id : integer
+    --
+    * name : string
+    * icon_path : string
+}
+
+entity "スタジオ-アメニティ" as StudioAmenity {
+    * studio_id : integer <<FK>>
+    * amenity_id : integer <<FK>>
+}
+
+entity "部屋" as Room {
+    * studio_id : integer <<FK>>
+    * room_id : integer
+    --
+    * name : string
+    reservation_url : string
+    min_reservable_people : integer
+    max_reservable_people : integer
+    floor_area : float
+    floor_material : string
+    mirror_length : float
+}
+
+entity "部屋画像" as RoomImage {
+    * studio_id : integer <<FK>>
+    * room_id : integer <<FK>>
+    * room_image_id : integer
+    --
+    * name : string
+    * description : string
+    * path : string
+}
+
+entity "部屋施設" as RoomFacility {
+    * id : integer
+    --
+    * name : string
+    * icon_path : string
+}
+
+entity "部屋-部屋施設" as RoomRoomFacility {
+    * studio_id : integer <<FK>>
+    * room_id : integer <<FK>>
+    * room_facility_id : integer <<FK>>
+}
+
+
+Studio ||--|| Address
+City ||--|{ Address
+Prefecture ||--|{ City
+Address ||--|{ AddressStation
+Station ||--|{ AddressStation
+Station ||--|{ StationLine
+Line ||--|{ StationLine
+Studio ||--|{ StudioImage
+Studio ||--|{ Room
+Studio ||--|{ StudioStudioFacility
+StudioFacility ||--|{ StudioStudioFacility
+Studio ||--|{ StudioAmenity
+Amenity ||--|{ StudioAmenity
+Room ||--|{ RoomImage
+Room ||--|{ RoomRoomFacility
+RoomFacility ||--|{ RoomRoomFacility
+
+@enduml

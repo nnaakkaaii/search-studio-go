@@ -1,0 +1,1356 @@
+openapi: "3.0.0"
+info:
+  title: studio search
+  version: 0.0.1
+paths:
+  /api/admin/login:
+    post:
+      tags:
+        - "admin"
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+          description: "Cognito ユーザープールから取得した OIDC トークンで Bearer 認証"
+          example: "Authorization: Bearer {jwt from cognito}"
+      responses:
+        200:
+          description: "ログイン完了"
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: session token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+  /api/admin/logout:
+    post:
+      tags:
+        - "admin"
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "ログアウト完了"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+  /api/admin/studios:
+    get:
+      tags:
+        - "admin"
+      parameters:
+        - $ref: "#/components/parameters/page_query"
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "スタジオの一覧取得"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                  last_page:
+                    type: integer
+                  page:
+                    type: integer
+                  total:
+                    type: integer
+    post:
+      tags:
+        - "admin"
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Studio"
+      responses:
+        200:
+          description: "スタジオの詳細情報"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Studio"
+  /api/admin/studios/{studioId}:
+    parameters:
+      - $ref: "#/components/parameters/studio_id"
+    get:
+      tags:
+        - "admin"
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "スタジオの詳細情報"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Studio"
+  /api/admin/studios/{studioId}/rooms:
+    parameters:
+      - $ref: "#/components/parameters/studio_id"
+    get:
+      tags:
+        - "admin"
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: "#/components/parameters/page_query"
+      responses:
+        200:
+          description: "部屋の詳細情報"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                  last_page:
+                    type: integer
+                  page:
+                    type: integer
+                  total:
+                    type: integer
+    post:
+      tags:
+        - "admin"
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Room"
+      responses:
+        200:
+          description: "部屋の詳細情報"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+  /api/admin/studios/{studioId}/rooms/{roomId}:
+    parameters:
+      - $ref: "#/components/parameters/studio_id"
+      - $ref: "#/components/parameters/room_id"
+    get:
+      tags:
+        - "admin"
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "部屋の詳細情報"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+  /api/admin/studios/{studioId}/rooms/{roomId}/calendar:
+    parameters:
+      - $ref: "#/components/parameters/studio_id"
+      - $ref: "#/components/parameters/room_id"
+    get:
+      tags:
+        - "admin"
+      parameters:
+        - $ref: "#/components/parameters/page_query"
+        - $ref: "#/components/parameters/begin_date_query"
+        - $ref: "#/components/parameters/end_date_query"
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "planの一覧を確認する"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                        begin_time:
+                          type: string
+                          format: time
+                        end_time:
+                          type: string
+                          format: time
+                        plans:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                              price:
+                                type: integer
+                  last_page:
+                    type: integer
+                  page:
+                    type: integer
+                  total:
+                    type: integer
+    post:
+      tags:
+        - "admin"
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+                plan_id:
+                  type: integer
+      responses:
+        200:
+          description: "planを設定する"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  date:
+                    type: string
+                    format: date
+                  begin_time:
+                    type: string
+                    format: time
+                  end_time:
+                    type: string
+                    format: time
+                  plans:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        price:
+                          type: integer
+  /api/admin/studios/{studioId}/rooms/{roomId}/reservations:
+    parameters:
+      - $ref: "#/components/parameters/studio_id"
+      - $ref: "#/components/parameters/room_id"
+    get:
+      tags:
+        - "admin"
+      parameters:
+        - $ref: "#/components/parameters/date_query"
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "予約一覧を確認する"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    date:
+                      type: string
+                      format: date
+                    begin_time:
+                      type: string
+                      format: time
+                    end_time:
+                      type: string
+                      format: time
+                    reservation_id:
+                      type: integer
+                    plan_id:
+                      type: integer
+                    user_id:
+                      type: integer
+                    is_completed:
+                      type: boolean
+                    available_plans:
+                      type: array
+                      items:
+                        type: integer
+  /api/admin/studios/{studioId}/rooms/{roomId}/reservations/{reservationId}:
+    parameters:
+      - $ref: "#/components/parameters/studio_id"
+      - $ref: "#/components/parameters/room_id"
+      - $ref: "#/components/parameters/reservation_id"
+    get:
+      tags:
+        - "admin"
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "予約詳細を確認する"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reservation"
+  /api/admin/studios/{studioId}/quota-types:
+    parameters:
+      - $ref: "#/components/parameters/studio_id"
+    get:
+      tags:
+        - "admin"
+      parameters:
+        - $ref: "#/components/parameters/page_query"
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "予約枠タイプの一覧取得"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/QuotaType"
+                  last_page:
+                    type: integer
+                  page:
+                    type: integer
+                  total:
+                    type: integer
+    post:
+      tags:
+        - "admin"
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuotaType"
+      responses:
+        200:
+          description: "予約枠タイプの追加"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuotaType"
+  /api/admin/studios/{studioId}/quota-types/{quotaTypeId}:
+    parameters:
+      - $ref: "#/components/parameters/studio_id"
+      - $ref: "#/components/parameters/quota_type_id"
+    get:
+      tags:
+        - "admin"
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "予約枠詳細を取得する"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuotaType"
+  /api/admin/studios/{studioId}/plans:
+    parameters:
+      - $ref: "#/components/parameters/studio_id"
+    get:
+      tags:
+        - "admin"
+      parameters:
+        - $ref: "#/components/parameters/page_query"
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "プラン一覧を取得する"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        begin_time:
+                          type: string
+                          format: time
+                        end_time:
+                          type: string
+                          format: time
+                        price:
+                          type: integer
+                        slot_type_id:
+                          type: integer
+                  last_page:
+                    type: integer
+                  page:
+                    type: integer
+                  total:
+                    type: integer
+    post:
+      tags:
+        - "admin"
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                begin_time:
+                  type: string
+                  format: time
+                end_time:
+                  type: string
+                  format: time
+                price:
+                  type: integer
+                slot_type_id:
+                  type: integer
+      responses:
+        200:
+          description: "プランを追加する"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Plan"
+  /api/admin/studios/{studioId}/plans/{planId}:
+    parameters:
+      - $ref: "#/components/parameters/studio_id"
+      - $ref: "#/components/parameters/plan_id"
+    get:
+      tags:
+        - "admin"
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "プラン詳細を取得する"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Plan"
+  /api/user/login:
+    post:
+      tags:
+        - "user"
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+          description: "Cognito ユーザープールから取得した OIDC トークンで Bearer 認証"
+          example: "Authorization: Bearer {jwt from cognito}"
+      responses:
+        200:
+          description: "ログイン完了"
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: session token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+  /api/user/logout:
+    post:
+      tags:
+        - "user"
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "ログアウト完了"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+  /api/user/studios:
+    get:
+      tags:
+        - "user"
+      parameters:
+        - $ref: "#/components/parameters/page_query"
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "スタジオ一覧取得"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        address:
+                          type: object
+                          properties:
+                            full_address:
+                              type: string
+                            stations:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  station:
+                                    type: object
+                                    properties:
+                                      name:
+                                        type: string
+                                  minutes_from_station:
+                                    type: number
+                        payments:
+                          type: array
+                          items:
+                            type: string
+                        reservations:
+                          type: array
+                          items:
+                            type: string
+                        free_cancel_date:
+                          type: string
+                          format: datetime
+                        facilities:
+                          type: array
+                          items:
+                            type: string
+                        amenities:
+                          type: array
+                          items:
+                            type: string
+                        images:
+                          type: array
+                          items:
+                            type: string
+                        slots:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              date:
+                                type: string
+                                format: date
+                              begin_time:
+                                type: string
+                                format: time
+                              end_time:
+                                type: string
+                                format: time
+                              available_plans:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: integer
+                                    price:
+                                      type: integer
+                  last_page:
+                    type: integer
+                  page:
+                    type: integer
+                  total:
+                    type: integer
+  /api/user/studios/{studioId}:
+    parameters:
+      - $ref: "#/components/parameters/studio_id"
+    get:
+      tags:
+        - "user"
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "スタジオ詳細"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  address:
+                    $ref: "#/components/schemas/Address"
+                  payments:
+                    type: array
+                    items:
+                      type: string
+                  reservations:
+                    type: array
+                    items:
+                      type: string
+                  free_cancel_date:
+                    type: string
+                    format: datetime
+                  facilities:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/StudioFacility"
+                  amenities:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Amenity"
+                  images:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Image"
+                  rooms:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Room"
+                  slots:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                        begin_time:
+                          type: string
+                          format: time
+                        end_time:
+                          type: string
+                          format: time
+                        available_plans:
+                          type: array
+                          items:
+                            $ref: "#/components/schemas/Plan"
+  /api/user/studios/{studioId}/rooms:
+    parameters:
+      - $ref: "#/components/parameters/studio_id"
+    get:
+      tags:
+        - "user"
+      parameters:
+        - $ref: "#/components/parameters/page_query"
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "スタジオ詳細"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Room"
+                  last_page:
+                    type: integer
+                  page:
+                    type: integer
+                  total:
+                    type: integer
+  /api/user/studios/{studioId}/rooms/{roomId}:
+    parameters:
+      - $ref: "#/components/parameters/studio_id"
+      - $ref: "#/components/parameters/room_id"
+    get:
+      tags:
+        - "user"
+      parameters:
+        - $ref: "#/components/parameters/page_query"
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "スタジオ詳細"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  reservation_url:
+                    type: string
+                  min_reservable_people:
+                    type: integer
+                  max_reservable_people:
+                    type: integer
+                  floor_area:
+                    type: number
+                  floor_material:
+                    type: string
+                  mirror_length:
+                    type: number
+                  images:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Image"
+                  facilities:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/RoomFacility"
+                  slots:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                        begin_time:
+                          type: string
+                          format: time
+                        end_time:
+                          type: string
+                          format: time
+                        available_plans:
+                          type: array
+                          items:
+                            $ref: "#/components/schemas/Plan"
+  /api/checkout/studios/{studioId}/rooms/{roomId}/reservations:
+    parameters:
+      - $ref: "#/components/parameters/studio_id"
+      - $ref: "#/components/parameters/room_id"
+    post:
+      tags:
+        - "checkout"
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slots:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      date:
+                        type: string
+                        format: date
+                      begin_time:
+                        type: string
+                        format: time
+                      end_time:
+                        type: string
+                        format: time
+                      available_plans:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+      responses:
+        200:
+          description: "カートに追加"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  slots:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                        begin_time:
+                          type: string
+                          format: time
+                        end_time:
+                          type: string
+                          format: time
+                        available_plans:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+  /api/checkout/studios/{studioId}/rooms/{roomId}/reservations/{reservationId}:
+    parameters:
+      - $ref: "#/components/parameters/studio_id"
+      - $ref: "#/components/parameters/room_id"
+      - $ref: "#/components/parameters/reservation_id"
+    get:
+      tags:
+        - "checkout"
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "カートに追加"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  slots:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                        begin_time:
+                          type: string
+                          format: time
+                        end_time:
+                          type: string
+                          format: time
+                        available_plans:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+    put:
+      tags:
+        - "checkout"
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slots:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      date:
+                        type: string
+                        format: date
+                      begin_time:
+                        type: string
+                        format: time
+                      end_time:
+                        type: string
+                        format: time
+                      available_plans:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+      responses:
+        200:
+          description: "カートに追加"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  slots:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                        begin_time:
+                          type: string
+                          format: time
+                        end_time:
+                          type: string
+                          format: time
+                        available_plans:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+    delete:
+      tags:
+        - "checkout"
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "カートに追加"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  slots:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                        begin_time:
+                          type: string
+                          format: time
+                        end_time:
+                          type: string
+                          format: time
+                        available_plans:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+  /api/checkout/studios/{studioId}/rooms/{roomId}/reservations/{reservationId}/confirm:
+    parameters:
+      - $ref: "#/components/parameters/studio_id"
+      - $ref: "#/components/parameters/room_id"
+      - $ref: "#/components/parameters/reservation_id"
+    post:
+      tags:
+        - "checkout"
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reserve_people:
+                  type: integer
+                memo:
+                  type: string
+      responses:
+        200:
+          description: "予約可能"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+  /api/checkout/studios/{studioId}/rooms/{roomId}/reservations/{reservationId}/complete:
+    parameters:
+      - $ref: "#/components/parameters/studio_id"
+      - $ref: "#/components/parameters/room_id"
+      - $ref: "#/components/parameters/reservation_id"
+    post:
+      tags:
+        - "checkout"
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                source:
+                  type: string
+      responses:
+        200:
+          description: "予約完了"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reservation"
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: "STUDIO_SEARCH"
+  parameters:
+    studio_id:
+      in: path
+      name: studioId
+      required: true
+      schema:
+        type: integer
+    room_id:
+      in: path
+      name: roomId
+      required: true
+      schema:
+        type: integer
+    reservation_id:
+      in: path
+      name: reservationId
+      required: true
+      schema:
+        type: integer
+    quota_type_id:
+      in: path
+      name: quotaTypeId
+      required: true
+      schema:
+        type: integer
+    plan_id:
+      in: path
+      name: planId
+      required: true
+      schema:
+        type: integer
+    page_query:
+      in: query
+      name: page
+      schema:
+        type: integer
+    date_query:
+      in: query
+      name: date
+      required: true
+      schema:
+        type: string
+        format: date
+    begin_date_query:
+      in: query
+      name: begin_date
+      description: "デフォルト : 今日"
+      schema:
+        type: string
+        format: date
+    end_date_query:
+      in: query
+      name: end_date
+      description: "デフォルト : 1週間後"
+      schema:
+        type: string
+        format: date
+    begin_time_query:
+      in: query
+      name: begin_time
+      schema:
+        type: string
+        format: time
+    end_time_query:
+      in: query
+      name: end_time
+      schema:
+        type: string
+        format: time
+  schemas:
+    Prefecture:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    City:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        prefecture:
+          $ref: "#/components/schemas/Prefecture"
+    Line:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    Station:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        lines:
+          type: array
+          items:
+            $ref: "#/components/schemas/Station"
+    Address:
+      type: object
+      properties:
+        id:
+          type: integer
+        full_address:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        city:
+          $ref: "#/components/schemas/City"
+        stations:
+          type: array
+          items:
+            type: object
+            properties:
+              station:
+                $ref: "#/components/schemas/Station"
+              minutes_from_station:
+                type: number
+    Image:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        path:
+          type: string
+    StudioFacility:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    Amenity:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    RoomFacility:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    Room:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        reservation_url:
+          type: string
+        min_reservable_people:
+          type: integer
+        max_reservable_people:
+          type: integer
+        floor_area:
+          type: number
+        floor_material:
+          type: string
+        mirror_length:
+          type: number
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/Image"
+        facilities:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoomFacility"
+    Studio:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        introduction:
+          type: string
+        precaution:
+          type: string
+        homepage_url:
+          type: string
+        contact:
+          type: string
+        address_id:
+          type: integer
+        payments:
+          type: array
+          items:
+            type: string
+        reservations:
+          type: array
+          items:
+            type: string
+        min_reservable_hours:
+          type: number
+        free_cancel_date:
+          type: integer
+        address:
+          $ref: "#/components/schemas/Address"
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/Image"
+        rooms:
+          type: array
+          items:
+            $ref: "#/components/schemas/Room"
+        facilities:
+          type: array
+          items:
+            $ref: "#/components/schemas/StudioFacility"
+        amenities:
+          type: array
+          items:
+            $ref: "#/components/schemas/Amenity"
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+        middle_name:
+          type: string
+        last_name:
+          type: string
+        gender:
+          type: integer
+          enum:
+            - 1  # 男
+            - 2  # 女
+            - 3  # その他
+        birthdate:
+          type: string
+          format: date
+        email1:
+          type: string
+        email2:
+          type: string
+        contact:
+          type: string
+        password:
+          type: string
+        address:
+          type: string
+        prefecture_id:
+          type: integer
+        city_id:
+          type: integer
+        line:
+          type: string
+          example: "中区日本大通1-1-1"
+        zip:
+          type: string
+    QuotaType:
+      type: object
+      properties:
+        id:
+          type: integer
+        hour_per_quota:
+          type: number
+        min_reservable_quotas:
+          type: integer
+    Plan:
+      type: object
+      properties:
+        id:
+          type: integer
+        begin_time:
+          type: string
+          format: time
+        end_time:
+          type: string
+          format: time
+        price:
+          type: integer
+        quota_type:
+          $ref: "#/components/schemas/QuotaType"
+    Reservation:
+      type: object
+      properties:
+        id:
+          type: integer
+        plan:
+          $ref: "#/components/schemas/Plan"
+        user:
+          $ref: "#/components/schemas/User"
+        transaction_id:
+          type: integer
+        is_completed:
+          type: boolean
+    Quota:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        begin_time:
+          type: string
+          format: time
+        end_time:
+          type: string
+          format: time
+        reservation:
+          $ref: "#/components/schemas/Reservation"
+        available_plans:
+          type: array
+          items:
+            $ref: "#/components/schemas/Plan"
+    Message:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "success"
+security:
+  - cookieAuth: []

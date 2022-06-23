@@ -1,0 +1,83 @@
+@startuml
+
+entity "スタジオ" as Studio {
+    * studio_id : integer
+}
+
+entity "部屋" as Room {
+    * room_id : integer
+    --
+    # studio_id : integer <<FK>>
+}
+
+entity "部屋日程" as RoomDate {
+    * room_date_id : integer
+    --
+    # room_id : integer
+    # date : date
+}
+
+entity "枠" as Quota {
+    * quota_id : integer
+    --
+    # room_date_id : integer
+    # begin_time : time
+    # end_time : time
+}
+
+entity "枠タイプ" as QuotaType {
+    * quota_type_id : integer
+    --
+    # studio_id : integer <<FK>>
+    * hour_per_quota : number
+    * min_reservable_quotas : integer
+}
+
+entity "予約プラン" as ReservationPlan {
+    * plan_id : integer
+    --
+    # quota_type_id : integer <<FK>>
+    * begin_time : time
+    * end_time : time
+    * price : integer
+}
+
+entity "部屋日程-予約プラン" as RoomDatePlan {
+    * room_date_id : integer <<FK>>
+    * plan_id : integer <<FK>>
+    --
+}
+
+entity "予約" as Reservation {
+    * reservation_id : integer
+    --
+    * plan_id : integer <<FK>>
+    * user_id : integer <<FK>>
+    * transaction_id : integer
+    * is_completed : boolean
+    * completed_at : datetime
+    * is_canceled : boolean
+    * canceled_at : datetime
+    * created_at : datetime
+    * updated_at : datetime
+}
+
+entity "予約-枠" as ReservationQuota {
+    * reservation_quota_id : integer
+    --
+    # reservation_id : integer <<FK>>
+    # quota_id : integer <<FK>>
+}
+
+Studio ||--|{ Room
+Room ||--|{ RoomDate
+Studio ||--|{ QuotaType
+QuotaType ||--|{ ReservationPlan
+ReservationPlan ||--|{ RoomDatePlan
+RoomDate ||--|{ RoomDatePlan
+RoomDate ||--|{ Quota
+Quota ||--|{ ReservationQuota
+Reservation ||--|{ ReservationQuota
+ReservationPlan ||--|{ Reservation
+
+@enduml
