@@ -169,10 +169,65 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Room"
-  /api/admin/studios/{studioId}/rooms/{roomId}/calendar:
+  /api/admin/studios/{studioId}/room-types:
     parameters:
       - $ref: "#/components/parameters/studio_id"
-      - $ref: "#/components/parameters/room_id"
+    get:
+      tags:
+        - "admin"
+      security:
+        - cookieAuth: []
+      responses:
+        200:
+          description: "部屋タイプの一覧取得"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/RoomType"
+                  last_page:
+                    type: integer
+                  page:
+                    type: integer
+                  total:
+                    type: integer
+    post:
+      tags:
+        - "admin"
+      security:
+        - cookieAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                rooms:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+      responses:
+        200:
+          description: "部屋タイプの追加"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoomType"
+  /api/admin/studios/{studioId}/room-types/{roomTypeId}/calendar:
+    parameters:
+      - $ref: "#/components/parameters/studio_id"
+      - $ref: "#/components/parameters/room_type_id"
     get:
       tags:
         - "admin"
@@ -1012,6 +1067,12 @@ components:
       required: true
       schema:
         type: integer
+    room_type_id:
+      in: path
+      name: roomTypeId
+      required: true
+      schema:
+        type: integer
     room_id:
       in: path
       name: roomId
@@ -1190,6 +1251,15 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/RoomFacility"
+    RoomType:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        rooms:
+          $ref: "#/components/schemas/Room"
     Studio:
       type: object
       properties:
