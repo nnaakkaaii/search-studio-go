@@ -278,31 +278,59 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    date:
-                      type: string
-                      format: date
-                    begin_time:
-                      type: string
-                      format: time
-                    end_time:
-                      type: string
-                      format: time
-                    reservation_id:
-                      type: integer
-                    plan_id:
-                      type: integer
-                    user_id:
-                      type: integer
-                    is_completed:
-                      type: boolean
-                    available_plans:
-                      type: array
-                      items:
-                        type: integer
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                        begin_time:
+                          type: string
+                          format: time
+                        end_time:
+                          type: string
+                          format: time
+                        reservation:
+                          type: object
+                          description: |
+                            予約がある場合
+                            begin_timeとend_timeはreservationの開始時間と終了時間に合わせる
+                          properties:
+                            id:
+                              type: integer
+                            user:
+                              type: object
+                              properties:
+                                id:
+                                  type: integer
+                                first_name:
+                                  type: string
+                                last_name:
+                                  type: string
+                            is_completed:
+                              type: boolean
+                        available_plans:
+                          type: array
+                          description: |
+                            予約がない場合
+                            begin_timeとend_timeはquotaに対応する
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                              price:
+                                type: integer
+                  last_page:
+                    type: integer
+                  page:
+                    type: integer
+                  total:
+                    type: integer
   /api/admin/studios/{studioId}/rooms/{roomId}/reservations/{reservationId}:
     parameters:
       - $ref: "#/components/parameters/studio_id"
@@ -561,15 +589,24 @@ paths:
                         facilities:
                           type: array
                           items:
-                            type: string
+                            type: object
+                            properties:
+                              name:
+                                type: string
                         amenities:
                           type: array
                           items:
-                            type: string
+                            type: object
+                            properties:
+                              name:
+                                type: string
                         images:
                           type: array
                           items:
-                            type: string
+                            type: object
+                            properties:
+                              name:
+                                type: string
                         quotas:
                           type: array
                           items:
@@ -755,10 +792,7 @@ paths:
                           type: array
                           items:
                             $ref: "#/components/schemas/Plan"
-  /api/checkout/studios/{studioId}/rooms/{roomId}/reservations:
-    parameters:
-      - $ref: "#/components/parameters/studio_id"
-      - $ref: "#/components/parameters/room_id"
+  /api/checkout/reservations:
     post:
       tags:
         - "checkout"
@@ -770,6 +804,13 @@ paths:
             schema:
               type: object
               properties:
+                id:
+                  type: integer
+                  description: "reservation_id"
+                studio_id:
+                  type: integer
+                room_id:
+                  type: integer
                 quotas:
                   type: array
                   items:
@@ -784,13 +825,11 @@ paths:
                       end_time:
                         type: string
                         format: time
-                      available_plans:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            id:
-                              type: integer
+                      reserved_plan:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
       responses:
         200:
           description: "カートに追加"
@@ -800,6 +839,11 @@ paths:
                 type: object
                 properties:
                   id:
+                    type: integer
+                    description: "reservation_id"
+                  studio_id:
+                    type: integer
+                  room_id:
                     type: integer
                   quotas:
                     type: array
@@ -815,17 +859,13 @@ paths:
                         end_time:
                           type: string
                           format: time
-                        available_plans:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              id:
-                                type: integer
-  /api/checkout/studios/{studioId}/rooms/{roomId}/reservations/{reservationId}:
+                        reserved_plan:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+  /api/checkout/reservations/{reservationId}:
     parameters:
-      - $ref: "#/components/parameters/studio_id"
-      - $ref: "#/components/parameters/room_id"
       - $ref: "#/components/parameters/reservation_id"
     get:
       tags:
@@ -842,68 +882,10 @@ paths:
                 properties:
                   id:
                     type: integer
-                  quotas:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        date:
-                          type: string
-                          format: date
-                        begin_time:
-                          type: string
-                          format: time
-                        end_time:
-                          type: string
-                          format: time
-                        available_plans:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              id:
-                                type: integer
-    put:
-      tags:
-        - "checkout"
-      security:
-        - cookieAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                quotas:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      date:
-                        type: string
-                        format: date
-                      begin_time:
-                        type: string
-                        format: time
-                      end_time:
-                        type: string
-                        format: time
-                      available_plans:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            id:
-                              type: integer
-      responses:
-        200:
-          description: "カートに追加"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
+                    description: "reservation_id"
+                  studio_id:
+                    type: integer
+                  room_id:
                     type: integer
                   quotas:
                     type: array
@@ -919,13 +901,11 @@ paths:
                         end_time:
                           type: string
                           format: time
-                        available_plans:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              id:
-                                type: integer
+                        reserved_plan:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
     delete:
       tags:
         - "checkout"
@@ -941,6 +921,11 @@ paths:
                 properties:
                   id:
                     type: integer
+                    description: "reservation_id"
+                  studio_id:
+                    type: integer
+                  room_id:
+                    type: integer
                   quotas:
                     type: array
                     items:
@@ -955,17 +940,13 @@ paths:
                         end_time:
                           type: string
                           format: time
-                        available_plans:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              id:
-                                type: integer
-  /api/checkout/studios/{studioId}/rooms/{roomId}/reservations/{reservationId}/confirm:
+                        reserved_plan:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+  /api/checkout/reservations/{reservationId}/confirm:
     parameters:
-      - $ref: "#/components/parameters/studio_id"
-      - $ref: "#/components/parameters/room_id"
       - $ref: "#/components/parameters/reservation_id"
     post:
       tags:
@@ -978,6 +959,10 @@ paths:
             schema:
               type: object
               properties:
+                studio_id:
+                  type: integer
+                room_id:
+                  type: integer
                 reserve_people:
                   type: integer
                 memo:
@@ -1320,10 +1305,12 @@ components:
       properties:
         id:
           type: integer
-        plan:
-          $ref: "#/components/schemas/Plan"
         user:
           $ref: "#/components/schemas/User"
+        quotas:
+          type: array
+          items:
+            $ref: "#/components/schemas/Quota"
         transaction_id:
           type: integer
         is_completed:
@@ -1340,8 +1327,8 @@ components:
         end_time:
           type: string
           format: time
-        reservation:
-          $ref: "#/components/schemas/Reservation"
+        reserved_plan:
+          $ref: "#/components/schemas/Plan"
         available_plans:
           type: array
           items:

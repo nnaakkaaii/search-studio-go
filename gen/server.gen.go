@@ -77,6 +77,15 @@ type Prefecture struct {
 	Name *string `json:"name,omitempty"`
 }
 
+// Quota defines model for Quota.
+type Quota struct {
+	AvailablePlans *[]Plan             `json:"available_plans,omitempty"`
+	BeginTime      *string             `json:"begin_time,omitempty"`
+	Date           *openapi_types.Date `json:"date,omitempty"`
+	EndTime        *string             `json:"end_time,omitempty"`
+	ReservedPlan   *Plan               `json:"reserved_plan,omitempty"`
+}
+
 // QuotaType defines model for QuotaType.
 type QuotaType struct {
 	HourPerQuota        *float32 `json:"hour_per_quota,omitempty"`
@@ -86,11 +95,11 @@ type QuotaType struct {
 
 // Reservation defines model for Reservation.
 type Reservation struct {
-	Id            *int  `json:"id,omitempty"`
-	IsCompleted   *bool `json:"is_completed,omitempty"`
-	Plan          *Plan `json:"plan,omitempty"`
-	TransactionId *int  `json:"transaction_id,omitempty"`
-	User          *User `json:"user,omitempty"`
+	Id            *int     `json:"id,omitempty"`
+	IsCompleted   *bool    `json:"is_completed,omitempty"`
+	Quotas        *[]Quota `json:"quotas,omitempty"`
+	TransactionId *int     `json:"transaction_id,omitempty"`
+	User          *User    `json:"user,omitempty"`
 }
 
 // Room defines model for Room.
@@ -216,11 +225,11 @@ type GetApiAdminStudiosStudioIdPlansParams struct {
 
 // PostApiAdminStudiosStudioIdPlansJSONBody defines parameters for PostApiAdminStudiosStudioIdPlans.
 type PostApiAdminStudiosStudioIdPlansJSONBody struct {
-	BeginTime  *string `json:"begin_time,omitempty"`
-	EndTime    *string `json:"end_time,omitempty"`
-	Id         *int    `json:"id,omitempty"`
-	Price      *int    `json:"price,omitempty"`
-	SlotTypeId *int    `json:"slot_type_id,omitempty"`
+	BeginTime   *string `json:"begin_time,omitempty"`
+	EndTime     *string `json:"end_time,omitempty"`
+	Id          *int    `json:"id,omitempty"`
+	Price       *int    `json:"price,omitempty"`
+	QuotaTypeId *int    `json:"quota_type_id,omitempty"`
 }
 
 // GetApiAdminStudiosStudioIdQuotaTypesParams defines parameters for GetApiAdminStudiosStudioIdQuotaTypes.
@@ -261,39 +270,33 @@ type GetApiAdminStudiosStudioIdRoomsRoomIdReservationsParams struct {
 	Date DateQuery `form:"date" json:"date"`
 }
 
-// PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsJSONBody defines parameters for PostApiCheckoutStudiosStudioIdRoomsRoomIdReservations.
-type PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsJSONBody struct {
-	Slots *[]struct {
-		AvailablePlans *[]struct {
+// PostApiCheckoutReservationsJSONBody defines parameters for PostApiCheckoutReservations.
+type PostApiCheckoutReservationsJSONBody struct {
+	// reservation_id
+	Id     *int `json:"id,omitempty"`
+	Quotas *[]struct {
+		BeginTime    *string             `json:"begin_time,omitempty"`
+		Date         *openapi_types.Date `json:"date,omitempty"`
+		EndTime      *string             `json:"end_time,omitempty"`
+		ReservedPlan *struct {
 			Id *int `json:"id,omitempty"`
-		} `json:"available_plans,omitempty"`
-		BeginTime *string             `json:"begin_time,omitempty"`
-		Date      *openapi_types.Date `json:"date,omitempty"`
-		EndTime   *string             `json:"end_time,omitempty"`
-	} `json:"slots,omitempty"`
+		} `json:"reserved_plan,omitempty"`
+	} `json:"quotas,omitempty"`
+	RoomId   *int `json:"room_id,omitempty"`
+	StudioId *int `json:"studio_id,omitempty"`
 }
 
-// PutApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdJSONBody defines parameters for PutApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationId.
-type PutApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdJSONBody struct {
-	Slots *[]struct {
-		AvailablePlans *[]struct {
-			Id *int `json:"id,omitempty"`
-		} `json:"available_plans,omitempty"`
-		BeginTime *string             `json:"begin_time,omitempty"`
-		Date      *openapi_types.Date `json:"date,omitempty"`
-		EndTime   *string             `json:"end_time,omitempty"`
-	} `json:"slots,omitempty"`
+// PostApiCheckoutReservationsReservationIdConfirmJSONBody defines parameters for PostApiCheckoutReservationsReservationIdConfirm.
+type PostApiCheckoutReservationsReservationIdConfirmJSONBody struct {
+	Memo          *string `json:"memo,omitempty"`
+	ReservePeople *int    `json:"reserve_people,omitempty"`
+	RoomId        *int    `json:"room_id,omitempty"`
+	StudioId      *int    `json:"studio_id,omitempty"`
 }
 
 // PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdCompleteJSONBody defines parameters for PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdComplete.
 type PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdCompleteJSONBody struct {
 	Source *string `json:"source,omitempty"`
-}
-
-// PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdConfirmJSONBody defines parameters for PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdConfirm.
-type PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdConfirmJSONBody struct {
-	Memo          *string `json:"memo,omitempty"`
-	ReservePeople *int    `json:"reserve_people,omitempty"`
 }
 
 // PostApiUserLoginParams defines parameters for PostApiUserLogin.
@@ -332,17 +335,14 @@ type PostApiAdminStudiosStudioIdRoomsJSONRequestBody = PostApiAdminStudiosStudio
 // PostApiAdminStudiosStudioIdRoomsRoomIdCalendarJSONRequestBody defines body for PostApiAdminStudiosStudioIdRoomsRoomIdCalendar for application/json ContentType.
 type PostApiAdminStudiosStudioIdRoomsRoomIdCalendarJSONRequestBody PostApiAdminStudiosStudioIdRoomsRoomIdCalendarJSONBody
 
-// PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsJSONRequestBody defines body for PostApiCheckoutStudiosStudioIdRoomsRoomIdReservations for application/json ContentType.
-type PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsJSONRequestBody PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsJSONBody
+// PostApiCheckoutReservationsJSONRequestBody defines body for PostApiCheckoutReservations for application/json ContentType.
+type PostApiCheckoutReservationsJSONRequestBody PostApiCheckoutReservationsJSONBody
 
-// PutApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdJSONRequestBody defines body for PutApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationId for application/json ContentType.
-type PutApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdJSONRequestBody PutApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdJSONBody
+// PostApiCheckoutReservationsReservationIdConfirmJSONRequestBody defines body for PostApiCheckoutReservationsReservationIdConfirm for application/json ContentType.
+type PostApiCheckoutReservationsReservationIdConfirmJSONRequestBody PostApiCheckoutReservationsReservationIdConfirmJSONBody
 
 // PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdCompleteJSONRequestBody defines body for PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdComplete for application/json ContentType.
 type PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdCompleteJSONRequestBody PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdCompleteJSONBody
-
-// PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdConfirmJSONRequestBody defines body for PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdConfirm for application/json ContentType.
-type PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdConfirmJSONRequestBody PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdConfirmJSONBody
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -401,23 +401,20 @@ type ServerInterface interface {
 	// (GET /api/admin/studios/{studioId}/rooms/{roomId}/reservations/{reservationId})
 	GetApiAdminStudiosStudioIdRoomsRoomIdReservationsReservationId(ctx echo.Context, studioId StudioId, roomId RoomId, reservationId ReservationId) error
 
-	// (POST /api/checkout/studios/{studioId}/rooms/{roomId}/reservations)
-	PostApiCheckoutStudiosStudioIdRoomsRoomIdReservations(ctx echo.Context, studioId StudioId, roomId RoomId) error
+	// (POST /api/checkout/reservations)
+	PostApiCheckoutReservations(ctx echo.Context) error
 
-	// (DELETE /api/checkout/studios/{studioId}/rooms/{roomId}/reservations/{reservationId})
-	DeleteApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationId(ctx echo.Context, studioId StudioId, roomId RoomId, reservationId ReservationId) error
+	// (DELETE /api/checkout/reservations/{reservationId})
+	DeleteApiCheckoutReservationsReservationId(ctx echo.Context, reservationId ReservationId) error
 
-	// (GET /api/checkout/studios/{studioId}/rooms/{roomId}/reservations/{reservationId})
-	GetApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationId(ctx echo.Context, studioId StudioId, roomId RoomId, reservationId ReservationId) error
+	// (GET /api/checkout/reservations/{reservationId})
+	GetApiCheckoutReservationsReservationId(ctx echo.Context, reservationId ReservationId) error
 
-	// (PUT /api/checkout/studios/{studioId}/rooms/{roomId}/reservations/{reservationId})
-	PutApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationId(ctx echo.Context, studioId StudioId, roomId RoomId, reservationId ReservationId) error
+	// (POST /api/checkout/reservations/{reservationId}/confirm)
+	PostApiCheckoutReservationsReservationIdConfirm(ctx echo.Context, reservationId ReservationId) error
 
 	// (POST /api/checkout/studios/{studioId}/rooms/{roomId}/reservations/{reservationId}/complete)
 	PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdComplete(ctx echo.Context, studioId StudioId, roomId RoomId, reservationId ReservationId) error
-
-	// (POST /api/checkout/studios/{studioId}/rooms/{roomId}/reservations/{reservationId}/confirm)
-	PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdConfirm(ctx echo.Context, studioId StudioId, roomId RoomId, reservationId ReservationId) error
 
 	// (POST /api/user/login)
 	PostApiUserLogin(ctx echo.Context, params PostApiUserLoginParams) error
@@ -893,51 +890,20 @@ func (w *ServerInterfaceWrapper) GetApiAdminStudiosStudioIdRoomsRoomIdReservatio
 	return err
 }
 
-// PostApiCheckoutStudiosStudioIdRoomsRoomIdReservations converts echo context to params.
-func (w *ServerInterfaceWrapper) PostApiCheckoutStudiosStudioIdRoomsRoomIdReservations(ctx echo.Context) error {
+// PostApiCheckoutReservations converts echo context to params.
+func (w *ServerInterfaceWrapper) PostApiCheckoutReservations(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "studioId" -------------
-	var studioId StudioId
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "studioId", runtime.ParamLocationPath, ctx.Param("studioId"), &studioId)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter studioId: %s", err))
-	}
-
-	// ------------- Path parameter "roomId" -------------
-	var roomId RoomId
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "roomId", runtime.ParamLocationPath, ctx.Param("roomId"), &roomId)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter roomId: %s", err))
-	}
 
 	ctx.Set(CookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PostApiCheckoutStudiosStudioIdRoomsRoomIdReservations(ctx, studioId, roomId)
+	err = w.Handler.PostApiCheckoutReservations(ctx)
 	return err
 }
 
-// DeleteApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationId converts echo context to params.
-func (w *ServerInterfaceWrapper) DeleteApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationId(ctx echo.Context) error {
+// DeleteApiCheckoutReservationsReservationId converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteApiCheckoutReservationsReservationId(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "studioId" -------------
-	var studioId StudioId
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "studioId", runtime.ParamLocationPath, ctx.Param("studioId"), &studioId)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter studioId: %s", err))
-	}
-
-	// ------------- Path parameter "roomId" -------------
-	var roomId RoomId
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "roomId", runtime.ParamLocationPath, ctx.Param("roomId"), &roomId)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter roomId: %s", err))
-	}
-
 	// ------------- Path parameter "reservationId" -------------
 	var reservationId ReservationId
 
@@ -949,29 +915,13 @@ func (w *ServerInterfaceWrapper) DeleteApiCheckoutStudiosStudioIdRoomsRoomIdRese
 	ctx.Set(CookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.DeleteApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationId(ctx, studioId, roomId, reservationId)
+	err = w.Handler.DeleteApiCheckoutReservationsReservationId(ctx, reservationId)
 	return err
 }
 
-// GetApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationId converts echo context to params.
-func (w *ServerInterfaceWrapper) GetApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationId(ctx echo.Context) error {
+// GetApiCheckoutReservationsReservationId converts echo context to params.
+func (w *ServerInterfaceWrapper) GetApiCheckoutReservationsReservationId(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "studioId" -------------
-	var studioId StudioId
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "studioId", runtime.ParamLocationPath, ctx.Param("studioId"), &studioId)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter studioId: %s", err))
-	}
-
-	// ------------- Path parameter "roomId" -------------
-	var roomId RoomId
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "roomId", runtime.ParamLocationPath, ctx.Param("roomId"), &roomId)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter roomId: %s", err))
-	}
-
 	// ------------- Path parameter "reservationId" -------------
 	var reservationId ReservationId
 
@@ -983,29 +933,13 @@ func (w *ServerInterfaceWrapper) GetApiCheckoutStudiosStudioIdRoomsRoomIdReserva
 	ctx.Set(CookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationId(ctx, studioId, roomId, reservationId)
+	err = w.Handler.GetApiCheckoutReservationsReservationId(ctx, reservationId)
 	return err
 }
 
-// PutApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationId converts echo context to params.
-func (w *ServerInterfaceWrapper) PutApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationId(ctx echo.Context) error {
+// PostApiCheckoutReservationsReservationIdConfirm converts echo context to params.
+func (w *ServerInterfaceWrapper) PostApiCheckoutReservationsReservationIdConfirm(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "studioId" -------------
-	var studioId StudioId
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "studioId", runtime.ParamLocationPath, ctx.Param("studioId"), &studioId)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter studioId: %s", err))
-	}
-
-	// ------------- Path parameter "roomId" -------------
-	var roomId RoomId
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "roomId", runtime.ParamLocationPath, ctx.Param("roomId"), &roomId)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter roomId: %s", err))
-	}
-
 	// ------------- Path parameter "reservationId" -------------
 	var reservationId ReservationId
 
@@ -1017,7 +951,7 @@ func (w *ServerInterfaceWrapper) PutApiCheckoutStudiosStudioIdRoomsRoomIdReserva
 	ctx.Set(CookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PutApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationId(ctx, studioId, roomId, reservationId)
+	err = w.Handler.PostApiCheckoutReservationsReservationIdConfirm(ctx, reservationId)
 	return err
 }
 
@@ -1052,40 +986,6 @@ func (w *ServerInterfaceWrapper) PostApiCheckoutStudiosStudioIdRoomsRoomIdReserv
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdComplete(ctx, studioId, roomId, reservationId)
-	return err
-}
-
-// PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdConfirm converts echo context to params.
-func (w *ServerInterfaceWrapper) PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdConfirm(ctx echo.Context) error {
-	var err error
-	// ------------- Path parameter "studioId" -------------
-	var studioId StudioId
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "studioId", runtime.ParamLocationPath, ctx.Param("studioId"), &studioId)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter studioId: %s", err))
-	}
-
-	// ------------- Path parameter "roomId" -------------
-	var roomId RoomId
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "roomId", runtime.ParamLocationPath, ctx.Param("roomId"), &roomId)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter roomId: %s", err))
-	}
-
-	// ------------- Path parameter "reservationId" -------------
-	var reservationId ReservationId
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "reservationId", runtime.ParamLocationPath, ctx.Param("reservationId"), &reservationId)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter reservationId: %s", err))
-	}
-
-	ctx.Set(CookieAuthScopes, []string{""})
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdConfirm(ctx, studioId, roomId, reservationId)
 	return err
 }
 
@@ -1279,12 +1179,11 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.POST(baseURL+"/api/admin/studios/:studioId/rooms/:roomId/calendar", wrapper.PostApiAdminStudiosStudioIdRoomsRoomIdCalendar)
 	router.GET(baseURL+"/api/admin/studios/:studioId/rooms/:roomId/reservations", wrapper.GetApiAdminStudiosStudioIdRoomsRoomIdReservations)
 	router.GET(baseURL+"/api/admin/studios/:studioId/rooms/:roomId/reservations/:reservationId", wrapper.GetApiAdminStudiosStudioIdRoomsRoomIdReservationsReservationId)
-	router.POST(baseURL+"/api/checkout/studios/:studioId/rooms/:roomId/reservations", wrapper.PostApiCheckoutStudiosStudioIdRoomsRoomIdReservations)
-	router.DELETE(baseURL+"/api/checkout/studios/:studioId/rooms/:roomId/reservations/:reservationId", wrapper.DeleteApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationId)
-	router.GET(baseURL+"/api/checkout/studios/:studioId/rooms/:roomId/reservations/:reservationId", wrapper.GetApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationId)
-	router.PUT(baseURL+"/api/checkout/studios/:studioId/rooms/:roomId/reservations/:reservationId", wrapper.PutApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationId)
+	router.POST(baseURL+"/api/checkout/reservations", wrapper.PostApiCheckoutReservations)
+	router.DELETE(baseURL+"/api/checkout/reservations/:reservationId", wrapper.DeleteApiCheckoutReservationsReservationId)
+	router.GET(baseURL+"/api/checkout/reservations/:reservationId", wrapper.GetApiCheckoutReservationsReservationId)
+	router.POST(baseURL+"/api/checkout/reservations/:reservationId/confirm", wrapper.PostApiCheckoutReservationsReservationIdConfirm)
 	router.POST(baseURL+"/api/checkout/studios/:studioId/rooms/:roomId/reservations/:reservationId/complete", wrapper.PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdComplete)
-	router.POST(baseURL+"/api/checkout/studios/:studioId/rooms/:roomId/reservations/:reservationId/confirm", wrapper.PostApiCheckoutStudiosStudioIdRoomsRoomIdReservationsReservationIdConfirm)
 	router.POST(baseURL+"/api/user/login", wrapper.PostApiUserLogin)
 	router.POST(baseURL+"/api/user/logout", wrapper.PostApiUserLogout)
 	router.GET(baseURL+"/api/user/studios", wrapper.GetApiUserStudios)

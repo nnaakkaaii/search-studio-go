@@ -17,12 +17,15 @@ entity "部屋日程" as RoomDate {
     # date : date
 }
 
+' 部屋日程プランでroom_date_idに該当するplan_idを複数取得し、さらにbegin_timeとend_timeで検索をかけて、残ったplan_idがその枠で予約可能なプラン
 entity "枠" as Quota {
     * quota_id : integer
     --
     # room_date_id : integer
     # begin_time : time
     # end_time : time
+    reservation_id : integer <<FK>>
+    reserved_plan_id : integer <<FK>>
 }
 
 entity "枠タイプ" as QuotaType {
@@ -33,7 +36,7 @@ entity "枠タイプ" as QuotaType {
     * min_reservable_quotas : integer
 }
 
-entity "予約プラン" as ReservationPlan {
+entity "プラン" as Plan {
     * plan_id : integer
     --
     # quota_type_id : integer <<FK>>
@@ -42,7 +45,7 @@ entity "予約プラン" as ReservationPlan {
     * price : integer
 }
 
-entity "部屋日程-予約プラン" as RoomDatePlan {
+entity "部屋日程-プラン" as RoomDatePlan {
     * room_date_id : integer <<FK>>
     * plan_id : integer <<FK>>
     --
@@ -51,7 +54,6 @@ entity "部屋日程-予約プラン" as RoomDatePlan {
 entity "予約" as Reservation {
     * reservation_id : integer
     --
-    * plan_id : integer <<FK>>
     * user_id : integer <<FK>>
     * transaction_id : integer
     * is_completed : boolean
@@ -62,22 +64,15 @@ entity "予約" as Reservation {
     * updated_at : datetime
 }
 
-entity "予約-枠" as ReservationQuota {
-    * reservation_quota_id : integer
-    --
-    # reservation_id : integer <<FK>>
-    # quota_id : integer <<FK>>
-}
 
 Studio ||--|{ Room
 Room ||--|{ RoomDate
 Studio ||--|{ QuotaType
-QuotaType ||--|{ ReservationPlan
-ReservationPlan ||--|{ RoomDatePlan
+QuotaType ||--|{ Plan
+Plan ||--|{ RoomDatePlan
 RoomDate ||--|{ RoomDatePlan
 RoomDate ||--|{ Quota
-Quota ||--|{ ReservationQuota
-Reservation ||--|{ ReservationQuota
-ReservationPlan ||--|{ Reservation
+Reservation ||--|{ Quota
+Plan ||--|{ Quota
 
 @enduml
