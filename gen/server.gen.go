@@ -122,6 +122,13 @@ type RoomFacility struct {
 	Name *string `json:"name,omitempty"`
 }
 
+// RoomType defines model for RoomType.
+type RoomType struct {
+	Id    *int    `json:"id,omitempty"`
+	Name  *string `json:"name,omitempty"`
+	Rooms *Room   `json:"rooms,omitempty"`
+}
+
 // Station defines model for Station.
 type Station struct {
 	Id    *int       `json:"id,omitempty"`
@@ -201,6 +208,9 @@ type ReservationId = int
 // RoomId defines model for room_id.
 type RoomId = int
 
+// RoomTypeId defines model for room_type_id.
+type RoomTypeId = int
+
 // StudioId defines model for studio_id.
 type StudioId = int
 
@@ -240,16 +250,17 @@ type GetApiAdminStudiosStudioIdQuotaTypesParams struct {
 // PostApiAdminStudiosStudioIdQuotaTypesJSONBody defines parameters for PostApiAdminStudiosStudioIdQuotaTypes.
 type PostApiAdminStudiosStudioIdQuotaTypesJSONBody = QuotaType
 
-// GetApiAdminStudiosStudioIdRoomsParams defines parameters for GetApiAdminStudiosStudioIdRooms.
-type GetApiAdminStudiosStudioIdRoomsParams struct {
-	Page *PageQuery `form:"page,omitempty" json:"page,omitempty"`
+// PostApiAdminStudiosStudioIdRoomTypesJSONBody defines parameters for PostApiAdminStudiosStudioIdRoomTypes.
+type PostApiAdminStudiosStudioIdRoomTypesJSONBody struct {
+	Id    *int    `json:"id,omitempty"`
+	Name  *string `json:"name,omitempty"`
+	Rooms *[]struct {
+		Id *int `json:"id,omitempty"`
+	} `json:"rooms,omitempty"`
 }
 
-// PostApiAdminStudiosStudioIdRoomsJSONBody defines parameters for PostApiAdminStudiosStudioIdRooms.
-type PostApiAdminStudiosStudioIdRoomsJSONBody = Room
-
-// GetApiAdminStudiosStudioIdRoomsRoomIdCalendarParams defines parameters for GetApiAdminStudiosStudioIdRoomsRoomIdCalendar.
-type GetApiAdminStudiosStudioIdRoomsRoomIdCalendarParams struct {
+// GetApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendarParams defines parameters for GetApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendar.
+type GetApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendarParams struct {
 	Page *PageQuery `form:"page,omitempty" json:"page,omitempty"`
 
 	// デフォルト : 今日
@@ -259,11 +270,19 @@ type GetApiAdminStudiosStudioIdRoomsRoomIdCalendarParams struct {
 	EndDate *EndDateQuery `form:"end_date,omitempty" json:"end_date,omitempty"`
 }
 
-// PostApiAdminStudiosStudioIdRoomsRoomIdCalendarJSONBody defines parameters for PostApiAdminStudiosStudioIdRoomsRoomIdCalendar.
-type PostApiAdminStudiosStudioIdRoomsRoomIdCalendarJSONBody struct {
+// PostApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendarJSONBody defines parameters for PostApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendar.
+type PostApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendarJSONBody struct {
 	Date   *openapi_types.Date `json:"date,omitempty"`
 	PlanId *int                `json:"plan_id,omitempty"`
 }
+
+// GetApiAdminStudiosStudioIdRoomsParams defines parameters for GetApiAdminStudiosStudioIdRooms.
+type GetApiAdminStudiosStudioIdRoomsParams struct {
+	Page *PageQuery `form:"page,omitempty" json:"page,omitempty"`
+}
+
+// PostApiAdminStudiosStudioIdRoomsJSONBody defines parameters for PostApiAdminStudiosStudioIdRooms.
+type PostApiAdminStudiosStudioIdRoomsJSONBody = Room
 
 // GetApiAdminStudiosStudioIdRoomsRoomIdReservationsParams defines parameters for GetApiAdminStudiosStudioIdRoomsRoomIdReservations.
 type GetApiAdminStudiosStudioIdRoomsRoomIdReservationsParams struct {
@@ -329,11 +348,14 @@ type PostApiAdminStudiosStudioIdPlansJSONRequestBody PostApiAdminStudiosStudioId
 // PostApiAdminStudiosStudioIdQuotaTypesJSONRequestBody defines body for PostApiAdminStudiosStudioIdQuotaTypes for application/json ContentType.
 type PostApiAdminStudiosStudioIdQuotaTypesJSONRequestBody = PostApiAdminStudiosStudioIdQuotaTypesJSONBody
 
+// PostApiAdminStudiosStudioIdRoomTypesJSONRequestBody defines body for PostApiAdminStudiosStudioIdRoomTypes for application/json ContentType.
+type PostApiAdminStudiosStudioIdRoomTypesJSONRequestBody PostApiAdminStudiosStudioIdRoomTypesJSONBody
+
+// PostApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendarJSONRequestBody defines body for PostApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendar for application/json ContentType.
+type PostApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendarJSONRequestBody PostApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendarJSONBody
+
 // PostApiAdminStudiosStudioIdRoomsJSONRequestBody defines body for PostApiAdminStudiosStudioIdRooms for application/json ContentType.
 type PostApiAdminStudiosStudioIdRoomsJSONRequestBody = PostApiAdminStudiosStudioIdRoomsJSONBody
-
-// PostApiAdminStudiosStudioIdRoomsRoomIdCalendarJSONRequestBody defines body for PostApiAdminStudiosStudioIdRoomsRoomIdCalendar for application/json ContentType.
-type PostApiAdminStudiosStudioIdRoomsRoomIdCalendarJSONRequestBody PostApiAdminStudiosStudioIdRoomsRoomIdCalendarJSONBody
 
 // PostApiCheckoutReservationsJSONRequestBody defines body for PostApiCheckoutReservations for application/json ContentType.
 type PostApiCheckoutReservationsJSONRequestBody PostApiCheckoutReservationsJSONBody
@@ -380,6 +402,18 @@ type ServerInterface interface {
 	// (GET /api/admin/studios/{studioId}/quota-types/{quotaTypeId})
 	GetApiAdminStudiosStudioIdQuotaTypesQuotaTypeId(ctx echo.Context, studioId StudioId, quotaTypeId QuotaTypeId) error
 
+	// (GET /api/admin/studios/{studioId}/room-types)
+	GetApiAdminStudiosStudioIdRoomTypes(ctx echo.Context, studioId StudioId) error
+
+	// (POST /api/admin/studios/{studioId}/room-types)
+	PostApiAdminStudiosStudioIdRoomTypes(ctx echo.Context, studioId StudioId) error
+
+	// (GET /api/admin/studios/{studioId}/room-types/{roomTypeId}/calendar)
+	GetApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendar(ctx echo.Context, studioId StudioId, roomTypeId RoomTypeId, params GetApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendarParams) error
+
+	// (POST /api/admin/studios/{studioId}/room-types/{roomTypeId}/calendar)
+	PostApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendar(ctx echo.Context, studioId StudioId, roomTypeId RoomTypeId) error
+
 	// (GET /api/admin/studios/{studioId}/rooms)
 	GetApiAdminStudiosStudioIdRooms(ctx echo.Context, studioId StudioId, params GetApiAdminStudiosStudioIdRoomsParams) error
 
@@ -388,12 +422,6 @@ type ServerInterface interface {
 
 	// (GET /api/admin/studios/{studioId}/rooms/{roomId})
 	GetApiAdminStudiosStudioIdRoomsRoomId(ctx echo.Context, studioId StudioId, roomId RoomId) error
-
-	// (GET /api/admin/studios/{studioId}/rooms/{roomId}/calendar)
-	GetApiAdminStudiosStudioIdRoomsRoomIdCalendar(ctx echo.Context, studioId StudioId, roomId RoomId, params GetApiAdminStudiosStudioIdRoomsRoomIdCalendarParams) error
-
-	// (POST /api/admin/studios/{studioId}/rooms/{roomId}/calendar)
-	PostApiAdminStudiosStudioIdRoomsRoomIdCalendar(ctx echo.Context, studioId StudioId, roomId RoomId) error
 
 	// (GET /api/admin/studios/{studioId}/rooms/{roomId}/reservations)
 	GetApiAdminStudiosStudioIdRoomsRoomIdReservations(ctx echo.Context, studioId StudioId, roomId RoomId, params GetApiAdminStudiosStudioIdRoomsRoomIdReservationsParams) error
@@ -675,6 +703,117 @@ func (w *ServerInterfaceWrapper) GetApiAdminStudiosStudioIdQuotaTypesQuotaTypeId
 	return err
 }
 
+// GetApiAdminStudiosStudioIdRoomTypes converts echo context to params.
+func (w *ServerInterfaceWrapper) GetApiAdminStudiosStudioIdRoomTypes(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "studioId" -------------
+	var studioId StudioId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "studioId", runtime.ParamLocationPath, ctx.Param("studioId"), &studioId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter studioId: %s", err))
+	}
+
+	ctx.Set(CookieAuthScopes, []string{""})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetApiAdminStudiosStudioIdRoomTypes(ctx, studioId)
+	return err
+}
+
+// PostApiAdminStudiosStudioIdRoomTypes converts echo context to params.
+func (w *ServerInterfaceWrapper) PostApiAdminStudiosStudioIdRoomTypes(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "studioId" -------------
+	var studioId StudioId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "studioId", runtime.ParamLocationPath, ctx.Param("studioId"), &studioId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter studioId: %s", err))
+	}
+
+	ctx.Set(CookieAuthScopes, []string{""})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PostApiAdminStudiosStudioIdRoomTypes(ctx, studioId)
+	return err
+}
+
+// GetApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendar converts echo context to params.
+func (w *ServerInterfaceWrapper) GetApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendar(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "studioId" -------------
+	var studioId StudioId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "studioId", runtime.ParamLocationPath, ctx.Param("studioId"), &studioId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter studioId: %s", err))
+	}
+
+	// ------------- Path parameter "roomTypeId" -------------
+	var roomTypeId RoomTypeId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "roomTypeId", runtime.ParamLocationPath, ctx.Param("roomTypeId"), &roomTypeId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter roomTypeId: %s", err))
+	}
+
+	ctx.Set(CookieAuthScopes, []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendarParams
+	// ------------- Optional query parameter "page" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "page", ctx.QueryParams(), &params.Page)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter page: %s", err))
+	}
+
+	// ------------- Optional query parameter "begin_date" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "begin_date", ctx.QueryParams(), &params.BeginDate)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter begin_date: %s", err))
+	}
+
+	// ------------- Optional query parameter "end_date" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "end_date", ctx.QueryParams(), &params.EndDate)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter end_date: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendar(ctx, studioId, roomTypeId, params)
+	return err
+}
+
+// PostApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendar converts echo context to params.
+func (w *ServerInterfaceWrapper) PostApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendar(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "studioId" -------------
+	var studioId StudioId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "studioId", runtime.ParamLocationPath, ctx.Param("studioId"), &studioId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter studioId: %s", err))
+	}
+
+	// ------------- Path parameter "roomTypeId" -------------
+	var roomTypeId RoomTypeId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "roomTypeId", runtime.ParamLocationPath, ctx.Param("roomTypeId"), &roomTypeId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter roomTypeId: %s", err))
+	}
+
+	ctx.Set(CookieAuthScopes, []string{""})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PostApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendar(ctx, studioId, roomTypeId)
+	return err
+}
+
 // GetApiAdminStudiosStudioIdRooms converts echo context to params.
 func (w *ServerInterfaceWrapper) GetApiAdminStudiosStudioIdRooms(ctx echo.Context) error {
 	var err error
@@ -743,81 +882,6 @@ func (w *ServerInterfaceWrapper) GetApiAdminStudiosStudioIdRoomsRoomId(ctx echo.
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetApiAdminStudiosStudioIdRoomsRoomId(ctx, studioId, roomId)
-	return err
-}
-
-// GetApiAdminStudiosStudioIdRoomsRoomIdCalendar converts echo context to params.
-func (w *ServerInterfaceWrapper) GetApiAdminStudiosStudioIdRoomsRoomIdCalendar(ctx echo.Context) error {
-	var err error
-	// ------------- Path parameter "studioId" -------------
-	var studioId StudioId
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "studioId", runtime.ParamLocationPath, ctx.Param("studioId"), &studioId)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter studioId: %s", err))
-	}
-
-	// ------------- Path parameter "roomId" -------------
-	var roomId RoomId
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "roomId", runtime.ParamLocationPath, ctx.Param("roomId"), &roomId)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter roomId: %s", err))
-	}
-
-	ctx.Set(CookieAuthScopes, []string{""})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params GetApiAdminStudiosStudioIdRoomsRoomIdCalendarParams
-	// ------------- Optional query parameter "page" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "page", ctx.QueryParams(), &params.Page)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter page: %s", err))
-	}
-
-	// ------------- Optional query parameter "begin_date" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "begin_date", ctx.QueryParams(), &params.BeginDate)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter begin_date: %s", err))
-	}
-
-	// ------------- Optional query parameter "end_date" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "end_date", ctx.QueryParams(), &params.EndDate)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter end_date: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetApiAdminStudiosStudioIdRoomsRoomIdCalendar(ctx, studioId, roomId, params)
-	return err
-}
-
-// PostApiAdminStudiosStudioIdRoomsRoomIdCalendar converts echo context to params.
-func (w *ServerInterfaceWrapper) PostApiAdminStudiosStudioIdRoomsRoomIdCalendar(ctx echo.Context) error {
-	var err error
-	// ------------- Path parameter "studioId" -------------
-	var studioId StudioId
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "studioId", runtime.ParamLocationPath, ctx.Param("studioId"), &studioId)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter studioId: %s", err))
-	}
-
-	// ------------- Path parameter "roomId" -------------
-	var roomId RoomId
-
-	err = runtime.BindStyledParameterWithLocation("simple", false, "roomId", runtime.ParamLocationPath, ctx.Param("roomId"), &roomId)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter roomId: %s", err))
-	}
-
-	ctx.Set(CookieAuthScopes, []string{""})
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PostApiAdminStudiosStudioIdRoomsRoomIdCalendar(ctx, studioId, roomId)
 	return err
 }
 
@@ -1172,11 +1236,13 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/api/admin/studios/:studioId/quota-types", wrapper.GetApiAdminStudiosStudioIdQuotaTypes)
 	router.POST(baseURL+"/api/admin/studios/:studioId/quota-types", wrapper.PostApiAdminStudiosStudioIdQuotaTypes)
 	router.GET(baseURL+"/api/admin/studios/:studioId/quota-types/:quotaTypeId", wrapper.GetApiAdminStudiosStudioIdQuotaTypesQuotaTypeId)
+	router.GET(baseURL+"/api/admin/studios/:studioId/room-types", wrapper.GetApiAdminStudiosStudioIdRoomTypes)
+	router.POST(baseURL+"/api/admin/studios/:studioId/room-types", wrapper.PostApiAdminStudiosStudioIdRoomTypes)
+	router.GET(baseURL+"/api/admin/studios/:studioId/room-types/:roomTypeId/calendar", wrapper.GetApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendar)
+	router.POST(baseURL+"/api/admin/studios/:studioId/room-types/:roomTypeId/calendar", wrapper.PostApiAdminStudiosStudioIdRoomTypesRoomTypeIdCalendar)
 	router.GET(baseURL+"/api/admin/studios/:studioId/rooms", wrapper.GetApiAdminStudiosStudioIdRooms)
 	router.POST(baseURL+"/api/admin/studios/:studioId/rooms", wrapper.PostApiAdminStudiosStudioIdRooms)
 	router.GET(baseURL+"/api/admin/studios/:studioId/rooms/:roomId", wrapper.GetApiAdminStudiosStudioIdRoomsRoomId)
-	router.GET(baseURL+"/api/admin/studios/:studioId/rooms/:roomId/calendar", wrapper.GetApiAdminStudiosStudioIdRoomsRoomIdCalendar)
-	router.POST(baseURL+"/api/admin/studios/:studioId/rooms/:roomId/calendar", wrapper.PostApiAdminStudiosStudioIdRoomsRoomIdCalendar)
 	router.GET(baseURL+"/api/admin/studios/:studioId/rooms/:roomId/reservations", wrapper.GetApiAdminStudiosStudioIdRoomsRoomIdReservations)
 	router.GET(baseURL+"/api/admin/studios/:studioId/rooms/:roomId/reservations/:reservationId", wrapper.GetApiAdminStudiosStudioIdRoomsRoomIdReservationsReservationId)
 	router.POST(baseURL+"/api/checkout/reservations", wrapper.PostApiCheckoutReservations)
