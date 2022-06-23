@@ -414,7 +414,7 @@ paths:
                           format: time
                         price:
                           type: integer
-                        slot_type_id:
+                        quota_type_id:
                           type: integer
                   last_page:
                     type: integer
@@ -443,7 +443,7 @@ paths:
                   format: time
                 price:
                   type: integer
-                slot_type_id:
+                quota_type_id:
                   type: integer
       responses:
         200:
@@ -570,7 +570,7 @@ paths:
                           type: array
                           items:
                             type: string
-                        slots:
+                        quotas:
                           type: array
                           items:
                             type: object
@@ -648,7 +648,7 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Room"
-                  slots:
+                  quotas:
                     type: array
                     items:
                       type: object
@@ -737,7 +737,7 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/RoomFacility"
-                  slots:
+                  quotas:
                     type: array
                     items:
                       type: object
@@ -770,7 +770,7 @@ paths:
             schema:
               type: object
               properties:
-                slots:
+                quotas:
                   type: array
                   items:
                     type: object
@@ -801,7 +801,7 @@ paths:
                 properties:
                   id:
                     type: integer
-                  slots:
+                  quotas:
                     type: array
                     items:
                       type: object
@@ -842,7 +842,7 @@ paths:
                 properties:
                   id:
                     type: integer
-                  slots:
+                  quotas:
                     type: array
                     items:
                       type: object
@@ -874,7 +874,7 @@ paths:
             schema:
               type: object
               properties:
-                slots:
+                quotas:
                   type: array
                   items:
                     type: object
@@ -905,7 +905,7 @@ paths:
                 properties:
                   id:
                     type: integer
-                  slots:
+                  quotas:
                     type: array
                     items:
                       type: object
@@ -941,7 +941,7 @@ paths:
                 properties:
                   id:
                     type: integer
-                  slots:
+                  quotas:
                     type: array
                     items:
                       type: object
